@@ -29,6 +29,7 @@ const CharitiesSchema = mongoose.Schema({
     fund: String,
     phone: String,
     about: String,
+    address: String,
     status: Number,
     tsCreatedAt: Number,
     tsModifiedAt: Number

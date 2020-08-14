@@ -223,7 +223,55 @@ exports.updateUser = async (req, res) => {
     }
 }
 
+exports.deleteUser = async (req, res) => {
+    var identity = req.identity.data;
+    var adminUserId = identity.id;
+    var userId = req.params.id;
 
+    let userData = await Users.findOne({
+        _id: userId
+    })
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while listing users',
+                error: err
+            }
+        })
+
+    if (userData && userData.success && (userData.success === 0)) {
+        return res.send(userData);
+    }
+    if (userData) {
+        let removeUser = await Users.updateOne({
+            _id: userId,
+        }, {
+            status: 0,
+            tsModifiedAt: Date.now()
+        })
+            .catch(err => {
+                return {
+                    success: 0,
+                    message: 'Something went wrong while remove user',
+                    error: err
+                }
+            })
+
+        if (removeUser && removeUser.success && (removeUser.success === 0)) {
+            return res.send(removeUser);
+        }
+        return res.status(200).send({
+            success: 1,
+            message: 'User deleted successfully'
+        })
+
+    } else {
+        return res.status(200).send({
+            success: 0,
+            message: 'User not exists'
+        });
+    }
+}
 async function checkUser(findCriteria, type) {
     let check = await Users.findOne(findCriteria)
         .catch(err => {

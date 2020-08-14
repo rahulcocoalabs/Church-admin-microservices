@@ -6,5 +6,6 @@ module.exports = (app) => {
     app.get('/users/list',auth, users.userList);
     app.get('/users/:id/profile',auth, users.getUser);
     app.patch('/users/:id/profile',auth, users.updateUser);
+    app.delete('/users/:id',auth, users.deleteUser);
 
 };
