@@ -43,6 +43,14 @@ const PostSchema = mongoose.Schema({
     fileName: String,
     textContent: String,
     textStyle: Object,
+    likesCount: Number,
+    likes: [{
+        likeStatus: Boolean,
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    }],
     sermonsCreatedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'Paster'},
     feedCreatedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}, 
     status: Number,

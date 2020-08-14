@@ -33,7 +33,13 @@ const UserSchema = mongoose.Schema({
     parishWard: { type: mongoose.Schema.Types.ObjectId, ref: 'ParishWard'},
     bloodGroup: String,
     isVerified: Boolean,
-    familyMembers: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+    familyMembers: [{
+        familyMember: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        relation: String
+    }],
     userType: String,
     status: Number,
     tsCreatedAt: Number,

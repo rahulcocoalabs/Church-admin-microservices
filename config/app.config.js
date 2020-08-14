@@ -7,7 +7,8 @@ module.exports = {
     expirySeconds: 2 * 60
   },
   users: {
-    imageBase: commonStorePath + 'users/'
+    imageBase: commonStorePath + 'users/',
+    resultsPerPage: 30
   },
   pasters: {
     resultsPerPage: 30

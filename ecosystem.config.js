@@ -14,20 +14,20 @@ module.exports = {
         port : 3031
       }
     },
-    // {
-    //   name: 'Pasters church-app Microservices',
-    //   script: 'pasters.service.js',
-    //   // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
-    //   instances: 1,
-    //   autorestart: true,
-    //   watch: false,
-    //   max_memory_restart: '1G',
-    //   //cron_restart
-    //   env: {
-    //     NODE_ENV: 'development',
-    //     port : 3002
-    //   }
-    // },
+    {
+      name: 'Users church-app Microservices',
+      script: 'users.service.js',
+      // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '1G',
+      //cron_restart
+      env: {
+        NODE_ENV: 'development',
+        port : 3032
+      }
+    },
     // {
     //   name: 'Events church-app Microservices',
     //   script: 'events.service.js',
