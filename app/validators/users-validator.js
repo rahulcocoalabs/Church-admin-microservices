@@ -2,6 +2,7 @@ const {check, validationResult} = require('express-validator');
 
 exports.validator = (method) => {
     switch (method) {
+        // block
         case 'updateProfile': {
             return [
                 check('name', 'Name is required').notEmpty(),
@@ -13,6 +14,21 @@ exports.validator = (method) => {
                 check('parish', 'Parish is required').notEmpty(),
                 check('parishWard', 'Parish ward is required').notEmpty(),
                 check('bloodGroup', 'Blood group is required').notEmpty(),
+                (req, res, next) => {
+                    const errors = validationResult(req);
+                    if (!errors.isEmpty()) {
+                        return res.status(422).json({
+                            success: 0,
+                            errors: errors.array()
+                        })
+                    }
+                    next()
+                }
+            ]
+        }
+        case 'block': {
+            return [
+                check('isBlocked', 'isBlocked is required').notEmpty(),
                 (req, res, next) => {
                     const errors = validationResult(req);
                     if (!errors.isEmpty()) {

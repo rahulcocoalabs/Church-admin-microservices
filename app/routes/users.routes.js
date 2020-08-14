@@ -7,5 +7,6 @@ module.exports = (app) => {
     app.get('/users/:id/profile',auth, users.getUser);
     app.patch('/users/:id/profile',auth, users.updateUser);
     app.delete('/users/:id',auth, users.deleteUser);
+    app.patch('/users/:id/block',usersValidator.validator('block'),auth, users.setBlockOrUnBlockUser);
 
 };

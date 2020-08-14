@@ -96,7 +96,7 @@ exports.getUser = async (req, res) => {
         .catch(err => {
             return {
                 success: 0,
-                message: 'Something went wrong while listing users',
+                message: 'Something went wrong while getting user',
                 error: err
             }
         })
@@ -123,7 +123,7 @@ exports.updateUser = async (req, res) => {
         .catch(err => {
             return {
                 success: 0,
-                message: 'Something went wrong while listing users',
+                message: 'Something went wrong while getting user',
                 error: err
             }
         })
@@ -234,7 +234,7 @@ exports.deleteUser = async (req, res) => {
         .catch(err => {
             return {
                 success: 0,
-                message: 'Something went wrong while listing users',
+                message: 'Something went wrong while getting user',
                 error: err
             }
         })
@@ -271,6 +271,67 @@ exports.deleteUser = async (req, res) => {
             message: 'User not exists'
         });
     }
+}
+
+exports.setBlockOrUnBlockUser = async(req,res) =>{
+    var identity = req.identity.data;
+    var adminUserId = identity.id;
+    var userId = req.params.id;
+
+    var params = req.body;
+
+    let userData = await Users.findOne({
+        _id: userId
+    })
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while getting users',
+                error: err
+            }
+        })
+
+    if (userData && userData.success && (userData.success === 0)) {
+        return res.send(userData);
+    }
+    if(userData){
+
+        let blockStatus = await Users.updateOne({
+            _id : userId,
+        },{
+            isBlocked : params.isBlocked,
+            tsModifiedAt : Date.now()
+        })
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while update block status',
+                error: err
+            }
+        })
+
+    if (blockStatus && blockStatus.success && (blockStatus.success === 0)) {
+        return res.send(blockStatus);
+    }
+    if(params.isBlocked){
+        return res.status(200).send({
+            success: 1,
+            message: 'User blocked'
+        })
+    }else{
+        return res.status(200).send({
+            success: 1,
+            message: 'User unblocked'
+        })
+    }
+
+    } else {
+        return res.status(200).send({
+            success: 0,
+            message: 'User not exists'
+        });
+    }
+  
 }
 async function checkUser(findCriteria, type) {
     let check = await Users.findOne(findCriteria)
