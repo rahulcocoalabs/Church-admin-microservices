@@ -25,8 +25,14 @@ var options = {
 const GroupSchema = mongoose.Schema({
     name: String,
     image: String,
-    members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    members: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
     status: Number,
     tsCreatedAt: Number,
     tsModifiedAt: Number

@@ -4,7 +4,6 @@ function transform(ret) {
     ret.id = ret._id;
     delete ret._id;
     delete ret.status;
-    delete ret.tsCreatedAt;
     delete ret.tsModifiedAt;
 }
 var options = {
@@ -24,13 +23,18 @@ var options = {
 const UserSchema = mongoose.Schema({
     name: String,
     email: String,
+    image: String,
     phone: String,
     address: String,
-    church: String,
-    parish: String,
-    parishWard: String,
+    userType: String,
+    passwordHash: String,
+    church: { type: mongoose.Schema.Types.ObjectId, ref: 'Church'},
+    parish: { type: mongoose.Schema.Types.ObjectId, ref: 'Parish'},
+    parishWard: { type: mongoose.Schema.Types.ObjectId, ref: 'ParishWard'},
     bloodGroup: String,
     isVerified: Boolean,
+    familyMembers: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+    userType: String,
     status: Number,
     tsCreatedAt: Number,
     tsModifiedAt: Number

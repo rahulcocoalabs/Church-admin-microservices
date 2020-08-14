@@ -20,18 +20,11 @@ var options = {
         }
     }
 };
-
-const CharitiesSchema = mongoose.Schema({
-    caption: String,
-    title: String,
-    trustName: String,
-    images: Array,
-    fund: String,
-    phone: String,
-    about: String,
+const UrogulfLocationSchema = mongoose.Schema({
+    name: String,
     status: Number,
     tsCreatedAt: Number,
     tsModifiedAt: Number
 
 }, options);
-module.exports = mongoose.model('Charity', CharitiesSchema, 'Charities');
+module.exports = mongoose.model('UrogulfLocation', UrogulfLocationSchema, 'UrogulfLocations');

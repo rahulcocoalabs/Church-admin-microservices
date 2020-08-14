@@ -39,7 +39,12 @@ const PostSchema = mongoose.Schema({
     kilometer: String,
     additionalInfo: String,
     postContent: String,
+    postType: String,
     fileName: String,
+    textContent: String,
+    textStyle: Object,
+    sermonsCreatedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'Paster'},
+    feedCreatedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}, 
     status: Number,
     tsCreatedAt: Number,
     tsModifiedAt: Number

@@ -20,18 +20,23 @@ var options = {
         }
     }
 };
-
-const CharitiesSchema = mongoose.Schema({
-    caption: String,
-    title: String,
-    trustName: String,
-    images: Array,
-    fund: String,
-    phone: String,
-    about: String,
+const UrogulfSchema = mongoose.Schema({
+    location: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'UrogulfLocation'
+    },
+    nearbyLocation: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'UrogulfNearby'
+    },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    message: String,
     status: Number,
     tsCreatedAt: Number,
     tsModifiedAt: Number
 
 }, options);
-module.exports = mongoose.model('Charity', CharitiesSchema, 'Charities');
+module.exports = mongoose.model('Urogulf', UrogulfSchema, 'Urogulfs');
