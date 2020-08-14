@@ -23,7 +23,10 @@ var options = {
 
 const BloodDonationSchema = mongoose.Schema({
     neededDate: Date,
-    place: String,
+    hospitalName: String,
+    address: String,
+    phone: String,
+    description: String,
     bloodGroup: String,
     status: Number,
     tsCreatedAt: Number,
