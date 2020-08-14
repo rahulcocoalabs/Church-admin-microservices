@@ -56,20 +56,20 @@ module.exports = {
     //     port : 3004
     //   }
     // },
-    // {
-    //   name: 'Masters church-app Microservices',
-    //   script: 'masters.service.js',
-    //   // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
-    //   instances: 1,
-    //   autorestart: true,
-    //   watch: false,
-    //   max_memory_restart: '1G',
-    //   //cron_restart
-    //   env: {
-    //     NODE_ENV: 'development',
-    //     port : 3005
-    //   }
-    // },
+    {
+      name: 'Masters Church-admin Microservices',
+      script: 'masters.service.js',
+      // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '1G',
+      //cron_restart
+      env: {
+        NODE_ENV: 'development',
+        port : 3035
+      }
+    },
     // {
     //   name: 'Buy/sell church-app Microservices',
     //   script: 'buyorsell.service.js',
