@@ -9,7 +9,7 @@ const { users } = require('../../config/app.config.js');
 var userConfig = config.users;
 exports.userList = async (req, res) => {
     var identity = req.identity.data;
-    var userId = identity.id;
+    var adminUserId = identity.id;
     var params = req.query;
     var page = Number(params.page) || 1;
     page = page > 0 ? page : 1;
@@ -24,12 +24,12 @@ exports.userList = async (req, res) => {
         userType: { $nin: [constants.ADMIN_USER, constants.SUB_ADMIN_USER] },
         status: 1
     }, {
-        parish : 0,
-        parishWard : 0,
-        familyMembers : 0,
-        userType : 0,
-        address : 0,
-        tsModifiedAt : 0,
+        parish: 0,
+        parishWard: 0,
+        familyMembers: 0,
+        userType: 0,
+        address: 0,
+        tsModifiedAt: 0,
 
     }, pageParams)
         .limit(perPage)
@@ -51,7 +51,18 @@ exports.userList = async (req, res) => {
     var itemsCount = await Users.countDocuments({
         userType: { $nin: [constants.ADMIN_USER, constants.SUB_ADMIN_USER] },
         status: 1
-    });
+    })
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while find total users count',
+                error: err
+            }
+        })
+
+    if (itemsCount && itemsCount.success && (itemsCount.success === 0)) {
+        return res.send(itemsCount);
+    }
     totalPages = itemsCount / perPage;
     totalPages = Math.ceil(totalPages);
     var hasNextPage = page < totalPages;
@@ -62,80 +73,169 @@ exports.userList = async (req, res) => {
         totalItems: itemsCount,
         totalPages: totalPages
     }
-   return res.status(200).send({
+    return res.status(200).send({
         success: 1,
         pagination: pagination,
         imageBase: users.imageBase,
         items: usersList
     })
-    // try {
-    //     var filter = {
-    //         status: 1
-    //     };
-    //     var projection = {
-    //         name: 1
-    //     };
-    //     var listChurch = await Church.find(filter,projection).sort({
-    //         'tsCreatedAt': -1
-    //     });
-    //     res.status(200).send({
-    //         success: 1,
-    //         items: listChurch
-    //     })
-    // } catch (err) {
-    //     res.status(500).send({
-    //         success: 0,
-    //         message: err.message
-    //     })
-    // }
 }
 
-exports.parishList = async (req, res) => {
-    var churchId = req.params.id;
-    try {
-        var filter = {
-            churchId: churchId,
-            status: 1
-        };
-        var projection = {
-            name: 1
-        };
-        var listParish = await Parish.find(filter, projection).sort({
-            "tsCreatedAt": -1
+exports.getUser = async (req, res) => {
+    var identity = req.identity.data;
+    var adminUserId = identity.id;
+    var userId = req.params.id;
+
+    let userData = await Users.findOne({
+        _id: userId
+    })
+        .populate('church')
+        .populate('parish')
+        .populate('parishWard')
+
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while listing users',
+                error: err
+            }
+        })
+
+    if (userData && userData.success && (userData.success === 0)) {
+        return res.send(userData);
+    }
+    return res.status(200).send({
+        success: 1,
+        imageBase: users.imageBase,
+        item: userData,
+        message: 'User details'
+    })
+}
+
+exports.updateUser = async (req, res) => {
+    var identity = req.identity.data;
+    var adminUserId = identity.id;
+    var userId = req.params.id;
+
+    let userData = await Users.findOne({
+        _id: userId
+    })
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while listing users',
+                error: err
+            }
+        })
+
+    if (userData && userData.success && (userData.success === 0)) {
+        return res.send(userData);
+    }
+    if (userData) {
+        var params = req.body;
+        if (!params.name && !params.email && !params.phone
+            && !params.address && !params.church
+            && !params.parish && !params.parishWard
+            && !params.bloodGroup) {
+            return res.send({
+                success: 0,
+                message: 'Nothing to update'
+            });
+        }
+        var update = {};
+        if (params.name) {
+            update.name = params.name;
+        }
+        if (params.email) {
+            var findCriteria = {
+                email: params.email,
+                status: 1
+            }
+            var emailCheck = await checkUser(findCriteria, "email")
+            if (emailCheck && emailCheck.success && emailCheck.success === 0) {
+                return res.send(emailCheck);
+            }
+            if (emailCheck && (JSON.stringify(emailCheck.id) !== JSON.stringify(userId)) || emailCheck.userType === constants.ADMIN_USER || emailCheck.userType === constants.SUB_ADMIN_USER) {
+                return res.send({
+                    success: 0,
+                    message: 'Email ID already exists'
+                });
+            }
+            update.email = params.email;
+        }
+        if (params.phone) {
+            var findCriteria = {
+                phone: params.phone,
+                status: 1
+            }
+            var phoneCheck = await checkUser(findCriteria, "phone")
+            if (phoneCheck && phoneCheck.success && phoneCheck.success === 0) {
+                return res.send(phoneCheck);
+            }
+            if (phoneCheck && (JSON.stringify(phoneCheck.id) !== JSON.stringify(userId)) || phoneCheck.userType === constants.ADMIN_USER || phoneCheck.userType === constants.SUB_ADMIN_USER) {
+                return res.send({
+                    success: 0,
+                    message: 'Phone already exists'
+                });
+            }
+            update.phone = params.phone;
+        }
+        if (params.address) {
+            update.address = params.address;
+        }
+        if (params.church) {
+            update.church = params.church;
+        }
+        if (params.parish) {
+            update.parish = params.parish;
+        }
+        if (params.parishWard) {
+            update.parishWard = params.parishWard;
+        }
+        if (params.bloodGroup) {
+            update.bloodGroup = params.bloodGroup;
+        }
+        update.tsModifiedAt = Date.now();
+        let updateUserData = await Users.updateOne({
+            _id: userId
+        }, update)
+            .catch(err => {
+                return {
+                    success: 0,
+                    message: 'Something went wrong while update user',
+                    error: err
+                }
+            })
+
+        if (updateUserData && updateUserData.success && (updateUserData.success === 0)) {
+            return res.send(updateUserData);
+        }
+        return res.status(200).send({
+            success: 1,
+            message: 'User updated successfully'
+        })
+
+    } else {
+        return res.status(200).send({
+            success: 0,
+            message: 'User not exists'
         });
-        res.status(200).send({
-            success: 1,
-            items: listParish
-        })
-    } catch (err) {
-        res.status(500).send({
-            success: 0,
-            message: err.message
-        })
     }
 }
 
-exports.parishWardList = async (req, res) => {
-    var parishId = req.params.id;
-    try {
-        var filter = {
-            parishId: parishId,
-            status: 1
-        };
-        var projection = {
-            name: 1
-        };
-        var listParishWards = await ParishWard.find(filter, projection).sort({
-            'tsCreatedAt': -1
+
+async function checkUser(findCriteria, type) {
+    let check = await Users.findOne(findCriteria)
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while checking ' + type,
+                error: err
+            }
         })
-        res.status(200).send({
-            success: 1,
-            items: listParishWards
-        })
-    } catch (err) {
-        res.status(500).send({
-            success: 0,
-            message: err.message
-        })
+
+    if (check && check.success && (check.success === 0)) {
+        return check;
     }
+    return check;
 }
