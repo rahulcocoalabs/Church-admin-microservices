@@ -39,7 +39,7 @@ module.exports = {
     //   //cron_restart
     //   env: {
     //     NODE_ENV: 'development',
-    //     port : 3003
+    //     port : 3033
     //   }
     // },
     // {
@@ -53,7 +53,7 @@ module.exports = {
     //   //cron_restart
     //   env: {
     //     NODE_ENV: 'development',
-    //     port : 3004
+    //     port : 3034
     //   }
     // },
     {
@@ -81,23 +81,23 @@ module.exports = {
     //   //cron_restart
     //   env: {
     //     NODE_ENV: 'development',
-    //     port : 3006
+    //     port : 3036
     //   }
     // },
-    // {
-    //   name: 'Feeds church-app Microservices',
-    //   script: 'feeds.service.js',
-    //   // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
-    //   instances: 1,
-    //   autorestart: true,
-    //   watch: false,
-    //   max_memory_restart: '1G',
-    //   //cron_restart
-    //   env: {
-    //     NODE_ENV: 'development',
-    //     port : 3007
-    //   }
-    // },
+    {
+      name: 'Feeds church-app Microservices',
+      script: 'feeds.service.js',
+      // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '1G',
+      //cron_restart
+      env: {
+        NODE_ENV: 'development',
+        port : 3037
+      }
+    },
     // {
     //   name: 'Matrimony church-app Microservices',
     //   script: 'matrimonies.service.js',
@@ -109,7 +109,7 @@ module.exports = {
     //   //cron_restart
     //   env: {
     //     NODE_ENV: 'development',
-    //     port : 3008
+    //     port : 3038
     //   }
     // },
     // {
@@ -123,7 +123,7 @@ module.exports = {
     //   //cron_restart
     //   env: {
     //     NODE_ENV: 'development',
-    //     port : 3009
+    //     port : 3039
     //   }
     // },
     // {
@@ -137,7 +137,7 @@ module.exports = {
     //   //cron_restart
     //   env: {
     //     NODE_ENV: 'development',
-    //     port : 3010
+    //     port : 3040
     //   }
     // }
     ]
