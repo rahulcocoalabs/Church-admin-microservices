@@ -10,6 +10,7 @@ var userConfig = config.users;
 exports.userList = async (req, res) => {
     var identity = req.identity.data;
     var adminUserId = identity.id;
+    var churchId = identity.church;
     var params = req.query;
     var page = Number(params.page) || 1;
     page = page > 0 ? page : 1;
@@ -20,8 +21,10 @@ exports.userList = async (req, res) => {
         skip: offset,
         limit: perPage
     };
+
     var usersList = await Users.find({
         userType: { $nin: [constants.ADMIN_USER, constants.SUB_ADMIN_USER] },
+        church : churchId,
         status: 1
     }, {
         parish: 0,
@@ -50,6 +53,7 @@ exports.userList = async (req, res) => {
     }
     var itemsCount = await Users.countDocuments({
         userType: { $nin: [constants.ADMIN_USER, constants.SUB_ADMIN_USER] },
+        church : churchId,
         status: 1
     })
         .catch(err => {
@@ -85,9 +89,13 @@ exports.getUser = async (req, res) => {
     var identity = req.identity.data;
     var adminUserId = identity.id;
     var userId = req.params.id;
+    var churchId = identity.church;
+
 
     let userData = await Users.findOne({
-        _id: userId
+        _id: userId,
+        church : churchId,
+        status : 1,
     })
         .populate('church')
         .populate('parish')
@@ -116,9 +124,13 @@ exports.updateUser = async (req, res) => {
     var identity = req.identity.data;
     var adminUserId = identity.id;
     var userId = req.params.id;
+    var churchId = identity.church;
+
 
     let userData = await Users.findOne({
-        _id: userId
+        _id: userId,
+        church : churchId,
+        status : 1
     })
         .catch(err => {
             return {
@@ -227,9 +239,13 @@ exports.deleteUser = async (req, res) => {
     var identity = req.identity.data;
     var adminUserId = identity.id;
     var userId = req.params.id;
+    var churchId = identity.church;
+
 
     let userData = await Users.findOne({
-        _id: userId
+        _id: userId,
+        church : churchId,
+        status : 1
     })
         .catch(err => {
             return {
@@ -277,11 +293,15 @@ exports.setBlockOrUnBlockUser = async(req,res) =>{
     var identity = req.identity.data;
     var adminUserId = identity.id;
     var userId = req.params.id;
+    var churchId = identity.church;
+
 
     var params = req.body;
 
     let userData = await Users.findOne({
-        _id: userId
+        _id: userId,
+        church : churchId,
+        status : 1
     })
         .catch(err => {
             return {
