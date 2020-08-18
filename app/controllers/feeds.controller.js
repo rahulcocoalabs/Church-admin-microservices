@@ -9,6 +9,7 @@ const feedType = constants.TYPE_FEEDPOST;
 var feedsConfig = config.feeds;
 
 exports.feedsList = async (req, res) => {
+    return res.send(req.identity.data);
     var identity = req.identity.data;
     var adminUserId = identity.id;
     var churchId = identity.church;
