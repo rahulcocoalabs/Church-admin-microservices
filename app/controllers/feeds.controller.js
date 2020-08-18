@@ -32,9 +32,7 @@ exports.feedsList = async (req, res) => {
     for (let i = 0; i < userDatas.length; i++) {
         userIdArray.push(userDatas[i].id);
     }
-    console.log("userIdArray")
-    console.log(userIdArray)
-    console.log("userIdArray")
+
 
     var params = req.query;
     var page = Number(params.page) || 1;
@@ -52,10 +50,18 @@ exports.feedsList = async (req, res) => {
         contentType: feedType,
         status: 1
     }
-    if (params.isApproved !== undefined) {
-        findCriteria.isApproved = params.isApproved;
+    
+    if (params.feedStatus) {
+        if (params.feedStatus !== constants.PENDING_FEED && params.feedStatus !== constants.APPROVED_FEED && params.feedStatus !== constants.REJECTED_FEED) {
+            return res.send({
+                success: 0,
+                message: 'Feed status value invalid'
+            })
+        }else{
+        findCriteria.feedStatus = params.feedStatus;
+        }
     }
-  
+
     var postList = await Posts.find(findCriteria)
         .limit(perPage)
         .sort({
@@ -98,7 +104,67 @@ exports.feedsList = async (req, res) => {
         success: 1,
         pagination,
         imageBase: feedsConfig.imageBase,
-        items: postList
+        items: postList,
+        message : 'List feeds'
     })
+
+}
+
+exports.updateFeedStatus = async (req, res) => {
+    var identity = req.identity.data;
+    var adminUserId = identity.id;
+    var churchId = identity.church;
+    var params = req.body;
+    var feedId = req.params.id;
+    if (params.feedStatus !== constants.APPROVED_FEED && params.feedStatus !== constants.REJECTED_FEED) {
+        return res.send({
+            success: 0,
+            message: 'Feed status value invalid'
+        })
+    }
+    var findCriteria = {
+        _id: feedId,
+        contentType: feedType,
+        status: 1
+    }
+    var feedData = await Posts.findOne(findCriteria)
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while finding feed',
+                error: err
+            }
+        })
+    if (feedData && feedData.success && (feedData.success === 0)) {
+        return res.send(feedData);
+    }
+    if (feedData) {
+        var update = {
+            feedStatus: params.feedStatus,
+            tsModifiedAt: Date.now()
+        }
+        var feedUpdateData = await Posts.updateOne(findCriteria, update)
+            .catch(err => {
+                return {
+                    success: 0,
+                    message: 'Something went wrong while finding feed',
+                    error: err
+                }
+            })
+        if (feedData && feedData.success && (feedData.success === 0)) {
+            return res.send(feedData);
+        }
+        return res.status(200).send({
+            success : 1,
+            message : 'Feed ' + params.feedStatus.toLowerCase() + ' successfully'
+        })
+    } else {
+        return res.send({
+            success: 0,
+            message: 'Feed not exists'
+        })
+    }
+
+
 
 }

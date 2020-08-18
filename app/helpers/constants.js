@@ -5,4 +5,8 @@ module.exports = Object.freeze({
 
    ADMIN_USER : "admin",
    SUB_ADMIN_USER : "subAdmin",
+
+   PENDING_FEED : "Pending",
+   APPROVED_FEED : "Approved",
+   REJECTED_FEED : "Rejected"
 });

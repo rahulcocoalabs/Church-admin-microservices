@@ -53,7 +53,7 @@ const PostSchema = mongoose.Schema({
     }],
     sermonsCreatedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'Paster'},
     feedCreatedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}, 
-    isApproved : Boolean,
+    feedStatus : String,
     status: Number,
     tsCreatedAt: Number,
     tsModifiedAt: Number
