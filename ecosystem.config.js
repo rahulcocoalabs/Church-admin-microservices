@@ -98,20 +98,20 @@ module.exports = {
         port : 3037
       }
     },
-    // {
-    //   name: 'Matrimony church-admin Microservices',
-    //   script: 'matrimonies.service.js',
-    //   // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
-    //   instances: 1,
-    //   autorestart: true,
-    //   watch: false,
-    //   max_memory_restart: '1G',
-    //   //cron_restart
-    //   env: {
-    //     NODE_ENV: 'development',
-    //     port : 3038
-    //   }
-    // },
+    {
+      name: 'Matrimony church-admin Microservices',
+      script: 'matrimonies.service.js',
+      // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '1G',
+      //cron_restart
+      env: {
+        NODE_ENV: 'development',
+        port : 3038
+      }
+    },
     // {
     //   name: 'Blood-donation church-admin Microservices',
     //   script: 'bloodDonation.service.js',
