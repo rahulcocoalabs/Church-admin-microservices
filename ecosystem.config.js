@@ -1,7 +1,7 @@
 module.exports = {
     apps : [
     {
-      name: 'Accounts Church-admin Microservices',
+      name: 'Accounts church-admin Microservices',
       script: 'accounts.service.js',
       // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
       instances: 1,
@@ -15,7 +15,7 @@ module.exports = {
       }
     },
     {
-      name: 'Users church-app Microservices',
+      name: 'Users church-admin Microservices',
       script: 'users.service.js',
       // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
       instances: 1,
@@ -29,7 +29,7 @@ module.exports = {
       }
     },
     // {
-    //   name: 'Events church-app Microservices',
+    //   name: 'Events church-admin Microservices',
     //   script: 'events.service.js',
     //   // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
     //   instances: 1,
@@ -43,7 +43,7 @@ module.exports = {
     //   }
     // },
     // {
-    //   name: 'Groups church-app Microservices',
+    //   name: 'Groups church-admin Microservices',
     //   script: 'groups.service.js',
     //   // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
     //   instances: 1,
@@ -71,7 +71,7 @@ module.exports = {
       }
     },
     // {
-    //   name: 'Buy/sell church-app Microservices',
+    //   name: 'Buy/sell church-admin Microservices',
     //   script: 'buyorsell.service.js',
     //   // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
     //   instances: 1,
@@ -85,7 +85,7 @@ module.exports = {
     //   }
     // },
     {
-      name: 'Feeds church-app Microservices',
+      name: 'Feeds church-admin Microservices',
       script: 'feeds.service.js',
       // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
       instances: 1,
@@ -99,7 +99,7 @@ module.exports = {
       }
     },
     // {
-    //   name: 'Matrimony church-app Microservices',
+    //   name: 'Matrimony church-admin Microservices',
     //   script: 'matrimonies.service.js',
     //   // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
     //   instances: 1,
@@ -113,7 +113,7 @@ module.exports = {
     //   }
     // },
     // {
-    //   name: 'Blood-donation church-app Microservices',
+    //   name: 'Blood-donation church-admin Microservices',
     //   script: 'bloodDonation.service.js',
     //   // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
     //   instances: 1,
@@ -127,7 +127,7 @@ module.exports = {
     //   }
     // },
     // {
-    //   name: 'Charity church-app Microservices',
+    //   name: 'Charity church-admin Microservices',
     //   script: 'charities.service.js',
     //   // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
     //   instances: 1,
