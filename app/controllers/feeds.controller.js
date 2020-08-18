@@ -61,6 +61,9 @@ exports.feedsList = async (req, res) => {
         findCriteria.feedStatus = params.feedStatus;
         }
     }
+    console.log("findCriteria")
+    console.log(findCriteria)
+    console.log("findCriteria")
 
     var postList = await Posts.find(findCriteria)
         .limit(perPage)
