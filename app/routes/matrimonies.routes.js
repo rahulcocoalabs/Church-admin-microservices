@@ -4,17 +4,20 @@ var multer = require('multer');
 var mime = require('mime-types');
 var config = require('../../config/app.config.js');
 var matrimonyConfig = config.matrimony;
-var storage = multer.diskStorage({
-    destination: matrimonyConfig.imageUploadPath,
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now() + "." + mime.extension(file.mimetype))
-    }
-});
+// var storage = multer.diskStorage({
+//     destination: matrimonyConfig.imageUploadPath,
+//     filename: function (req, file, cb) {
+//         cb(null, file.fieldname + '-' + Date.now() + "." + mime.extension(file.mimetype))
+//     }
+// });
 
-var imageUpload = multer({ storage: storage });
+// var imageUpload = multer({ storage: storage });
 module.exports = (app) => {
     const matrimony = require('../controllers/matrimonies.controller');
-    app.post('/admin/matrimonies', auth, matrimonyValidator.validator('create'), matrimony.create);
+    // app.post('/admin/matrimonies', auth, matrimonyValidator.validator('create'), matrimony.create);
+    app.get('/admin/matrimonies/list', auth,  matrimony.listMatrimonies);
+    app.get('/admin/matrimonies/:id/profile', auth,  matrimony.getProfile);
+   
     // app.get('/matrimonies/:id/get-profile', auth, matrimony.getProfile);
     // app.patch('/matrimonies/:id/edit-profile', auth, imageUpload.single('image'), matrimony.editProfile);
     // app.get('/matrimonies/matches', auth, matrimonyValidator.validator('getMatches'), matrimony.getMatches);
