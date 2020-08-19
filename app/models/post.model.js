@@ -24,6 +24,10 @@ var options = {
 const PostSchema = mongoose.Schema({
     contentType: String,
     userId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    churchId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Church'
+    },
     name: String,
     detail: String,
     image: String,

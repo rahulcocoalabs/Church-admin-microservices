@@ -14,28 +14,20 @@ exports.feedsList = async (req, res) => {
     var adminUserId = identity.id;
     var churchId = identity.church;
     var params = req.query;
-    let userDatas = await Users.find({
-        userType: { $nin: [constants.ADMIN_USER, constants.SUB_ADMIN_USER] },
-        church: churchId,
-        status: 1
-    })
-        .catch(err => {
-            return {
-                success: 0,
-                message: 'Something went wrong while getting users',
-                error: err
-            }
-        })
-    if (userDatas && userDatas.success && (userDatas.success === 0)) {
-        return res.send(userDatas);
-    }
+    var userDatas;
     var userIdArray = [];
-    for (let i = 0; i < userDatas.length; i++) {
-        userIdArray.push(userDatas[i].id);
+    var params = req.query;
+    var findCriteria = {
+        contentType: feedType,
+        churchId,
+        status: 1
+    }
+    if(params.userId){
+        findCriteria.feedCreatedBy = params.userId; 
     }
 
 
-    var params = req.query;
+
     var page = Number(params.page) || 1;
     page = page > 0 ? page : 1;
     var perPage = Number(params.perPage) || feedsConfig.resultsPerPage;
@@ -46,11 +38,8 @@ exports.feedsList = async (req, res) => {
         limit: perPage
     };
 
-    var findCriteria = {
-        feedCreatedBy: { $in: userIdArray },
-        contentType: feedType,
-        status: 1
-    }
+
+    // if(params.user)
     
     if (params.feedStatus) {
         if (params.feedStatus !== constants.PENDING_FEED && params.feedStatus !== constants.APPROVED_FEED && params.feedStatus !== constants.REJECTED_FEED) {
@@ -129,7 +118,11 @@ exports.updateFeedStatus = async (req, res) => {
     var findCriteria = {
         _id: feedId,
         contentType: feedType,
+        churchId,
         status: 1
+    }
+    if(params.userId){
+        findCriteria.feedCreatedBy = params.userId; 
     }
     var feedData = await Posts.findOne(findCriteria)
         .catch(err => {
