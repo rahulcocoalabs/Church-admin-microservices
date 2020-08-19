@@ -49,6 +49,13 @@ exports.feedsList = async (req, res) => {
     console.log("findCriteria")
 
     var postList = await Posts.find(findCriteria)
+        .populate([{
+            path: 'feedCreatedBy',
+            select: 'name image'
+        },{
+            path: 'churchId',
+            select:'name'
+        }])
         .limit(perPage)
         .skip(offset)
         .sort({
