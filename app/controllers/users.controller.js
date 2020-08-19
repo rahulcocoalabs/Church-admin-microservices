@@ -17,11 +17,7 @@ exports.userList = async (req, res) => {
     var perPage = Number(params.perPage) || userConfig.resultsPerPage;
     perPage = perPage > 0 ? perPage : userConfig.resultsPerPage;
     var offset = (page - 1) * perPage;
-    var pageParams = {
-        skip: offset,
-        limit: perPage
-    };
-
+    
     var usersList = await Users.find({
         userType: { $nin: [constants.ADMIN_USER, constants.SUB_ADMIN_USER] },
         church : churchId,
@@ -34,8 +30,9 @@ exports.userList = async (req, res) => {
         address: 0,
         tsModifiedAt: 0,
 
-    }, pageParams)
-        .limit(perPage)
+    })
+    .limit(perPage)
+    .skip(offset)
         .populate('church')
         .sort({
             'tsCreatedAt': -1

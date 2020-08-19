@@ -22,8 +22,8 @@ exports.feedsList = async (req, res) => {
         churchId,
         status: 1
     }
-    if(params.userId){
-        findCriteria.feedCreatedBy = params.userId; 
+    if (params.userId) {
+        findCriteria.feedCreatedBy = params.userId;
     }
 
 
@@ -33,22 +33,15 @@ exports.feedsList = async (req, res) => {
     var perPage = Number(params.perPage) || feedsConfig.resultsPerPage;
     perPage = perPage > 0 ? perPage : feedsConfig.resultsPerPage;
     var offset = (page - 1) * perPage;
-    var pageParams = {
-        skip: offset,
-        limit: perPage
-    };
 
-
-    // if(params.user)
-    
     if (params.feedStatus) {
         if (params.feedStatus !== constants.PENDING_FEED && params.feedStatus !== constants.APPROVED_FEED && params.feedStatus !== constants.REJECTED_FEED) {
             return res.send({
                 success: 0,
                 message: 'Feed status value invalid'
             })
-        }else{
-        findCriteria.feedStatus = params.feedStatus;
+        } else {
+            findCriteria.feedStatus = params.feedStatus;
         }
     }
     console.log("findCriteria")
@@ -57,6 +50,7 @@ exports.feedsList = async (req, res) => {
 
     var postList = await Posts.find(findCriteria)
         .limit(perPage)
+        .skip(offset)
         .sort({
             'tsCreatedAt': -1
         })
@@ -98,7 +92,7 @@ exports.feedsList = async (req, res) => {
         pagination,
         imageBase: feedsConfig.imageBase,
         items: postList,
-        message : 'List feeds'
+        message: 'List feeds'
     })
 
 }
@@ -121,8 +115,8 @@ exports.updateFeedStatus = async (req, res) => {
         churchId,
         status: 1
     }
-    if(params.userId){
-        findCriteria.feedCreatedBy = params.userId; 
+    if (params.userId) {
+        findCriteria.feedCreatedBy = params.userId;
     }
     var feedData = await Posts.findOne(findCriteria)
         .catch(err => {
@@ -152,8 +146,8 @@ exports.updateFeedStatus = async (req, res) => {
             return res.send(feedData);
         }
         return res.status(200).send({
-            success : 1,
-            message : 'Feed ' + params.feedStatus.toLowerCase() + ' successfully'
+            success: 1,
+            message: 'Feed ' + params.feedStatus.toLowerCase() + ' successfully'
         })
     } else {
         return res.send({
