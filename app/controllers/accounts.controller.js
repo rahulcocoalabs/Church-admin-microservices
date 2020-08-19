@@ -132,6 +132,7 @@
         payload.phone = userData.phone;
         payload.name = userData.name;
         payload.church = userData.church;
+        payload.userType = userData.userType;
         var token = jwt.sign({
             data: payload,
         }, JWT_KEY, {
