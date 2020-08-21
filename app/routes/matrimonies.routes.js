@@ -9,5 +9,5 @@ module.exports = (app) => {
     const matrimony = require('../controllers/matrimonies.controller');
     app.get('/admin/matrimonies/list', auth,  matrimony.listMatrimonies);
     app.get('/admin/matrimonies/:id/profile', auth,  matrimony.getProfile);
-    app.patch('/admin/matrimonies/:id/status', auth,feedsValidator.validator('updateProfileStatus'),   matrimony.updateProfileStatus);
+    app.patch('/admin/matrimonies/:id/status', auth,matrimonyValidator.validator('updateProfileStatus'),   matrimony.updateProfileStatus);
 };
