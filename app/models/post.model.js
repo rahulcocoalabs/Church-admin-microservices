@@ -36,6 +36,10 @@ const PostSchema = mongoose.Schema({
     entryFees: Array,
     participants: Array, 
     categoryAndType: String,
+    categoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'EventCategory'
+    },
     caption: String,
     images: Array,
     rate: String,
