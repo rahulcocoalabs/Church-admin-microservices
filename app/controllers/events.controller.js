@@ -338,7 +338,7 @@ exports.update = async (req, res) => {
             return res.send(updateEvent);
         }
         return res.send({
-            success: 0,
+            success: 1,
             message: 'Event updated successfully'
         });
     } else {
@@ -388,7 +388,7 @@ exports.delete = async (req, res) => {
             return res.send(updateEvent);
         }
         return res.send({
-            success: 0,
+            success: 1,
             message: 'Event deleted successfully'
         });
     } else {
