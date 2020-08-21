@@ -8,5 +8,9 @@ module.exports = Object.freeze({
 
    PENDING_FEED : "Pending",
    APPROVED_FEED : "Approved",
-   REJECTED_FEED : "Rejected"
+   REJECTED_FEED : "Rejected",
+
+   PENDING_PROFILE : "Pending",
+   APPROVED_PROFILE : "Approved",
+   REJECTED_PROFILE : "Rejected"
 });
