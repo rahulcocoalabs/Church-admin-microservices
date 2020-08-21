@@ -324,7 +324,7 @@ exports.update = async (req, res) => {
 
         }
         
-        eventObj.participants = obj.participants;
+        // update.participants = obj.participants;
         update.tsModifiedAt = Date.now();
         let updateEvent = await Post.updateOne(findCriteria, update)
             .catch(err => {
