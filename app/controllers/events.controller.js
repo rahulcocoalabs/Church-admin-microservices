@@ -272,10 +272,11 @@ exports.update = async (req, res) => {
     }
     let findCriteria = {
         _id: eventId,
+        contentType: eventType,
         churchId,
         status: 1
     }
-    let eventData = await Event.findOne(findCriteria)
+    let eventData = await Post.findOne(findCriteria)
         .catch(err => {
             return {
                 success: 0,
@@ -356,6 +357,7 @@ exports.delete = async (req, res) => {
     var eventId = req.params.id;
     let findCriteria = {
         _id: eventId,
+        contentType: eventType,
         churchId,
         status: 1
     }
