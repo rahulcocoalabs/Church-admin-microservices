@@ -1,6 +1,7 @@
 var Church = require('../models/church.model');
 var Parish = require('../models/parish.model');
 var ParishWard = require('../models/parishWard.model');
+var EventCategory = require('../models/eventCategory.model');
 
 exports.churchList = async (req, res) => {
     try {
@@ -73,4 +74,34 @@ exports.parishWardList = async (req, res) => {
             message: err.message
         })
     }
+}
+
+exports.eventCategoryList = async(req,res) =>{
+        var filter = {
+            status: 1,
+            status: 1
+        };
+        var projection = {
+            name: 1
+        };
+        var listEventCategoryList = await EventCategory.find(filter, projection)
+        .sort({
+            'tsCreatedAt': -1
+        })
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while listing event categories',
+                error: err
+            }
+        })
+    if (listEventCategoryList && listEventCategoryList.success && (listEventCategoryList.success === 0)) {
+        return res.send(listEventCategoryList);
+    }
+        
+      return res.status(200).send({
+            success: 1,
+            items: listEventCategoryList
+        })
+
 }
