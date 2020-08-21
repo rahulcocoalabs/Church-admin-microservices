@@ -101,7 +101,8 @@ exports.eventCategoryList = async(req,res) =>{
         
       return res.status(200).send({
             success: 1,
-            items: listEventCategoryList
+            items: listEventCategoryList,
+            message : 'Event category list'
         })
 
 }
