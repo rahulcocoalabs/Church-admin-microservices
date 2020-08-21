@@ -13,12 +13,12 @@ exports.create = async (req, res) => {
     var params = req.body;
     var eventImage = req.file;
     var errors = [];
-    if (!eventImage) {
-        errors.push({
-            success: 0,
-            message: 'Event image required'
-        })
-    }
+    // if (!eventImage) {
+    //     errors.push({
+    //         success: 0,
+    //         message: 'Event image required'
+    //     })
+    // }
     if (!params.name) {
         errors.push({
             field: "name",
@@ -62,12 +62,12 @@ exports.create = async (req, res) => {
             message: "exhibitors is required"
         })
     }
-    // if (!params.exhibitors) {
-    //     errors.push({
-    //         field: "exhibitors",
-    //         message: "exhibitors is required"
-    //     })
-    // }
+    if (!params.timings) {
+        errors.push({
+            field: "timings",
+            message: "timings is required"
+        })
+    }
     if (errors.length > 0) {
         return res.status(400).send({
             success: 0,
@@ -76,19 +76,29 @@ exports.create = async (req, res) => {
     }
 
     var eventObj = {};
+    
     eventObj.contentType = eventType;
     eventObj.name = params.name;
     eventObj.detail = params.detail;
     eventObj.venue = params.venue;
     eventObj.churchId = churchId;
+    if(eventImage){
+    eventObj.image = eventImage.filename;
+    }else{
+    eventObj.image = "";
+    }
     eventObj.entryFees = params.entryFees;
+    eventObj.timings = params.timings;
     eventObj.visitors = params.visitors;
     eventObj.exhibitors = params.exhibitors;
+    let obj = await setDisplayDetails(params);
+    eventObj.timing = obj.timing;
+    // eventObj.participants = obj.participants;
     eventObj.categoryId = params.categoryId;
     eventObj.status = 1;
     eventObj.tsCreatedAt = Date.now();
     eventObj.tsModifiedAt = null;
-
+    
     let newEventObj = new Post(eventObj);
     let eventData = await newEventObj.save()
         .catch(err => {
@@ -230,10 +240,184 @@ exports.detail = async (req, res) => {
     if (eventDetail && eventDetail.success && (eventDetail.success === 0)) {
         return res.send(eventDetail);
     }
-    return res.status(200).send({
-        success: 1,
-        imageBase: eventConfig.imageBase,
-        item: eventDetail
-    });
+    if (eventDetail) {
+        return res.status(200).send({
+            success: 1,
+            imageBase: eventConfig.imageBase,
+            item: eventDetail,
+            message: 'Event details'
+        });
+    } else {
+        return res.send({
+            success: 0,
+            message: 'Event not exists'
+        });
+    }
 
+}
+
+exports.update = async (req, res) => {
+    var identity = req.identity.data;
+    var adminUserId = identity.id;
+    var churchId = identity.church;
+    var params = req.body;
+    var eventId = req.params.id;
+    var eventImage = req.file;
+    if (!params.eventImage && !params.name && !params.detail && !params.venue && !params.entryFees
+        && !params.entryFees && !params.categoryId && !params.visitors && !params.exhibitors) {
+        return res.status(400).send({
+            success: 0,
+            message: "Nothing to update"
+        });
+    }
+    let findCriteria = {
+        _id: eventId,
+        churchId,
+        status: 1
+    }
+    let eventData = await Event.findOne(findCriteria)
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while checking event exists',
+                error: err
+            }
+        })
+    if (eventData && eventData.success && (eventData.success === 0)) {
+        return res.send(eventData);
+    }
+    if (eventData) {
+        var update = {};
+        if (eventImage) {
+            update.image = eventImage.filename;
+        }
+        if (params.name) {
+            update.name = params.name;
+        }
+
+        if (params.detail) {
+            update.detail = params.detail;
+        }
+        if (params.venue) {
+            update.venue = params.venue;
+        }
+        if (params.entryFees) {
+            update.entryFees = params.entryFees;
+        }
+        if (params.categoryId) {
+            update.categoryId = params.categoryId;
+        }
+        if (params.visitors) {
+            update.visitors = params.visitors;
+        }
+        if (params.exhibitors) {
+            update.exhibitors = params.exhibitors;
+        }
+        var obj = {};
+         if(params.timings){
+         obj = await setDisplayDetails(params);
+         }
+        if (params.timings) {
+            update.timings = params.timings;
+            update.timing = obj.timing;
+
+        }
+        
+        eventObj.participants = obj.participants;
+        update.tsModifiedAt = Date.now();
+        let updateEvent = await Event.updateOne(findCriteria, update)
+            .catch(err => {
+                return {
+                    success: 0,
+                    message: 'Something went wrong while updating event',
+                    error: err
+                }
+            })
+        if (updateEvent && updateEvent.success && (updateEvent.success === 0)) {
+            return res.send(updateEvent);
+        }
+        return res.send({
+            success: 0,
+            message: 'Event updated successfully'
+        });
+    } else {
+        return res.send({
+            success: 0,
+            message: 'Event not exists'
+        });
+    }
+
+}
+
+exports.delete = async (req, res) => {
+    var identity = req.identity.data;
+    var adminUserId = identity.id;
+    var churchId = identity.church;
+    var eventId = req.params.id;
+    let findCriteria = {
+        _id: eventId,
+        churchId,
+        status: 1
+    }
+    let eventData = await Event.findOne(findCriteria)
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while checking event exists',
+                error: err
+            }
+        })
+    if (eventData && eventData.success && (eventData.success === 0)) {
+        return res.send(eventData);
+    }
+    if (eventData) {
+        var update = {};
+        update.status = 0;
+        update.tsModifiedAt = Date.now();
+        let updateEvent = await Event.updateOne(findCriteria, update)
+            .catch(err => {
+                return {
+                    success: 0,
+                    message: 'Something went wrong while deleting event',
+                    error: err
+                }
+            })
+        if (updateEvent && updateEvent.success && (updateEvent.success === 0)) {
+            return res.send(updateEvent);
+        }
+        return res.send({
+            success: 0,
+            message: 'Event deleted successfully'
+        });
+    } else {
+        return res.send({
+            success: 0,
+            message: 'Event not exists'
+        });
+    }
+}
+
+
+async function setDisplayDetails(params){
+    var obj = {};
+    // var participantsArray = [];
+    var timingArray = [];
+
+    if(params.timings){
+        for(let i = 0; i < timings.length; i++){
+            let timingObj = timings[i];
+            let timingString = '';
+            timingString = timingString + timingObj.startTime + ' - ' + timingObj.endTime + ' ( ' + timingObj.date + ' )';
+            timingArray.push(timingString);
+        }
+        obj.timing = timingArray;
+    }
+    // if(params.visitors){
+    //     participantsArray.push(params.visitors + " visitors")
+    // }
+    // if(params.exhibitors){
+    //     participantsArray.push(params.exhibitors + " exhibitors")
+    // }
+    // obj.participants = participantsArray;
+    return obj;
 }

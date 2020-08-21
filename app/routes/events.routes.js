@@ -17,6 +17,7 @@ module.exports = (app) => {
     app.post('/admin/events/create', auth,imageUpload.single('image'), events.create);
     app.get('/admin/events/list', auth, events.list);
     app.get('/admin/events/:id/detail', auth, events.detail);
-    // app.patch('/admin/events/:id/update', auth,imageUpload.single('image'), events.update);
+    app.patch('/admin/events/:id/update', auth,imageUpload.single('image'), events.update);
+    app.delete('/admin/events/:id/delete', auth, events.delete);
 
 };

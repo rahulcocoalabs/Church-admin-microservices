@@ -32,8 +32,15 @@ const PostSchema = mongoose.Schema({
     detail: String,
     image: String,
     timing: Array,
+    timings:  [{
+        date: Date,
+        startTime:String, 
+        endTime:String, 
+    }],
     venue: String,
     entryFees: Array,
+    visitors : String,
+    exhibitors : String,
     participants: Array, 
     categoryAndType: String,
     categoryId: {
