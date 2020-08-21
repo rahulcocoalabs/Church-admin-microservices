@@ -326,7 +326,7 @@ exports.update = async (req, res) => {
         
         eventObj.participants = obj.participants;
         update.tsModifiedAt = Date.now();
-        let updateEvent = await Event.updateOne(findCriteria, update)
+        let updateEvent = await Post.updateOne(findCriteria, update)
             .catch(err => {
                 return {
                     success: 0,
@@ -361,7 +361,7 @@ exports.delete = async (req, res) => {
         churchId,
         status: 1
     }
-    let eventData = await Event.findOne(findCriteria)
+    let eventData = await Post.findOne(findCriteria)
         .catch(err => {
             return {
                 success: 0,
@@ -376,7 +376,7 @@ exports.delete = async (req, res) => {
         var update = {};
         update.status = 0;
         update.tsModifiedAt = Date.now();
-        let updateEvent = await Event.updateOne(findCriteria, update)
+        let updateEvent = await Post.updateOne(findCriteria, update)
             .catch(err => {
                 return {
                     success: 0,
