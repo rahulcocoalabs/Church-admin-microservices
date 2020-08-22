@@ -404,8 +404,9 @@ async function setDisplayDetails(params){
     var obj = {};
     // var participantsArray = [];
     var timingArray = [];
-
+  
     if(params.timings){
+        var timings = params.timings;
         for(let i = 0; i < timings.length; i++){
             let timingObj = timings[i];
             let timingString = '';
