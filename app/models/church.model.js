@@ -23,6 +23,7 @@ var options = {
 
 const ChurchSchema = mongoose.Schema({
     name: String,
+    paymentGatewayKey : String,
     status: Number,
     tsCreatedAt: Number,
     tsModifiedAt: Number
