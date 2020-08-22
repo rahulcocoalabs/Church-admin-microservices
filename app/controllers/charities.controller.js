@@ -3,11 +3,14 @@ var Parish = require('../models/parish.model');
 var ParishWard = require('../models/parishWard.model');
 var Posts = require('../models/post.model')
 var Charity = require('../models/charity.model');
-var charity = require('../models/charity.model')
+var CharityPay = require('../models/charityPayments.model');
+var User = require('../models/user.model')
 var config = require('../../config/app.config.js');
 const constants = require('../helpers/constants');
 const feedType = constants.TYPE_FEEDPOST;
-var feedsConfig = config.feeds;
+
+
+var charityConfig = config.charity;
 exports.delete = async (req,res) => {
 
     const identity = req.identity.data;
@@ -158,18 +161,19 @@ exports.list = async (req,res) => {
     var params = req.query;
     var page = Number(params.page) || 1;
     page = page > 0 ? page : 1;
-    var perPage = Number(params.perPage) || feedsConfig.resultsPerPage;
-    perPage = perPage > 0 ? perPage : feedsConfig.resultsPerPage;
+    var perPage = Number(params.perPage) || charityConfig.resultsPerPage;
+    perPage = perPage > 0 ? perPage : charityConfig.resultsPerPage;
     var offset = (page - 1) * perPage;
     var filter = {};
     filter.status =0;
-    
+    filter.__v = 0;
     filter.tsModifiedAt = 0;
+    filter.images = 0;
+    filter.phone = 0;
     
     let data = await Charity.find({
-        
         status: 1
-    },filter).limit(perPage)
+    },filter).limit(perPage).skip(offset)
     .sort({
         'tsCreatedAt': -1
     }).catch(err => {
@@ -182,23 +186,67 @@ exports.list = async (req,res) => {
     if (data && data.success && (data.success === 0)) {
         return res.send(userDatas);
     }
-    var array = [];
-    var ids = [];
-    var ret = {
-        success:1,
-        items : []
-    }
-    for (let i = 0; i < data.length; i++) {
-        let obj = {};
-        obj.id = data[i]._id;
-        obj.amount = data[i].fund;
-        obj.titile = data[i].title;
-        obj.createdAt = data[i].tsCreatedAt;
-        ret.items.push(obj);
-    }
+   
 
     
    
-    return res.status(200).send(ret)
+    var totalPostCount = await Charity.countDocuments({status:1})
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while finding post count',
+                error: err
+            }
+        })
+    if (totalPostCount && totalPostCount.success && (totalPostCount.success === 0)) {
+        return res.send(totalPostCount);
+    }
+
+    totalPages = totalPostCount / perPage;
+    totalPages = Math.ceil(totalPages);
+    var hasNextPage = page < totalPages;
+    var pagination = {
+        page,
+        perPage,
+        hasNextPage,
+        totalItems: totalPostCount,
+        totalPages
+    }
+    return res.status(200).send({
+        success: 1,
+        pagination,
+        
+        items:data,
+        message: 'List feeds'
+    })
+}
+
+exports.details = async (req,res) => {
+
+    const identity = req.identity.data;
+    
+    var params = req.body;
+
+    
+    
+    let data = await CharityPay.find({},{userId:1,amount:1});
+
+    var array = [];
+
+    for (x in data){
+
+        let user = await User.findOne({_id:data[x].userId},{name:1})
+        let object = {
+            user:user.name,
+            amt:data[x].amount
+        }
+
+        array.push(object)
+    }
+   
+    return res.send({
+        success:1,
+        items:array
+    })
 
 }
