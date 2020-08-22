@@ -25,6 +25,10 @@ const LivePrayerSchema = mongoose.Schema({
     title: String,
     date: String,
     time: String,
+    churchId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Church'
+    },
     description: String,
     liveVideoLink: String,
     videoLink: String,
