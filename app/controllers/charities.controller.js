@@ -34,7 +34,7 @@ exports.delete = async (req,res) => {
                 error: err
             }
         })
-    if (data && data.success && (data.success === 0)) {
+    if (data && (data.success !== undefined) && (data.success === 0)) {
         return res.send(userDatas);
     }
 
@@ -72,7 +72,7 @@ exports.update = async (req,res) => {
                 error: err
             }
         })
-    if (data && data.success && (data.success === 0)) {
+    if (data && (data.success !== undefined) && (data.success === 0)) {
         return res.send(userDatas);
     }
 
@@ -183,7 +183,7 @@ exports.list = async (req,res) => {
                 error: err
             }
         })
-    if (data && data.success && (data.success === 0)) {
+    if (data && (data.success !== undefined) && (data.success === 0)) {
         return res.send(userDatas);
     }
    
@@ -198,7 +198,7 @@ exports.list = async (req,res) => {
                 error: err
             }
         })
-    if (totalPostCount && totalPostCount.success && (totalPostCount.success === 0)) {
+    if (totalPostCount && (totalPostCount.success !== undefined) && (totalPostCount.success === 0)) {
         return res.send(totalPostCount);
     }
 

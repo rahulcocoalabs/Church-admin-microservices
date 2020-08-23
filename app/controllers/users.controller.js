@@ -45,7 +45,7 @@ exports.userList = async (req, res) => {
             }
         })
 
-    if (usersList && usersList.success && (usersList.success === 0)) {
+    if (usersList && (usersList.success !== undefined) && (usersList.success === 0)) {
         return res.send(usersList);
     }
     var itemsCount = await Users.countDocuments({
@@ -61,7 +61,7 @@ exports.userList = async (req, res) => {
             }
         })
 
-    if (itemsCount && itemsCount.success && (itemsCount.success === 0)) {
+    if (itemsCount && (itemsCount.success !== undefined) && (itemsCount.success === 0)) {
         return res.send(itemsCount);
     }
     totalPages = itemsCount / perPage;
@@ -106,7 +106,7 @@ exports.getUser = async (req, res) => {
             }
         })
 
-    if (userData && userData.success && (userData.success === 0)) {
+    if (userData && (userData.success !== undefined) && (userData.success === 0)) {
         return res.send(userData);
     }
     return res.status(200).send({
@@ -137,7 +137,7 @@ exports.updateUser = async (req, res) => {
             }
         })
 
-    if (userData && userData.success && (userData.success === 0)) {
+    if (userData && (userData.success !== undefined) && (userData.success === 0)) {
         return res.send(userData);
     }
     if (userData) {
@@ -216,7 +216,7 @@ exports.updateUser = async (req, res) => {
                 }
             })
 
-        if (updateUserData && updateUserData.success && (updateUserData.success === 0)) {
+        if (updateUserData && (updateUserData.success !== undefined) && (updateUserData.success === 0)) {
             return res.send(updateUserData);
         }
         return res.status(200).send({
@@ -252,7 +252,7 @@ exports.deleteUser = async (req, res) => {
             }
         })
 
-    if (userData && userData.success && (userData.success === 0)) {
+    if (userData && (userData.success !== undefined) && (userData.success === 0)) {
         return res.send(userData);
     }
     if (userData) {
@@ -270,7 +270,7 @@ exports.deleteUser = async (req, res) => {
                 }
             })
 
-        if (removeUser && removeUser.success && (removeUser.success === 0)) {
+        if (removeUser && (removeUser.success !== undefined) && (removeUser.success === 0)) {
             return res.send(removeUser);
         }
         return res.status(200).send({
@@ -308,7 +308,7 @@ exports.setBlockOrUnBlockUser = async(req,res) =>{
             }
         })
 
-    if (userData && userData.success && (userData.success === 0)) {
+    if (userData && (userData.success !== undefined) && (userData.success === 0)) {
         return res.send(userData);
     }
     if(userData){
@@ -327,7 +327,7 @@ exports.setBlockOrUnBlockUser = async(req,res) =>{
             }
         })
 
-    if (blockStatus && blockStatus.success && (blockStatus.success === 0)) {
+    if (blockStatus && (blockStatus.success !== undefined) && (blockStatus.success === 0)) {
         return res.send(blockStatus);
     }
     if(params.isBlocked){
@@ -360,7 +360,7 @@ async function checkUser(findCriteria, type) {
             }
         })
 
-    if (check && check.success && (check.success === 0)) {
+    if (check && (check.success !== undefined) && (check.success === 0)) {
         return check;
     }
     return check;

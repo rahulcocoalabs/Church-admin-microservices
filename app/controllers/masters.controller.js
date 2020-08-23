@@ -95,7 +95,7 @@ exports.eventCategoryList = async (req, res) => {
                 error: err
             }
         })
-    if (listEventCategoryList && listEventCategoryList.success && (listEventCategoryList.success === 0)) {
+    if (listEventCategoryList && (listEventCategoryList.success !== undefined) && (listEventCategoryList.success === 0)) {
         return res.send(listEventCategoryList);
     }
 
@@ -124,7 +124,7 @@ exports.getPayementGatewaySettings = async (req, res) => {
                 error: err
             }
         })
-    if (churchData && churchData.success && (churchData.success === 0)) {
+    if (churchData && (churchData.success !== undefined) && (churchData.success === 0)) {
         return res.send(churchData);
     }
     if (churchData) {
@@ -164,7 +164,7 @@ exports.updatePayementGatewaySettings = async (req, res) => {
                 error: err
             }
         })
-    if (churchData && churchData.success && (churchData.success === 0)) {
+    if (churchData && (churchData.success !== undefined) && (churchData.success === 0)) {
         return res.send(churchData);
     }
     if (churchData) {
@@ -179,7 +179,7 @@ exports.updatePayementGatewaySettings = async (req, res) => {
                     error: err
                 }
             })
-        if (updateData && updateData.success && (updateData.success === 0)) {
+        if (updateData && (updateData.success !== undefined) && (updateData.success === 0)) {
             return res.send(updateData);
         }
         return res.send({

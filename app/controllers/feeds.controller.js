@@ -67,7 +67,7 @@ exports.feedsList = async (req, res) => {
                 error: err
             }
         })
-    if (postList && postList.success && (postList.success === 0)) {
+    if (postList && (postList.success !== undefined) && (postList.success === 0)) {
         return res.send(postList);
     }
     var totalPostCount = await Posts.countDocuments(findCriteria)
@@ -78,7 +78,7 @@ exports.feedsList = async (req, res) => {
                 error: err
             }
         })
-    if (totalPostCount && totalPostCount.success && (totalPostCount.success === 0)) {
+    if (totalPostCount && (totalPostCount.success !== undefined) && (totalPostCount.success === 0)) {
         return res.send(totalPostCount);
     }
 
@@ -131,7 +131,7 @@ exports.updateFeedStatus = async (req, res) => {
                 error: err
             }
         })
-    if (feedData && feedData.success && (feedData.success === 0)) {
+    if (feedData && (feedData.success !== undefined) && (feedData.success === 0)) {
         return res.send(feedData);
     }
     if (feedData) {
@@ -147,7 +147,7 @@ exports.updateFeedStatus = async (req, res) => {
                     error: err
                 }
             })
-        if (feedData && feedData.success && (feedData.success === 0)) {
+        if (feedData && (feedData.success !== undefined) && (feedData.success === 0)) {
             return res.send(feedData);
         }
         return res.status(200).send({

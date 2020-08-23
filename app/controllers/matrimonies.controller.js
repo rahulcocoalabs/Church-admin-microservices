@@ -42,7 +42,7 @@ exports.listMatrimonies = async (req, res) => {
                 error: err
             }
         })
-    if (matrimonysData && matrimonysData.success && (matrimonysData.success === 0)) {
+    if (matrimonysData && (matrimonysData.success !== undefined) && (matrimonysData.success === 0)) {
         return res.send(matrimonysData);
     }
     var totalMatrimonyCount = await Matrimony.countDocuments(findCriteria)
@@ -53,7 +53,7 @@ exports.listMatrimonies = async (req, res) => {
                 error: err
             }
         })
-    if (totalMatrimonyCount && totalMatrimonyCount.success && (totalMatrimonyCount.success === 0)) {
+    if (totalMatrimonyCount && (totalMatrimonyCount.success !== undefined) && (totalMatrimonyCount.success === 0)) {
         return res.send(totalMatrimonyCount);
     }
     totalPages = totalMatrimonyCount / perPage;
@@ -107,7 +107,7 @@ exports.getProfile = async (req, res) => {
                 error: err
             }
         })
-    if (profileData && profileData.success && (profileData.success === 0)) {
+    if (profileData && (profileData.success !== undefined) && (profileData.success === 0)) {
         return res.send(profileData);
     }
     return res.status(200).send({
@@ -157,7 +157,7 @@ exports.updateProfileStatus = async (req, res) => {
                 error: err
             }
         })
-    if (profileData && profileData.success && (profileData.success === 0)) {
+    if (profileData && (profileData.success !== undefined) && (profileData.success === 0)) {
         return res.send(profileData);
     }
     if (profileData) {
@@ -172,7 +172,7 @@ exports.updateProfileStatus = async (req, res) => {
                     error: err
                 }
             })
-        if (profileDataUpdate && profileDataUpdate.success && (profprofileDataUpdateileData.success === 0)) {
+        if (profileDataUpdate && (profileDataUpdate.success !== undefined) && (profprofileDataUpdateileData.success === 0)) {
             return res.send(profileDataUpdate);
         }
         return res.status(200).send({

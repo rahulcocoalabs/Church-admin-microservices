@@ -76,7 +76,9 @@ exports.create = async (req, res) => {
     }
 
     var eventObj = {};
-    
+    console.log("eventImage")
+    console.log(eventImage)
+    console.log("eventImage")
     eventObj.contentType = eventType;
     eventObj.name = params.name;
     eventObj.detail = params.detail;
@@ -98,7 +100,9 @@ exports.create = async (req, res) => {
     eventObj.status = 1;
     eventObj.tsCreatedAt = Date.now();
     eventObj.tsModifiedAt = null;
-    
+    console.log("eventObj")
+    console.log(eventObj)
+    console.log("eventObj")
     let newEventObj = new Post(eventObj);
     let eventData = await newEventObj.save()
         .catch(err => {
@@ -108,9 +112,12 @@ exports.create = async (req, res) => {
                 error: err
             }
         })
-    if (eventData && eventData.success && (eventData.success === 0)) {
+    if (eventData && (eventData.success !== undefined) && (eventData.success === 0)) {
         return res.send(eventData);
     }
+    console.log("eventData")
+    console.log(eventData)
+    console.log("eventData")
     return res.status(200).send({
         success: 1,
         message: 'Event added successfully'
@@ -158,7 +165,7 @@ exports.list = async (req, res) => {
                 error: err
             }
         })
-    if (eventsList && eventsList.success && (eventsList.success === 0)) {
+    if (eventsList && (eventsList.success !== undefined) && (eventsList.success === 0)) {
         return res.send(eventsList);
     }
     var eventsCount = await Post.countDocuments(findCriteria)
@@ -169,7 +176,7 @@ exports.list = async (req, res) => {
                 error: err
             }
         })
-    if (eventsCount && eventsCount.success && (eventsCount.success === 0)) {
+    if (eventsCount && (eventsCount.success !== undefined) && (eventsCount.success === 0)) {
         return res.send(eventsCount);
     }
     totalPages = eventsCount / perPage;
@@ -237,7 +244,7 @@ exports.detail = async (req, res) => {
                 error: err
             }
         })
-    if (eventDetail && eventDetail.success && (eventDetail.success === 0)) {
+    if (eventDetail && (eventDetail.success !== undefined) && (eventDetail.success === 0)) {
         return res.send(eventDetail);
     }
     if (eventDetail) {
@@ -284,7 +291,7 @@ exports.update = async (req, res) => {
                 error: err
             }
         })
-    if (eventData && eventData.success && (eventData.success === 0)) {
+    if (eventData && (eventData.success !== undefined) && (eventData.success === 0)) {
         return res.send(eventData);
     }
     if (eventData) {
@@ -334,7 +341,7 @@ exports.update = async (req, res) => {
                     error: err
                 }
             })
-        if (updateEvent && updateEvent.success && (updateEvent.success === 0)) {
+        if (updateEvent && (updateEvent.success !== undefined) && (updateEvent.success === 0)) {
             return res.send(updateEvent);
         }
         return res.send({
@@ -369,7 +376,7 @@ exports.delete = async (req, res) => {
                 error: err
             }
         })
-    if (eventData && eventData.success && (eventData.success === 0)) {
+    if (eventData && (eventData.success !== undefined) && (eventData.success === 0)) {
         return res.send(eventData);
     }
     if (eventData) {
@@ -384,7 +391,7 @@ exports.delete = async (req, res) => {
                     error: err
                 }
             })
-        if (updateEvent && updateEvent.success && (updateEvent.success === 0)) {
+        if (updateEvent && (updateEvent.success !== undefined) && (updateEvent.success === 0)) {
             return res.send(updateEvent);
         }
         return res.send({

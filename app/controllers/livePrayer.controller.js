@@ -35,7 +35,7 @@ exports.create = async (req, res) => {
                 error: err
             }
         })
-    if (newLivePrayerData && newLivePrayerData.success && (newLivePrayerData.success === 0)) {
+    if (newLivePrayerData && (newLivePrayerData.success !== undefined) && (newLivePrayerData.success === 0)) {
         return res.send(newLivePrayerData);
     }
     return res.status(200).send({
@@ -74,7 +74,7 @@ exports.list = async (req, res) => {
                 error: err
             }
         })
-    if (listLivePrayers && listLivePrayers.success && (listLivePrayers.success === 0)) {
+    if (listLivePrayers && (listLivePrayers.success !== undefined) && (listLivePrayers.success === 0)) {
         return res.send(listLivePrayers);
     }
     var itemsCount = await LivePrayer.countDocuments(filter)
@@ -85,7 +85,7 @@ exports.list = async (req, res) => {
                 error: err
             }
         })
-    if (itemsCount && itemsCount.success && (itemsCount.success === 0)) {
+    if (itemsCount && (itemsCount.success !== undefined) && (itemsCount.success === 0)) {
         return res.send(itemsCount);
     }
     totalPages = itemsCount / perPage;
@@ -123,7 +123,7 @@ exports.detail = async (req, res) => {
                 error: err
             }
         })
-    if (livePrayerData && livePrayerData.success && (livePrayerData.success === 0)) {
+    if (livePrayerData && (livePrayerData.success !== undefined) && (livePrayerData.success === 0)) {
         return res.send(livePrayerData);
     }
     if (livePrayerData) {
@@ -160,7 +160,7 @@ exports.update = async (req, res) => {
                 error: err
             }
         })
-    if (livePrayerData && livePrayerData.success && (livePrayerData.success === 0)) {
+    if (livePrayerData && (livePrayerData.success !== undefined) && (livePrayerData.success === 0)) {
         return res.send(livePrayerData);
     }
     if (livePrayerData) {
@@ -193,7 +193,7 @@ exports.update = async (req, res) => {
                     error: err
                 }
             })
-        if (updateData && updateData.success && (updateData.success === 0)) {
+        if (updateData && (updateData.success !== undefined) && (updateData.success === 0)) {
             return res.send(updateData);
         }
         return res.status(200).send({
@@ -227,7 +227,7 @@ exports.delete = async (req, res) => {
                 error: err
             }
         })
-    if (livePrayerData && livePrayerData.success && (livePrayerData.success === 0)) {
+    if (livePrayerData && (livePrayerData.success !== undefined) && (livePrayerData.success === 0)) {
         return res.send(livePrayerData);
     }
     if (livePrayerData) {
@@ -243,7 +243,7 @@ exports.delete = async (req, res) => {
                     error: err
                 }
             })
-        if (updateData && updateData.success && (updateData.success === 0)) {
+        if (updateData && (updateData.success !== undefined) && (updateData.success === 0)) {
             return res.send(updateData);
         }
         return res.status(200).send({

@@ -39,7 +39,7 @@ exports.create = async (req, res) => {
                 error: err
             }
         })
-    if (newSermonsData && newSermonsData.success && (newSermonsData.success === 0)) {
+    if (newSermonsData && (newSermonsData.success !== undefined) && (newSermonsData.success === 0)) {
         return res.send(newSermonsData);
     }
     return res.status(200).send({
@@ -91,7 +91,7 @@ exports.list = async (req, res) => {
                 error: err
             }
         })
-    if (sermonsList && sermonsList.success && (sermonsList.success === 0)) {
+    if (sermonsList && (sermonsList.success !== undefined) && (sermonsList.success === 0)) {
         return res.send(sermonsList);
     }
     var itemsCount = await Sermons.countDocuments(filter)
@@ -102,7 +102,7 @@ exports.list = async (req, res) => {
                 error: err
             }
         })
-    if (itemsCount && itemsCount.success && (itemsCount.success === 0)) {
+    if (itemsCount && (itemsCount.success !== undefined) && (itemsCount.success === 0)) {
         return res.send(itemsCount);
     }
     totalPages = itemsCount / perPage;
@@ -145,7 +145,7 @@ exports.detail = async (req, res) => {
                 error: err
             }
         })
-    if (sermonDetail && sermonDetail.success && (sermonDetail.success === 0)) {
+    if (sermonDetail && (sermonDetail.success !== undefined) && (sermonDetail.success === 0)) {
         return res.send(sermonDetail);
     }
     if (sermonDetail) {
@@ -186,7 +186,7 @@ exports.update = async (req, res) => {
                 error: err
             }
         })
-    if (sermonDetail && sermonDetail.success && (sermonDetail.success === 0)) {
+    if (sermonDetail && (sermonDetail.success !== undefined) && (sermonDetail.success === 0)) {
         return res.send(sermonDetail);
     }
     if (sermonDetail) {
@@ -246,7 +246,7 @@ exports.update = async (req, res) => {
                     error: err
                 }
             })
-        if (updateSermonData && updateSermonData.success && (updateSermonData.success === 0)) {
+        if (updateSermonData && (updateSermonData.success !== undefined) && (updateSermonData.success === 0)) {
             return res.send(updateSermonData);
         }
         return res.status(200).send({
@@ -282,7 +282,7 @@ exports.delete = async(req,res) =>{
                 error: err
             }
         })
-    if (sermonDetail && sermonDetail.success && (sermonDetail.success === 0)) {
+    if (sermonDetail && (sermonDetail.success !== undefined) && (sermonDetail.success === 0)) {
         return res.send(sermonDetail);
     }
     if (sermonDetail) {
@@ -297,7 +297,7 @@ exports.delete = async(req,res) =>{
                     error: err
                 }
             })
-        if (deleteSermonData && deleteSermonData.success && (deleteSermonData.success === 0)) {
+        if (deleteSermonData && (deleteSermonData.success !== undefined) && (deleteSermonData.success === 0)) {
             return res.send(deleteSermonData);
         }
         return res.status(200).send({

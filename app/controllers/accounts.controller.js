@@ -132,7 +132,7 @@
             }
         })
 
-    if (userData && userData.success && (userData.success === 0)) {
+    if (userData && (userData.success !== undefined) && (userData.success === 0)) {
         return res.send(userData);
     }
     if (!userData || !userData.roles || userData.roles.length <= 0) {
