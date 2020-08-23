@@ -28,18 +28,22 @@ const UserSchema = mongoose.Schema({
     address: String,
     userType: String,
     passwordHash: String,
-    church: { type: mongoose.Schema.Types.ObjectId, ref: 'Church'},
-    parish: { type: mongoose.Schema.Types.ObjectId, ref: 'Parish'},
-    parishWard: { type: mongoose.Schema.Types.ObjectId, ref: 'ParishWard'},
+    church: { type: mongoose.Schema.Types.ObjectId, ref: 'Church' },
+    parish: { type: mongoose.Schema.Types.ObjectId, ref: 'Parish' },
+    parishWard: { type: mongoose.Schema.Types.ObjectId, ref: 'ParishWard' },
     bloodGroup: String,
     isVerified: Boolean,
-    isBlocked : Boolean,
+    isBlocked: Boolean,
     familyMembers: [{
         familyMember: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         },
         relation: String
+    }],
+    roles: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'UserRole'
     }],
     userType: String,
     status: Number,

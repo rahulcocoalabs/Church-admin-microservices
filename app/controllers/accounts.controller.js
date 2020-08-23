@@ -1,4 +1,5 @@
   const Users = require('../models/user.model');
+  const UserRoles = require('../models/userRole.model');
   const Otp = require('../models/otp.model');
   const config = require('../../config/app.config.js');
   const constants = require('../helpers/constants');
@@ -53,7 +54,14 @@
         })
       }
     const hash = bcrypt.hashSync(password, salt);
-
+    
+      let userRoleData = await UserRoles.findOne({
+        name : constants.SUB_ADMIN_USER,
+        status : 1
+      },{ name: 1 })
+      
+      var roles = [];
+      roles.push(userRoleData.id);
       // var otpResponse = await otp(phone)
       var newUser = new Users({
         name: name,
@@ -66,19 +74,23 @@
         // parish: parish,
         // parishWard: parishWard,
         // bloodGroup: bloodGroup,
-        userType : constants.SUB_ADMIN_USER,
+        // userType : constants.SUB_ADMIN_USER,
+        roles,
         // isVerified: true,
         status: 1,
         tsCreatedAt: new Date(),
         tsModifiedAt: null
       });
+      var roleData = [];
+      roleData.push(userRoleData)
       var saveUser = await newUser.save();
       var payload = {
         id: saveUser._id,
         name,
         email,
         phone,
-        church
+        church,
+        roles : roleData
       };
       var token = jwt.sign({
         data: payload,
@@ -107,6 +119,11 @@
     findCriteria.status = 1;
 
     let userData = await Users.findOne(findCriteria)
+    .populate([{
+      path: 'roles',
+      select: { name: 1 }
+
+  }])
         .catch(err => {
             return {
                 success: 0,
@@ -118,7 +135,7 @@
     if (userData && userData.success && (userData.success === 0)) {
         return res.send(userData);
     }
-    if (!userData) {
+    if (!userData || !userData.roles || userData.roles.length <= 0) {
         return res.status(200).send({
             success: 0,
             message: 'User not exists'
@@ -133,6 +150,7 @@
         payload.name = userData.name;
         payload.church = userData.church;
         payload.userType = userData.userType;
+        payload.roles = userData.roles;
         var token = jwt.sign({
             data: payload,
         }, JWT_KEY, {
