@@ -27,6 +27,7 @@ module.exports = {
   events: {
     resultsPerPage: 30,
     imageBase: commonStorePath + 'events/',
+    // imageUploadPath: 'uploads'
     imageUploadPath: '/var/www/html/church-app-images/events/'
   },
   buyorsell: {
@@ -46,6 +47,20 @@ module.exports = {
     imageUploadPath: '/var/www/html/church-app-images/matrimony/',
     resultsPerPage: 30,
 
+  },
+  urogulf: {
+    resultsPerPage: 30
+  },
+  sermons: {
+    resultsPerPage: 30,
+    imageBase: commonStorePath + 'sermons/'
+  },
+  bloodDonation: {
+    resultsPerPage: 30
+  },
+  livePrayers: {
+    imageBase: commonStorePath + 'live-prayers/',
+    resultsPerPage: 30
   }
 
 
