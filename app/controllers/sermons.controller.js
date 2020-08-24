@@ -23,7 +23,7 @@ exports.create = async (req, res) => {
     sermonsObj.textStyle = {
         fontStyle: 1,
         textAlign: params.textAlign,
-        textColor: params.textColor,
+        bgColor: params.textColor,
     }
     sermonsObj.sermonsCreatedBy = adminUserId;
     sermonsObj.status = 1;
@@ -224,9 +224,9 @@ exports.update = async (req, res) => {
         }
         if (params.textColor) {
             textStyleCheck = true;
-            obj.textColor = params.textColor
+            obj.bgColor = params.textColor
         }else{
-            obj.textColor = textStyle.textColor;
+            obj.bgColor = textStyle.textColor;
         }
         console.log("params")
         console.log(params)

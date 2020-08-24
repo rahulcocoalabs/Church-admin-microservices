@@ -7,6 +7,7 @@ module.exports = Object.freeze({
 
    ADMIN_USER : "admin",
    SUB_ADMIN_USER : "subAdmin",
+   URO_GULF_ADMIN_USER : "uroGulfAdmin",
 
    PENDING_FEED : "Pending",
    APPROVED_FEED : "Approved",
