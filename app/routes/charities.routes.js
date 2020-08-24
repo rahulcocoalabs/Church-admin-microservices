@@ -21,5 +21,5 @@ module.exports = (app) => {
     app.post('/admin/charities/add',auth, charityFileUpload.single('image'), charities.add);
     app.delete('/admin/charities/:id/delete',auth, charities.delete);
     app.patch('/admin/charities/:id/update',auth,charityFileUpload.single('image'), charities.update);
-    app.get('/admin/charities/details',auth, charities.details);
+    app.get('/admin/charities/:id/detail',auth, charities.details);
 };

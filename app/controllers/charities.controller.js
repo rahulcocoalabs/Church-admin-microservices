@@ -305,7 +305,7 @@ exports.details = async (req, res) => {
     var offset = (page - 1) * perPage;
 
     var findCriteria = {
-        _id: charityId,
+        charityId,
         status: 1
     }
     let charityPaymentData = await CharityPay.findOne(findCriteria)
