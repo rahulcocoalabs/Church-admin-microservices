@@ -104,11 +104,15 @@ exports.create = async (req, res) => {
         var len = eventImages.images.length;
         var i = 0;
         while (i < len) {
+            console.log("eventImages.images[i].filename")
+            console.log(eventImages.images[i].filename)
+            console.log("eventImages.images[i].filename")
             images.push(eventImages.images[i].filename);
             i++;
         }
         eventObj.images = images;
         eventObj.image = eventImages.images[0].filename;
+        
     }
 
     eventObj.entryFees = params.entryFees;
@@ -122,7 +126,9 @@ exports.create = async (req, res) => {
     eventObj.status = 1;
     eventObj.tsCreatedAt = Date.now();
     eventObj.tsModifiedAt = null;
-
+    console.log("eventObj")
+    console.log(eventObj)
+    console.log("eventObj")
     let newEventObj = new Post(eventObj);
     let eventData = await newEventObj.save()
         .catch(err => {
