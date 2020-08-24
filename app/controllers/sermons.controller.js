@@ -22,8 +22,8 @@ exports.create = async (req, res) => {
     sermonsObj.postType = constants.TEXT_POST_TYPE;
     sermonsObj.textStyle = {
         fontStyle: 1,
-        textAlign: params.textAlign,
-        bgColor: params.textColor,
+        textAlign: parseInt(params.textAlign),
+        bgColor: parseFloat(params.textColor),
     }
     sermonsObj.sermonsCreatedBy = adminUserId;
     sermonsObj.status = 1;
@@ -218,22 +218,17 @@ exports.update = async (req, res) => {
 
         if (params.textAlign) {
             textStyleCheck = true;
-            obj.textAlign = params.textAlign
+            obj.textAlign = parseInt(params.textAlign)
         }else{
-            obj.textAlign = textStyle.textAlign;
+            obj.textAlign = parseInt(textStyle.textAlign);
         }
         if (params.textColor) {
             textStyleCheck = true;
-            obj.bgColor = params.textColor
+            obj.bgColor = parseFloat(params.textColor)
         }else{
-            obj.bgColor = textStyle.textColor;
+            obj.bgColor = parseFloat(textStyle.textColor);
         }
-        console.log("params")
-        console.log(params)
-        console.log("params")
-        console.log("textStyle")
-        console.log(textStyle)
-        console.log("textStyle")
+      
         if (textStyleCheck) {
             update.textStyle = obj;
         }
