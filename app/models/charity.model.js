@@ -22,6 +22,10 @@ var options = {
 };
 
 const CharitiesSchema = mongoose.Schema({
+    churchId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Church'
+    },
     caption: String,
     title: String,
     trustName: String,

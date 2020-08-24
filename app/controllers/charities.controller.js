@@ -7,155 +7,220 @@ var CharityPay = require('../models/charityPayments.model');
 var User = require('../models/user.model')
 var config = require('../../config/app.config.js');
 const constants = require('../helpers/constants');
-const feedType = constants.TYPE_FEEDPOST;
 
 
 var charityConfig = config.charity;
-exports.delete = async (req,res) => {
-
+exports.delete = async (req, res) => {
     const identity = req.identity.data;
-
+    var adminUserId = identity.id;
+    var churchId = identity.church;
     let params = req.body;
+    var charityId = req.params.id;
 
-    if (!params.id){
-        return res.send({
-            success:0,
-            msg:"no values found"
-        })
-    }
-
-    let data = await Charity.updateOne({
-        _id:params.id,
+    var findCriteria = {
+        _id: charityId,
+        churchId,
         status: 1
-    },{status:0}).catch(err => {
+    }
+    let charityData = await Charity.findOne(findCriteria)
+        .catch(err => {
             return {
                 success: 0,
-                message: 'Something went wrong while getting users',
+                message: 'Something went wrong while getting charity',
                 error: err
             }
         })
-    if (data && (data.success !== undefined) && (data.success === 0)) {
-        return res.send(userDatas);
+    if (charityData && (charityData.success !== undefined) && (charityData.success === 0)) {
+        return res.send(charityData);
     }
+    if (charityData) {
+        var update = {};
+        update.status = 0;
+        update.tsModifiedAt = Date.now();
+        let data = await Charity.updateOne(findCriteria, update)
+            .catch(err => {
+                return {
+                    success: 0,
+                    message: 'Something went wrong while deleting charities',
+                    error: err
+                }
+            })
+        if (data && (data.success !== undefined) && (data.success === 0)) {
+            return res.send(userDatas);
+        }
 
-    if(!data){
         return res.send({
-            success:0,
-            msg:"something wrong"
+            success: 1,
+            msg: "Charity deleted successfully"
+        })
+    } else {
+        return res.send({
+            success: 0,
+            msg: "Charity not exist"
         })
     }
-    return res.send({
-        success:1,
-        msg:"successfully updated"
-    })
 }
-exports.update = async (req,res) => {
+exports.update = async (req, res) => {
 
     const identity = req.identity.data;
-
+    var adminUserId = identity.id;
+    var churchId = identity.church;
     let params = req.body;
-
-    if (!params.object){
+    var charityId = req.params.id;
+    if (!params.title && !params.trustName && !params.fund && !params.phone && !params.file) {
         return res.send({
-            success:0,
-            msg:"no values found"
+            success: 0,
+            msg: "Nothing to update"
         })
     }
-
-    let data = await Charity.updateOne({
-        _id:params.id,
+    var findCriteria = {
+        _id: charityId,
+        churchId,
         status: 1
-    },params.object).catch(err => {
+    }
+    let charityData = await Charity.findOne(findCriteria)
+        .catch(err => {
             return {
                 success: 0,
-                message: 'Something went wrong while getting users',
+                message: 'Something went wrong while getting charity',
                 error: err
             }
         })
-    if (data && (data.success !== undefined) && (data.success === 0)) {
-        return res.send(userDatas);
+    if (charityData && (charityData.success !== undefined) && (charityData.success === 0)) {
+        return res.send(charityData);
     }
+    if (charityData) {
+        var update = {};
+        if (req.file) {
+            var images = [];
+            images.push(req.file.filename);
+            update.images = images;
+        }
+        if (params.title) {
+            update.title = params.title;
+        }
+        if (params.organisation) {
+            update.trustName = params.organisation;
+        }
+        if (params.amount) {
+            update.fund = params.amount;
+        }
+        if (params.phone) {
+            update.phone = params.phone;
+        }
+        update.tsModifiedAt = Date.now();
+        let data = await Charity.updateOne(findCriteria, update)
+            .catch(err => {
+                return {
+                    success: 0,
+                    message: 'Something went wrong while getting users',
+                    error: err
+                }
+            })
+        if (data && (data.success !== undefined) && (data.success === 0)) {
+            return res.send(userDatas);
+        }
 
-    if(!data){
         return res.send({
-            success:0,
-            msg:"something wrong"
+            success: 1,
+            msg: "Charity successfully updated"
+        })
+    } else {
+        return res.send({
+            success: 0,
+            msg: "Charity not exist"
         })
     }
-    return res.send({
-        success:1,
-        msg:"successfully updated"
-    })
-
 }
-exports.add = async (req,res) => {
-
-   // return res.send("ok")
+exports.add = async (req, res) => {
     const identity = req.identity.data;
-     var adminUserId = identity.id;
-     var churchId = identity.church;
+    var adminUserId = identity.id;
+    var churchId = identity.church;
     var params = req.body;
     var errorArray = [];
-    var flag = false ;
+    var flag = false;
+    // var files = req.files;
+    var file = req.file;
+    var images = [];
 
-    if (!params.title){
-       errorArray.push('no value found for title')
+    // if (files) {
+    // var len = files.image.length;
+    // var i = 0;
+    // while (i < len) {
+    //     images.push(files.image[i].filename);
+    //     i++;
+    // }
+    // }
+    if (file) {
+        images.push(file.filename)
     }
-    if (!params.amount){
-        errorArray.push("no value found for amount")
-    }
-
-    if (!params.about){
-        errorArray.push("no value found for about informaion")
-    }
-    if (!params.organisation){
-        errorArray.push("no value found for organisation")
-    }
-    if (!params.phone){
-        errorArray.push("no value found for phone")
-    }
-
-    if ( errorArray.length > 0){
-        return res.send({
-            success:0,
-            msg: errorArray
+    var errors = [];
+    if (!params.title) {
+        errors.push({
+            'field': 'title',
+            'message': 'title required',
         })
     }
-
-     var charity = new Charity({
-        title:params.title,
-        charityId: params.charityId,
-        trustname: params.organisation,
+    if (!params.organisation) {
+        errors.push({
+            'field': 'organisation',
+            'message': 'organisation required',
+        })
+    }
+    if (!params.amount) {
+        errors.push({
+            'field': 'amount',
+            'message': 'amount required',
+        })
+    }
+    if (!params.phone) {
+        errors.push({
+            'field': 'phone',
+            'message': 'phone required',
+        })
+    }
+    if (errors.length > 0) {
+        return res.send({
+            success: 0,
+            errors
+        })
+    }
+    var charity = new Charity({
+        churchId,
+        title: params.title,
+        images,
+        trustName: params.organisation,
         fund: params.amount,
         phone: params.phone,
-        paidOn: params.paidOn,
+        // paidOn: params.paidOn,
         status: 1,
         tsCreatedAt: Date.now(),
         tsModifiedAt: null
-      });
-      var new_charity = await charity.save();
+    });
 
+    var new_charity = await charity.save();
 
-      
-      if (!new_charity){
-          return res.send({
-              success:0,
-              msg:"something wrong"
-          })
-      }
+    if (!new_charity) {
+        return res.send({
+            success: 0,
+            msg: "something wrong"
+        })
+    }
 
-      return res.send({
-          success:1,
-          id:new_charity._id
-      })
+    return res.send({
+        success: 1,
+        id: new_charity._id,
+        message: 'New charity added successfully',
+
+    })
 }
 
 
-exports.list = async (req,res) => {
+exports.list = async (req, res) => {
 
     const identity = req.identity.data;
-     var adminUserId = identity.id;
-     var churchId = identity.church;
+    var adminUserId = identity.id;
+    var churchId = identity.church;
     var params = req.query;
 
     var params = req.query;
@@ -164,19 +229,25 @@ exports.list = async (req,res) => {
     var perPage = Number(params.perPage) || charityConfig.resultsPerPage;
     perPage = perPage > 0 ? perPage : charityConfig.resultsPerPage;
     var offset = (page - 1) * perPage;
-    var filter = {};
-    filter.status =0;
-    filter.__v = 0;
-    filter.tsModifiedAt = 0;
-    filter.images = 0;
-    filter.phone = 0;
-    
-    let data = await Charity.find({
+    var projection = {};
+    projection.status = 0;
+    projection.__v = 0;
+    projection.tsModifiedAt = 0;
+    projection.images = 0;
+    projection.phone = 0;
+    let findCriteria = {
+        churchId,
         status: 1
-    },filter).limit(perPage).skip(offset)
-    .sort({
-        'tsCreatedAt': -1
-    }).catch(err => {
+    }
+
+    let data = await Charity.find(
+        findCriteria
+        , projection)
+        .limit(perPage)
+        .skip(offset)
+        .sort({
+            'tsCreatedAt': -1
+        }).catch(err => {
             return {
                 success: 0,
                 message: 'Something went wrong while getting users',
@@ -186,11 +257,11 @@ exports.list = async (req,res) => {
     if (data && (data.success !== undefined) && (data.success === 0)) {
         return res.send(userDatas);
     }
-   
 
-    
-   
-    var totalPostCount = await Charity.countDocuments({status:1})
+
+
+
+    var totalCharityCount = await Charity.countDocuments(findCriteria)
         .catch(err => {
             return {
                 success: 0,
@@ -198,55 +269,92 @@ exports.list = async (req,res) => {
                 error: err
             }
         })
-    if (totalPostCount && (totalPostCount.success !== undefined) && (totalPostCount.success === 0)) {
-        return res.send(totalPostCount);
+    if (totalCharityCount && (totalCharityCount.success !== undefined) && (totalCharityCount.success === 0)) {
+        return res.send(totalCharityCount);
     }
 
-    totalPages = totalPostCount / perPage;
+    totalPages = totalCharityCount / perPage;
     totalPages = Math.ceil(totalPages);
     var hasNextPage = page < totalPages;
     var pagination = {
         page,
         perPage,
         hasNextPage,
-        totalItems: totalPostCount,
+        totalItems: totalCharityCount,
         totalPages
     }
     return res.status(200).send({
         success: 1,
         pagination,
-        
-        items:data,
-        message: 'List feeds'
+
+        items: data,
+        message: 'List charities'
     })
 }
 
-exports.details = async (req,res) => {
-
+exports.details = async (req, res) => {
     const identity = req.identity.data;
-    
-    var params = req.body;
+    var adminUserId = identity.id;
+    var churchId = identity.church;
+    var charityId = req.params.id;
+    var params = req.query;
+    var page = Number(params.page) || 1;
+    page = page > 0 ? page : 1;
+    var perPage = Number(params.perPage) || charityConfig.resultsPerPage;
+    perPage = perPage > 0 ? perPage : charityConfig.resultsPerPage;
+    var offset = (page - 1) * perPage;
 
-    
-    
-    let data = await CharityPay.find({},{userId:1,amount:1});
-
-    var array = [];
-
-    for (x in data){
-
-        let user = await User.findOne({_id:data[x].userId},{name:1})
-        let object = {
-            user:user.name,
-            amt:data[x].amount
-        }
-
-        array.push(object)
+    var findCriteria = {
+        _id: charityId,
+        status: 1
     }
-   
-    return res.send({
-        success:1,
-        items:array
+    let charityPaymentData = await CharityPay.findOne(findCriteria)
+        .populate([{
+            path: 'charityId',
+        }, {
+            path: 'userId',
+
+        }])
+        .limit(perPage)
+        .skip(offset)
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while getting charity payments',
+                error: err
+            }
+        })
+    if (charityPaymentData && (charityPaymentData.success !== undefined) && (charityPaymentData.success === 0)) {
+        return res.send(charityData);
+    }
+
+    var charityPayCount = await CharityPay.countDocuments(findCriteria)
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while finding charity pay transaction count',
+                error: err
+            }
+        })
+    if (charityPayCount && (charityPayCount.success !== undefined) && (charityPayCount.success === 0)) {
+        return res.send(charityPayCount);
+    }
+
+    totalPages = charityPayCount / perPage;
+    totalPages = Math.ceil(totalPages);
+    var hasNextPage = page < totalPages;
+    var pagination = {
+        page,
+        perPage,
+        hasNextPage,
+        totalItems: charityPayCount,
+        totalPages
+    }
+    return res.status(200).send({
+        success: 1,
+        pagination,
+        items: charityPaymentData,
+        message: 'List charities payment transactions'
     })
 
 }
