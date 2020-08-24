@@ -12,6 +12,9 @@ exports.create = async (req, res) => {
     var churchId = identity.church;
     var params = req.body;
     var eventImage = req.file;
+    console.log("req.files")
+    console.log(req.files)
+    console.log("req.files")
     var errors = [];
     // if (!eventImage) {
     //     errors.push({
@@ -76,14 +79,15 @@ exports.create = async (req, res) => {
     }
 
     var eventObj = {};
-    console.log("eventImage")
-    console.log(eventImage)
-    console.log("eventImage")
+   
     eventObj.contentType = eventType;
     eventObj.name = params.name;
     eventObj.detail = params.detail;
     eventObj.venue = params.venue;
     eventObj.churchId = churchId;
+    console.log("req.file")
+    console.log(req.file)
+    console.log("req.file")
     if(eventImage){
     eventObj.image = eventImage.filename;
     }else{
@@ -93,16 +97,14 @@ exports.create = async (req, res) => {
     eventObj.timings = params.timings;
     eventObj.visitors = params.visitors;
     eventObj.exhibitors = params.exhibitors;
-    let obj = await setDisplayDetails(params);
-    eventObj.timing = obj.timing;
+    // let obj = await setDisplayDetails(params);
+    // eventObj.timing = obj.timing;
     // eventObj.participants = obj.participants;
     eventObj.categoryId = params.categoryId;
     eventObj.status = 1;
     eventObj.tsCreatedAt = Date.now();
     eventObj.tsModifiedAt = null;
-    console.log("eventObj")
-    console.log(eventObj)
-    console.log("eventObj")
+
     let newEventObj = new Post(eventObj);
     let eventData = await newEventObj.save()
         .catch(err => {
@@ -115,9 +117,7 @@ exports.create = async (req, res) => {
     if (eventData && (eventData.success !== undefined) && (eventData.success === 0)) {
         return res.send(eventData);
     }
-    console.log("eventData")
-    console.log(eventData)
-    console.log("eventData")
+  
     return res.status(200).send({
         success: 1,
         message: 'Event added successfully'
@@ -417,7 +417,15 @@ async function setDisplayDetails(params){
         for(let i = 0; i < timings.length; i++){
             let timingObj = timings[i];
             let timingString = '';
-            timingString = timingString + timingObj.startTime + ' - ' + timingObj.endTime + ' ( ' + timingObj.date + ' )';
+            var startTime = new Date(timingObj.startTime);
+            // console.log(startTime.toLocaleString() ); 
+            // console.log(startTime.toLocaleString() ); 
+            console.log(timingObj.startTime)
+            var endTime = new Date(timingObj.endTime);
+            // console.log(timingObj.startTime.split("T")[1].split("Z")[0]);
+            console.log("startTime : " + startTime)
+            // console.log("endTime : " + endTime)
+            timingString = timingString + formatAMPM(addHours(startTime)) + ' - ' + formatAMPM(addHours(endTime)) + ' ( ' + timingObj.date + ' )';
             timingArray.push(timingString);
         }
         obj.timing = timingArray;
@@ -431,3 +439,28 @@ async function setDisplayDetails(params){
     // obj.participants = participantsArray;
     return obj;
 }
+
+// function addHours(date){
+//     date.setTime(date.getTime() - (5.5*60*60*1000));
+//     return date;
+
+// }
+
+// function formatAMPM(date) {
+//     var hours = date.getHours();
+//     var minutes = date.getMinutes();
+//     var ampm = hours >= 12 ? 'pm' : 'am';
+//     hours = hours % 12;
+//     hours = hours ? hours : 12; // the hour '0' should be '12'
+//     minutes = minutes < 10 ? '0'+minutes : minutes;
+//     var strTime = hours + ':' + minutes + ' ' + ampm;
+//     console.log("strTime : " + strTime)
+//     return strTime;
+//   }
+
+// function getFormattedDate(date) {
+//     var month = date.getMonth() + 1;
+//     var day = format(date.getDate());
+//     var year = format(date.getFullYear());
+//     return dd + "/" + day + "/" + year;
+// }

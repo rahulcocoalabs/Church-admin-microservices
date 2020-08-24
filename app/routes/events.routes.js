@@ -14,7 +14,9 @@ var imageUpload = multer({ storage: storage });
 
 module.exports = (app) => {
     const events = require('../controllers/events.controller');
-    app.post('/admin/events/create', auth,imageUpload.single('images'), events.create);
+    // app.post('/admin/events/create', auth,imageUpload.single('images'), events.create);
+    app.post('/admin/events/create', auth, imageUpload.fields([{ name: 'images'}]), events.create);
+   
     app.get('/admin/events/list', auth, events.list);
     app.get('/admin/events/:id/detail', auth, events.detail);
     app.patch('/admin/events/:id/update', auth,imageUpload.single('images'), events.update);
