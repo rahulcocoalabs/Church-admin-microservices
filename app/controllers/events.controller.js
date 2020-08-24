@@ -12,10 +12,12 @@ exports.create = async (req, res) => {
     var churchId = identity.church;
     var params = req.body;
     var eventImage = req.file;
+    var eventImages = req.files;
     console.log("req.files")
     console.log(req.files)
     console.log("req.files")
     var errors = [];
+
     // if (!eventImage) {
     //     errors.push({
     //         success: 0,
@@ -79,7 +81,7 @@ exports.create = async (req, res) => {
     }
 
     var eventObj = {};
-   
+    var images = [];
     eventObj.contentType = eventType;
     eventObj.name = params.name;
     eventObj.detail = params.detail;
@@ -88,11 +90,27 @@ exports.create = async (req, res) => {
     console.log("req.file")
     console.log(req.file)
     console.log("req.file")
-    if(eventImage){
-    eventObj.image = eventImage.filename;
-    }else{
-    eventObj.image = "";
+    // if(eventImage){
+    // eventObj.image = eventImage.filename;
+    // }else{
+    // eventObj.image = "";
+    // }
+    if (eventImages.images) {
+        //     return res.status(400).send({
+        //         success: 0,
+        //         message: 'Atleast one image is required'
+        //     })
+        // } else {
+        var len = eventImages.images.length;
+        var i = 0;
+        while (i < len) {
+            images.push(eventImages.images[i].filename);
+            i++;
+        }
+        eventObj.images = images;
+        eventObj.image = eventImages.images[0].filename;
     }
+
     eventObj.entryFees = params.entryFees;
     eventObj.timings = params.timings;
     eventObj.visitors = params.visitors;
@@ -117,7 +135,7 @@ exports.create = async (req, res) => {
     if (eventData && (eventData.success !== undefined) && (eventData.success === 0)) {
         return res.send(eventData);
     }
-  
+
     return res.status(200).send({
         success: 1,
         message: 'Event added successfully'
@@ -270,7 +288,7 @@ exports.update = async (req, res) => {
     var params = req.body;
     var eventId = req.params.id;
     var eventImage = req.file;
-    if (!params.eventImage && !params.name && !params.detail && !params.venue && !params.entryFees
+    if (!req.files && !params.name && !params.detail && !params.venue && !params.entryFees
         && !params.entryFees && !params.categoryId && !params.visitors && !params.exhibitors) {
         return res.status(400).send({
             success: 0,
@@ -321,16 +339,34 @@ exports.update = async (req, res) => {
         if (params.exhibitors) {
             update.exhibitors = params.exhibitors;
         }
+        var eventImages = req.files;
+        if (eventImages) {
+            var images = [];
+            //     return res.status(400).send({
+            //         success: 0,
+            //         message: 'Atleast one image is required'
+            //     })
+            // } else {
+                var len = eventImages.images.length;
+                var i = 0;
+                while (i < len) {
+                    images.push(eventImages.images[i].filename);
+                    i++;
+                }
+                update.images = images;
+                update.image = eventImages.images[0].filename;
+            }
+
         var obj = {};
-         if(params.timings){
-         obj = await setDisplayDetails(params);
-         }
+        if (params.timings) {
+            obj = await setDisplayDetails(params);
+        }
         if (params.timings) {
             update.timings = params.timings;
             update.timing = obj.timing;
 
         }
-        
+
         // update.participants = obj.participants;
         update.tsModifiedAt = Date.now();
         let updateEvent = await Post.updateOne(findCriteria, update)
@@ -407,14 +443,14 @@ exports.delete = async (req, res) => {
 }
 
 
-async function setDisplayDetails(params){
+async function setDisplayDetails(params) {
     var obj = {};
     // var participantsArray = [];
     var timingArray = [];
-  
-    if(params.timings){
+
+    if (params.timings) {
         var timings = params.timings;
-        for(let i = 0; i < timings.length; i++){
+        for (let i = 0; i < timings.length; i++) {
             let timingObj = timings[i];
             let timingString = '';
             var startTime = new Date(timingObj.startTime);
