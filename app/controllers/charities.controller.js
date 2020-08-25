@@ -51,12 +51,12 @@ exports.delete = async (req, res) => {
 
         return res.send({
             success: 1,
-            msg: "Charity deleted successfully"
+            message: "Charity deleted successfully"
         })
     } else {
         return res.send({
             success: 0,
-            msg: "Charity not exist"
+            message: "Charity not exist"
         })
     }
 }
@@ -70,7 +70,7 @@ exports.update = async (req, res) => {
     if (!params.title && !params.trustName && !params.fund && !params.phone && !params.file) {
         return res.send({
             success: 0,
-            msg: "Nothing to update"
+            message: "Nothing to update"
         })
     }
     var findCriteria = {
@@ -123,12 +123,12 @@ exports.update = async (req, res) => {
 
         return res.send({
             success: 1,
-            msg: "Charity successfully updated"
+            message: "Charity successfully updated"
         })
     } else {
         return res.send({
             success: 0,
-            msg: "Charity not exist"
+            message: "Charity not exist"
         })
     }
 }
@@ -203,7 +203,7 @@ exports.add = async (req, res) => {
     if (!new_charity) {
         return res.send({
             success: 0,
-            msg: "something wrong"
+            message: "something wrong"
         })
     }
 
@@ -292,7 +292,7 @@ exports.list = async (req, res) => {
     })
 }
 
-exports.details = async (req, res) => {
+exports.donations = async (req, res) => {
     const identity = req.identity.data;
     var adminUserId = identity.id;
     var churchId = identity.church;
@@ -357,4 +357,39 @@ exports.details = async (req, res) => {
         message: 'List charities payment transactions'
     })
 
+}
+
+exports.details = async (req, res) => {
+    const identity = req.identity.data;
+    var adminUserId = identity.id;
+    var churchId = identity.church;
+    var charityId = req.params.id;
+
+    let charityData = await Charity.findOne({
+        _id: charityId,
+        churchId,
+        status: 1
+    })
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while getting details of charity',
+                error: err
+            }
+        })
+    if (charityData && (charityData.success !== undefined) && (charityData.success === 0)) {
+        return res.send(charityData);
+    }
+    if (charityData) {
+        return res.status(200).send({
+            success: 1,
+            item: charityData,
+            message: 'Charity details'
+        })
+    } else {
+        return res.send({
+            success: 0,
+            message: 'Charity not exists'
+        });
+    }
 }
