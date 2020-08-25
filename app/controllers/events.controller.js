@@ -293,7 +293,6 @@ exports.update = async (req, res) => {
     var churchId = identity.church;
     var params = req.body;
     var eventId = req.params.id;
-    var eventImage = req.file;
     if (!req.files && !params.name && !params.detail && !params.venue && !params.entryFees
         && !params.entryFees && !params.categoryId && !params.visitors && !params.exhibitors) {
         return res.status(400).send({
@@ -348,6 +347,9 @@ exports.update = async (req, res) => {
         var eventImages = req.files;
         if (eventImages) {
             var images = [];
+            console.log("eventImages")
+            console.log(eventImages)
+            console.log("eventImages")
                 var len = eventImages.images.length;
                 var i = 0;
                 while (i < len) {
