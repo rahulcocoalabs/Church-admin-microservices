@@ -394,7 +394,7 @@ exports.getPriests = async(req,res)=>{
         return res.send(usersList);
     }
     var itemsCount = await Users.countDocuments({
-        userType: { $nin: [constants.ADMIN_USER, constants.SUB_ADMIN_USER] },
+        userType: { $nin: [constants.SUB_ADMIN_USER] },
         church : churchId,
         status: 1
     })
