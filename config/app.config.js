@@ -39,6 +39,7 @@ module.exports = {
   charity: {
     resultsPerPage: 30,
     imageBase: commonStorePath + 'charity/',
+    // imageUploadPath: 'uploads'
     imageUploadPath: '/var/www/html/church-app-images/charity/'
   },
   matrimony: {
@@ -61,7 +62,10 @@ module.exports = {
   livePrayers: {
     imageBase: commonStorePath + 'live-prayers/',
     resultsPerPage: 30
-  }
+  },
+  donations: {
+    resultsPerPage: 30,
+  },
 
 
 }
