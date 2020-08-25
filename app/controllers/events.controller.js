@@ -319,9 +319,6 @@ exports.update = async (req, res) => {
     }
     if (eventData) {
         var update = {};
-        if (eventImage) {
-            update.image = eventImage.filename;
-        }
         if (params.name) {
             update.name = params.name;
         }
