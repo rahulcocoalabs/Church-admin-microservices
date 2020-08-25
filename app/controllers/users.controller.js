@@ -350,6 +350,83 @@ exports.setBlockOrUnBlockUser = async(req,res) =>{
     }
   
 }
+
+exports.getPriests = async(req,res)=>{
+
+   
+    var identity = req.identity.data;
+    var adminUserId = identity.id;
+    var churchId = identity.church;
+    var params = req.query;
+    var page = Number(params.page) || 1;
+    page = page > 0 ? page : 1;
+    var perPage = Number(params.perPage) || userConfig.resultsPerPage;
+    perPage = perPage > 0 ? perPage : userConfig.resultsPerPage;
+    var offset = (page - 1) * perPage;
+    
+    var usersList = await Users.find({
+        userType: { $nin: [constants.SUB_ADMIN_USER] },
+       
+        status: 1
+    }, {
+        name: 1,
+        email: 1,
+        image: 1,
+        phone: 1,
+        address: 1,
+
+    })
+    .limit(perPage)
+    .skip(offset)
+        .populate('church')
+        .sort({
+            'tsCreatedAt': -1
+        })
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while listing users',
+                error: err
+            }
+        })
+
+    if (usersList && (usersList.success !== undefined) && (usersList.success === 0)) {
+        return res.send(usersList);
+    }
+    var itemsCount = await Users.countDocuments({
+        userType: { $nin: [constants.ADMIN_USER, constants.SUB_ADMIN_USER] },
+        church : churchId,
+        status: 1
+    })
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while find total users count',
+                error: err
+            }
+        })
+
+    if (itemsCount && (itemsCount.success !== undefined) && (itemsCount.success === 0)) {
+        return res.send(itemsCount);
+    }
+    totalPages = itemsCount / perPage;
+    totalPages = Math.ceil(totalPages);
+    var hasNextPage = page < totalPages;
+    var pagination = {
+        page: page,
+        perPage: perPage,
+        hasNextPage: hasNextPage,
+        totalItems: itemsCount,
+        totalPages: totalPages
+    }
+    return res.status(200).send({
+        success: 1,
+        pagination: pagination,
+        imageBase: users.imageBase,
+        items: usersList
+    })
+
+}
 async function checkUser(findCriteria, type) {
     let check = await Users.findOne(findCriteria)
         .catch(err => {
