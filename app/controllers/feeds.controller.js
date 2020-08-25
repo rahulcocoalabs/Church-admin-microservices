@@ -16,7 +16,6 @@ exports.feedsList = async (req, res) => {
     var params = req.query;
     var userDatas;
     var userIdArray = [];
-    var params = req.query;
     var findCriteria = {
         contentType: feedType,
         churchId,
