@@ -53,7 +53,11 @@ exports.listRequest = async (req, res) => {
 
             }, {
                 path: 'nearbyLocation',
-                select: 'name address urogulfLocationId'
+                select: 'name address urogulfLocationId',
+                populate :{
+                    path: 'urogulfLocationId',
+                    select : "name"
+                }
 
             },, {
                 path: 'location',
