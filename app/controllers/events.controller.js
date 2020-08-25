@@ -342,11 +342,9 @@ exports.update = async (req, res) => {
             update.exhibitors = params.exhibitors;
         }
         var eventImages = req.files;
-        if (eventImages) {
+        if (eventImages.images) {
             var images = [];
-            console.log("eventImages")
-            console.log(eventImages)
-            console.log("eventImages")
+                
                 var len = eventImages.images.length;
                 var i = 0;
                 while (i < len) {
@@ -357,13 +355,13 @@ exports.update = async (req, res) => {
                 update.image = eventImages.images[0].filename;
             }
 
-        var obj = {};
-        if (params.timings) {
-            obj = await setDisplayDetails(params);
-        }
+        // var obj = {};
+        // if (params.timings) {
+        //     obj = await setDisplayDetails(params);
+        // }
         if (params.timings) {
             update.timings = params.timings;
-            update.timing = obj.timing;
+            // update.timing = obj.timing;
 
         }
 
