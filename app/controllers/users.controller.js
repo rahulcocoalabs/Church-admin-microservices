@@ -2,6 +2,7 @@ var Church = require('../models/church.model');
 var Parish = require('../models/parish.model');
 var ParishWard = require('../models/parishWard.model');
 var Users = require('../models/user.model');
+var UserRoles = require('../models/userRole.model');
 var ObjectId = require('mongoose').Types.ObjectId;
 var config = require('../../config/app.config.js');
 var constants = require('../helpers/constants');
@@ -363,9 +364,11 @@ exports.getPriests = async(req,res)=>{
     var perPage = Number(params.perPage) || userConfig.resultsPerPage;
     perPage = perPage > 0 ? perPage : userConfig.resultsPerPage;
     var offset = (page - 1) * perPage;
+
+  var roles = await UserRoles.findOne({name:constants.SUB_ADMIN_USER})
     
     var usersList = await Users.find({
-        userType: { $nin: [constants.SUB_ADMIN_USER] },
+        userType: { $in: [roles._id] },
        
         status: 1
     }, {
