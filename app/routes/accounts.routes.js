@@ -15,6 +15,7 @@ module.exports = (app) => {
     const accounts = require('../controllers/accounts.controller.js');
     app.post('/admin/accounts/sign-up', accountsValidator.validator('signUp'), accounts.signUp);
     app.post('/admin/accounts/login',accountsValidator.validator('login'), accounts.login);
+    app.get('/admin/accounts/donation',auth, accounts.donationList);
 
 };
 
