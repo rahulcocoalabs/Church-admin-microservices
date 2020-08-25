@@ -286,7 +286,7 @@ exports.list = async (req, res) => {
     return res.status(200).send({
         success: 1,
         pagination,
-
+        imageBase: charityConfig.imageBase,
         items: data,
         message: 'List charities'
     })
@@ -383,6 +383,7 @@ exports.details = async (req, res) => {
     if (charityData) {
         return res.status(200).send({
             success: 1,
+            imageBase: charityConfig.imageBase,
             item: charityData,
             message: 'Charity details'
         })
