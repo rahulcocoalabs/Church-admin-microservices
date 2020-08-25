@@ -366,9 +366,10 @@ exports.getPriests = async(req,res)=>{
     var offset = (page - 1) * perPage;
 
   var roles = await UserRoles.findOne({name:constants.SUB_ADMIN_USER})
+  console.log(roles);
     
     var usersList = await Users.find({
-        userType: { $in: [roles._id] },
+        roles: { $in: [roles._id] },
        
         status: 1
     }, {
