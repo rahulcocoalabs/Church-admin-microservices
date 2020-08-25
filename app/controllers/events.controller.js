@@ -348,11 +348,6 @@ exports.update = async (req, res) => {
         var eventImages = req.files;
         if (eventImages) {
             var images = [];
-            //     return res.status(400).send({
-            //         success: 0,
-            //         message: 'Atleast one image is required'
-            //     })
-            // } else {
                 var len = eventImages.images.length;
                 var i = 0;
                 while (i < len) {
