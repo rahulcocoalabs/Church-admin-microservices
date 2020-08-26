@@ -67,5 +67,10 @@ module.exports = {
     resultsPerPage: 30,
   },
 
+  resetpassword: {
+    timeForExpiry: 24 *60 * 60 * 1000,
+    root:"http://localhost:4200/reset-password"
+  },
+
 
 }
