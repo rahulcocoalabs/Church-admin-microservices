@@ -16,6 +16,8 @@ module.exports = (app) => {
     app.post('/admin/accounts/sign-up', accountsValidator.validator('signUp'), accounts.signUp);
     app.post('/admin/accounts/login',accountsValidator.validator('login'), accounts.login);
     app.get('/admin/accounts/donation',auth, accounts.donationList);
+    app.get('/admin/accounts/profile',auth, accounts.getProfile);
+    app.patch('/admin/accounts/profile',auth, accounts.updateProfile);
 
 };
 
