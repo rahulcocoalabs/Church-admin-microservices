@@ -19,6 +19,12 @@ module.exports = (app) => {
     app.post('/admin/accounts/resetpassword', accounts.reset);
     app.post('/admin/accounts/addnewpassword',auth, accounts.resetPassword);
 
+    app.get('/admin/accounts/paster-profile',auth, accounts.getPasterProfile);
+    app.patch('/admin/accounts/paster-profile',auth, accounts.updatePasterProfile);
+    app.get('/admin/accounts/admin-profile',auth, accounts.getAdminProfile);
+    app.patch('/admin/accounts/admin-profile',auth, accounts.updateAdminProfile);
+    app.get('/admin/accounts/urogulf-profile',auth, accounts.getUrogulfProfile);
+    app.patch('/admin/accounts/urogulf-profile',auth, accounts.updateUrogulfProfile);
 };
 
 

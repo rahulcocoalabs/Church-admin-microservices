@@ -3,11 +3,14 @@ var Parish = require('../models/parish.model');
 var ParishWard = require('../models/parishWard.model');
 var Users = require('../models/user.model');
 var UserRoles = require('../models/userRole.model');
+var Charity = require('../models/charity.model');
+var CharityPayments = require('../models/charityPayments.model');
 var ObjectId = require('mongoose').Types.ObjectId;
 var config = require('../../config/app.config.js');
 var constants = require('../helpers/constants');
 const { users } = require('../../config/app.config.js');
 var userConfig = config.users;
+var charityConfig = config.charity;
 exports.userList = async (req, res) => {
     var identity = req.identity.data;
     var adminUserId = identity.id;
@@ -18,10 +21,10 @@ exports.userList = async (req, res) => {
     var perPage = Number(params.perPage) || userConfig.resultsPerPage;
     perPage = perPage > 0 ? perPage : userConfig.resultsPerPage;
     var offset = (page - 1) * perPage;
-    
+
     var usersList = await Users.find({
         userType: { $nin: [constants.ADMIN_USER, constants.SUB_ADMIN_USER] },
-        church : churchId,
+        church: churchId,
         status: 1
     }, {
         parish: 0,
@@ -32,8 +35,8 @@ exports.userList = async (req, res) => {
         tsModifiedAt: 0,
 
     })
-    .limit(perPage)
-    .skip(offset)
+        .limit(perPage)
+        .skip(offset)
         .populate('church')
         .sort({
             'tsCreatedAt': -1
@@ -51,7 +54,7 @@ exports.userList = async (req, res) => {
     }
     var itemsCount = await Users.countDocuments({
         userType: { $nin: [constants.ADMIN_USER, constants.SUB_ADMIN_USER] },
-        church : churchId,
+        church: churchId,
         status: 1
     })
         .catch(err => {
@@ -92,8 +95,8 @@ exports.getUser = async (req, res) => {
 
     let userData = await Users.findOne({
         _id: userId,
-        church : churchId,
-        status : 1,
+        church: churchId,
+        status: 1,
     })
         .populate('church')
         .populate('parish')
@@ -127,8 +130,8 @@ exports.updateUser = async (req, res) => {
 
     let userData = await Users.findOne({
         _id: userId,
-        church : churchId,
-        status : 1
+        church: churchId,
+        status: 1
     })
         .catch(err => {
             return {
@@ -242,8 +245,8 @@ exports.deleteUser = async (req, res) => {
 
     let userData = await Users.findOne({
         _id: userId,
-        church : churchId,
-        status : 1
+        church: churchId,
+        status: 1
     })
         .catch(err => {
             return {
@@ -287,7 +290,7 @@ exports.deleteUser = async (req, res) => {
     }
 }
 
-exports.setBlockOrUnBlockUser = async(req,res) =>{
+exports.setBlockOrUnBlockUser = async (req, res) => {
     var identity = req.identity.data;
     var adminUserId = identity.id;
     var userId = req.params.id;
@@ -298,8 +301,8 @@ exports.setBlockOrUnBlockUser = async(req,res) =>{
 
     let userData = await Users.findOne({
         _id: userId,
-        church : churchId,
-        status : 1
+        church: churchId,
+        status: 1
     })
         .catch(err => {
             return {
@@ -312,36 +315,36 @@ exports.setBlockOrUnBlockUser = async(req,res) =>{
     if (userData && (userData.success !== undefined) && (userData.success === 0)) {
         return res.send(userData);
     }
-    if(userData){
+    if (userData) {
 
         let blockStatus = await Users.updateOne({
-            _id : userId,
-        },{
-            isBlocked : params.isBlocked,
-            tsModifiedAt : Date.now()
+            _id: userId,
+        }, {
+            isBlocked: params.isBlocked,
+            tsModifiedAt: Date.now()
         })
-        .catch(err => {
-            return {
-                success: 0,
-                message: 'Something went wrong while update block status',
-                error: err
-            }
-        })
+            .catch(err => {
+                return {
+                    success: 0,
+                    message: 'Something went wrong while update block status',
+                    error: err
+                }
+            })
 
-    if (blockStatus && (blockStatus.success !== undefined) && (blockStatus.success === 0)) {
-        return res.send(blockStatus);
-    }
-    if(params.isBlocked){
-        return res.status(200).send({
-            success: 1,
-            message: 'User blocked'
-        })
-    }else{
-        return res.status(200).send({
-            success: 1,
-            message: 'User unblocked'
-        })
-    }
+        if (blockStatus && (blockStatus.success !== undefined) && (blockStatus.success === 0)) {
+            return res.send(blockStatus);
+        }
+        if (params.isBlocked) {
+            return res.status(200).send({
+                success: 1,
+                message: 'User blocked'
+            })
+        } else {
+            return res.status(200).send({
+                success: 1,
+                message: 'User unblocked'
+            })
+        }
 
     } else {
         return res.status(200).send({
@@ -349,12 +352,12 @@ exports.setBlockOrUnBlockUser = async(req,res) =>{
             message: 'User not exists'
         });
     }
-  
+
 }
 
-exports.getPriests = async(req,res)=>{
+exports.getPriests = async (req, res) => {
 
-   
+
     var identity = req.identity.data;
     var adminUserId = identity.id;
     var churchId = identity.church;
@@ -365,12 +368,12 @@ exports.getPriests = async(req,res)=>{
     perPage = perPage > 0 ? perPage : userConfig.resultsPerPage;
     var offset = (page - 1) * perPage;
 
-  var roles = await UserRoles.findOne({name:constants.SUB_ADMIN_USER})
-  console.log(roles);
-    
+    var roles = await UserRoles.findOne({ name: constants.SUB_ADMIN_USER })
+    console.log(roles);
+
     var usersList = await Users.find({
         roles: { $in: [roles._id] },
-       
+
         status: 1
     }, {
         name: 1,
@@ -380,8 +383,8 @@ exports.getPriests = async(req,res)=>{
         address: 1,
 
     })
-    .limit(perPage)
-    .skip(offset)
+        .limit(perPage)
+        .skip(offset)
         .populate('church')
         .sort({
             'tsCreatedAt': -1
@@ -399,7 +402,7 @@ exports.getPriests = async(req,res)=>{
     }
     var itemsCount = await Users.countDocuments({
         roles: { $in: [roles._id] },
-        church : churchId,
+        church: churchId,
         status: 1
     })
         .catch(err => {
@@ -431,6 +434,74 @@ exports.getPriests = async(req,res)=>{
     })
 
 }
+
+exports.charityTransactionsList = async (req, res) => {
+    var identity = req.identity.data;
+    var adminUserId = identity.id;
+    var churchId = identity.church;
+    var userId = req.params.id;
+    var params = req.query;
+    var page = Number(params.page) || 1;
+    page = page > 0 ? page : 1;
+    var perPage = Number(params.perPage) || userConfig.resultsPerPage;
+    perPage = perPage > 0 ? perPage : userConfig.resultsPerPage;
+    var offset = (page - 1) * perPage;
+    var findCriteria = {};
+    findCriteria.userId = userId;
+    findCriteria.paidStatus = true;
+    findCriteria.status = 1;
+
+    let charityPaymentsData = await CharityPayments.find(findCriteria)
+        .populate([{
+            path: 'charityId',
+        }])
+        .limit(perPage)
+        .skip(offset)
+        .sort({
+            'tsCreatedAt': -1
+        }).catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while getting charity payments',
+                error: err
+            }
+        })
+    if (charityPaymentsData && (charityPaymentsData.success !== undefined) && (charityPaymentsData.success === 0)) {
+        return res.send(charityPaymentsData);
+    }
+
+    var totalCharityPaymentsCount = await CharityPayments.countDocuments(findCriteria)
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while finding charity payments count',
+                error: err
+            }
+        })
+    if (totalCharityPaymentsCount && (totalCharityPaymentsCount.success !== undefined) && (totalCharityPaymentsCount.success === 0)) {
+        return res.send(totalCharityPaymentsCount);
+    }
+
+    totalPages = totalCharityPaymentsCount / perPage;
+    totalPages = Math.ceil(totalPages);
+    var hasNextPage = page < totalPages;
+    var pagination = {
+        page,
+        perPage,
+        hasNextPage,
+        totalItems: totalCharityPaymentsCount,
+        totalPages
+    }
+    return res.status(200).send({
+        success: 1,
+        pagination,
+        imageBase: charityConfig.imageBase,
+        items: charityPaymentsData,
+        message: 'List charity payments'
+    })
+}
+
+
 async function checkUser(findCriteria, type) {
     let check = await Users.findOne(findCriteria)
         .catch(err => {

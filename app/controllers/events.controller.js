@@ -123,12 +123,11 @@ exports.create = async (req, res) => {
     // eventObj.timing = obj.timing;
     // eventObj.participants = obj.participants;
     eventObj.categoryId = params.categoryId;
+    eventObj.feedStatus = constants.APPROVED_FEED;
     eventObj.status = 1;
     eventObj.tsCreatedAt = Date.now();
     eventObj.tsModifiedAt = null;
-    console.log("eventObj")
-    console.log(eventObj)
-    console.log("eventObj")
+
     let newEventObj = new Post(eventObj);
     let eventData = await newEventObj.save()
         .catch(err => {

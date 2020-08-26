@@ -8,6 +8,7 @@ var config = require('../../config/app.config.js');
 const { UserBindingContext } = require('twilio/lib/rest/chat/v2/service/user/userBinding');
 const constants = require('../helpers/constants');
 var urogulfConfig = config.urogulf;
+var userConfig = config.users;
 
 exports.listRequest = async (req, res) => {
     const identity = req.identity.data;
@@ -49,7 +50,7 @@ exports.listRequest = async (req, res) => {
             let urogulfRequestList = await Urogulf.find(findCriteria)
             .populate([{
                 path: 'userId',
-                select: 'name image'
+                select: 'name email phone image'
 
             }, {
                 path: 'nearbyLocation',
@@ -102,9 +103,10 @@ exports.listRequest = async (req, res) => {
     }
     return res.status(200).send({
         success: 1,
+        imageBase : userConfig.imageBase,
         pagination,
         items: urogulfRequestList,
-        message: 'List urofulf request list'
+        message: 'List urogulf request list'
     })
 
         } else{
