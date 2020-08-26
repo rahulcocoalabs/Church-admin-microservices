@@ -198,9 +198,9 @@ exports.donationList = async (req, res) => {
   if(params.userId){
     findCriteria.userId = params.userId;
   }
-  console.log("findCriteria")
-  console.log(findCriteria)
-  console.log("findCriteria")
+  // console.log("findCriteria")
+  // console.log(findCriteria)
+  // console.log("findCriteria")
   var donationList = await Donation.find(findCriteria)
     .populate([{
       path: 'userId',
