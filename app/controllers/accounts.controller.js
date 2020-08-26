@@ -189,15 +189,18 @@ exports.donationList = async (req, res) => {
     // churchId,
     status: 1
   }
-  if(params.userId){
-    findCriteria.userId = params.userId;
-  }
+
   var page = Number(params.page) || 1;
   page = page > 0 ? page : 1;
   var perPage = Number(params.perPage) || donationConfig.resultsPerPage;
   perPage = perPage > 0 ? perPage : donationConfig.resultsPerPage;
   var offset = (page - 1) * perPage;
-
+  if(params.userId){
+    findCriteria.userId = params.userId;
+  }
+  console.log("findCriteria")
+  console.log(findCriteria)
+  console.log("findCriteria")
   var donationList = await Donation.find(findCriteria)
     .populate([{
       path: 'userId',
