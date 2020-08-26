@@ -246,7 +246,7 @@ exports.donationList = async (req, res) => {
   })
 }
 
-exports.getProfile = async (req, res) => {
+exports.getPasterProfile = async (req, res) => {
   const identity = req.identity.data;
   var adminUserId = identity.id;
   var churchId = identity.church;
@@ -300,7 +300,7 @@ exports.getProfile = async (req, res) => {
   }
 }
 
-exports.updateProfile = async (req, res) => {
+exports.updatePasterProfile = async (req, res) => {
   const identity = req.identity.data;
   var adminUserId = identity.id;
   var churchId = identity.church;
@@ -425,7 +425,7 @@ exports.updateProfile = async (req, res) => {
     //   update.church = params.churchId
     // }
     update.tsModifiedAt = Date.now();
-    
+
     var updateData = await Users.updateOne(
       {
         _id : adminUserId
@@ -444,7 +444,7 @@ exports.updateProfile = async (req, res) => {
    
   return res.send({
     success: 1,
-    message: 'User profile updated successfully'
+    message: 'Profile updated successfully'
   })
 
   } else {
@@ -455,6 +455,423 @@ exports.updateProfile = async (req, res) => {
   }
 
 }
+
+exports.getAdminProfile = async (req, res) => {
+  const identity = req.identity.data;
+  var adminUserId = identity.id;
+  var churchId = identity.church;
+  var roles = await UserRoles.findOne({ name: constants.ADMIN_USER })
+    .catch(err => {
+      return {
+        success: 0,
+        message: 'Something went wrong while getting role data',
+        error: err
+      }
+    })
+  if (roles && (roles.success !== undefined) && (roles.success === 0)) {
+    return res.send(roles);
+  }
+
+  let adminUserData = await Users.findOne({
+    _id: adminUserId,
+    roles: { $in: [roles._id] },
+    status: 1
+  }, {
+    passwordHash: 0
+  })
+    .populate([{
+      path: 'roles',
+      select: { name: 1 }
+    }, {
+      path: 'church',
+      select: { name: 1 }
+    }])
+    .catch(err => {
+      return {
+        success: 0,
+        message: 'Something went wrong while getting user data',
+        error: err
+      }
+    })
+  if (adminUserData && (adminUserData.success !== undefined) && (adminUserData.success === 0)) {
+    return res.send(adminUserData);
+  }
+  if (adminUserData) {
+    return res.send({
+      success: 1,
+      item: adminUserData,
+      message: 'User profile'
+    })
+  } else {
+    return res.send({
+      success: 0,
+      message: 'User not exist'
+    })
+  }
+}
+
+exports.updateAdminProfile = async (req, res) => {
+  const identity = req.identity.data;
+  var adminUserId = identity.id;
+  var churchId = identity.church;
+
+  var roles = await UserRoles.findOne({ name: constants.ADMIN_USER })
+    .catch(err => {
+      return {
+        success: 0,
+        message: 'Something went wrong while getting role data',
+        error: err
+      }
+    })
+  if (roles && (roles.success !== undefined) && (roles.success === 0)) {
+    return res.send(roles);
+  }
+  let userData = await Users.findOne({
+    _id: adminUserId,
+    roles: { $in: [roles._id] },
+    status: 1
+  })
+    .catch(err => {
+      return {
+        success: 0,
+        message: 'Something went wrong while getting user data',
+        error: err
+      }
+    })
+  if (userData && (userData.success !== undefined) && (userData.success === 0)) {
+    return res.send(userData);
+  }
+  if (userData) {
+    let params = req.body;
+    if(!params.name && !params.email && !params.phone && !params.newPassword && !params.churchId){
+      return res.send({
+        success: 0,
+        message: 'Nothing to update'
+      })
+    }
+    let update = {};
+    if(params.name){
+      update.name = params.name;
+    }
+    if(params.email){
+ 
+      var filter = {
+        email : params.email,
+         _id: { $ne: adminUserId },
+        status: 1
+      }
+      var checkEmail = await Users.findOne(filter)
+      .catch(err => {
+        return {
+          success: 0,
+          message: 'Something went wrong while getting email already exists',
+          error: err
+        }
+      })
+    if (checkEmail && (checkEmail.success !== undefined) && (checkEmail.success === 0)) {
+      return res.send(checkEmail);
+    }
+      if (checkEmail) {
+        return res.send({
+          success: 0,
+          message: 'Email already registered'
+        })
+      }else{
+        update.email = params.email;
+      }
+    }
+    if(params.phone){
+      var filter = {
+        phone: params.phone,
+        _id: { $ne: adminUserId },
+        status: 1
+      }
+      var checkPhone = await Users.findOne(filter)
+      .catch(err => {
+        return {
+          success: 0,
+          message: 'Something went wrong while getting phone already exists',
+          error: err
+        }
+      })
+    if (checkPhone && (checkPhone.success !== undefined) && (checkPhone.success === 0)) {
+      return res.send(checkPhone);
+    }
+      if (checkPhone) {
+        return res.send({
+          success: 0,
+          message: 'Phone number already registered'
+        })
+      }else{
+        update.phone = params.phone;
+      }
+    }
+    if(!params.oldPassword && params.newPassword){
+      return res.send({
+        success: 0,
+        message: 'Missing old password'
+      })
+    }
+    if(params.oldPassword && !params.newPassword){
+      return res.send({
+        success: 0,
+        message: 'Missing new password'
+      })
+    }
+    if(params.oldPassword && params.newPassword){
+      let matched = await bcrypt.compare(params.oldPassword, userData.passwordHash);
+      if (matched) {
+        const hash = bcrypt.hashSync(params.newPassword, salt);
+        update.passwordHash = hash;
+
+      }else{
+        return res.send({
+          success: 0,
+          message: 'Incorrect current password'
+        })
+      }
+    }
+     // if(params.churchId){
+    //   update.church = params.churchId
+    // }
+    update.tsModifiedAt = Date.now();
+
+    var updateData = await Users.updateOne(
+      {
+        _id : adminUserId
+      },update
+    )
+    .catch(err => {
+      return {
+        success: 0,
+        message: 'Something went wrong while updating user data',
+        error: err
+      }
+    })
+  if (updateData && (updateData.success !== undefined) && (updateData.success === 0)) {
+    return res.send(updateData);
+  }
+   
+  return res.send({
+    success: 1,
+    message: 'Profile updated successfully'
+  })
+
+  } else {
+    return res.send({
+      success: 0,
+      message: 'User not exist'
+    })
+  }
+
+}
+exports.getUrogulfProfile = async (req, res) => {
+  const identity = req.identity.data;
+  var adminUserId = identity.id;
+  // var churchId = identity.church;
+  var roles = await UserRoles.findOne({ name: constants.URO_GULF_ADMIN_USER })
+    .catch(err => {
+      return {
+        success: 0,
+        message: 'Something went wrong while getting role data',
+        error: err
+      }
+    })
+  if (roles && (roles.success !== undefined) && (roles.success === 0)) {
+    return res.send(roles);
+  }
+
+  let adminUserData = await Users.findOne({
+    _id: adminUserId,
+    roles: { $in: [roles._id] },
+    status: 1
+  }, {
+    passwordHash: 0
+  })
+    .populate([{
+      path: 'roles',
+      select: { name: 1 }
+    }
+  ])
+    .catch(err => {
+      return {
+        success: 0,
+        message: 'Something went wrong while getting user data',
+        error: err
+      }
+    })
+  if (adminUserData && (adminUserData.success !== undefined) && (adminUserData.success === 0)) {
+    return res.send(adminUserData);
+  }
+  if (adminUserData) {
+    return res.send({
+      success: 1,
+      item: adminUserData,
+      message: 'User profile'
+    })
+  } else {
+    return res.send({
+      success: 0,
+      message: 'User not exist'
+    })
+  }
+}
+
+exports.updateUrogulfProfile = async (req, res) => {
+  const identity = req.identity.data;
+  var adminUserId = identity.id;
+
+  var roles = await UserRoles.findOne({ name: constants.URO_GULF_ADMIN_USER })
+    .catch(err => {
+      return {
+        success: 0,
+        message: 'Something went wrong while getting role data',
+        error: err
+      }
+    })
+  if (roles && (roles.success !== undefined) && (roles.success === 0)) {
+    return res.send(roles);
+  }
+  let userData = await Users.findOne({
+    _id: adminUserId,
+    roles: { $in: [roles._id] },
+    status: 1
+  })
+    .catch(err => {
+      return {
+        success: 0,
+        message: 'Something went wrong while getting user data',
+        error: err
+      }
+    })
+  if (userData && (userData.success !== undefined) && (userData.success === 0)) {
+    return res.send(userData);
+  }
+  if (userData) {
+    let params = req.body;
+    if(!params.name && !params.email && !params.phone && !params.newPassword && !params.churchId){
+      return res.send({
+        success: 0,
+        message: 'Nothing to update'
+      })
+    }
+    let update = {};
+    if(params.name){
+      update.name = params.name;
+    }
+    if(params.email){
+ 
+      var filter = {
+        email : params.email,
+         _id: { $ne: adminUserId },
+        status: 1
+      }
+      var checkEmail = await Users.findOne(filter)
+      .catch(err => {
+        return {
+          success: 0,
+          message: 'Something went wrong while getting email already exists',
+          error: err
+        }
+      })
+    if (checkEmail && (checkEmail.success !== undefined) && (checkEmail.success === 0)) {
+      return res.send(checkEmail);
+    }
+      if (checkEmail) {
+        return res.send({
+          success: 0,
+          message: 'Email already registered'
+        })
+      }else{
+        update.email = params.email;
+      }
+    }
+    if(params.phone){
+      var filter = {
+        phone: params.phone,
+        _id: { $ne: adminUserId },
+        status: 1
+      }
+      var checkPhone = await Users.findOne(filter)
+      .catch(err => {
+        return {
+          success: 0,
+          message: 'Something went wrong while getting phone already exists',
+          error: err
+        }
+      })
+    if (checkPhone && (checkPhone.success !== undefined) && (checkPhone.success === 0)) {
+      return res.send(checkPhone);
+    }
+      if (checkPhone) {
+        return res.send({
+          success: 0,
+          message: 'Phone number already registered'
+        })
+      }else{
+        update.phone = params.phone;
+      }
+    }
+    if(!params.oldPassword && params.newPassword){
+      return res.send({
+        success: 0,
+        message: 'Missing old password'
+      })
+    }
+    if(params.oldPassword && !params.newPassword){
+      return res.send({
+        success: 0,
+        message: 'Missing new password'
+      })
+    }
+    if(params.oldPassword && params.newPassword){
+      let matched = await bcrypt.compare(params.oldPassword, userData.passwordHash);
+      if (matched) {
+        const hash = bcrypt.hashSync(params.newPassword, salt);
+        update.passwordHash = hash;
+
+      }else{
+        return res.send({
+          success: 0,
+          message: 'Incorrect current password'
+        })
+      }
+    }
+     // if(params.churchId){
+    //   update.church = params.churchId
+    // }
+    update.tsModifiedAt = Date.now();
+
+    var updateData = await Users.updateOne(
+      {
+        _id : adminUserId
+      },update
+    )
+    .catch(err => {
+      return {
+        success: 0,
+        message: 'Something went wrong while updating user data',
+        error: err
+      }
+    })
+  if (updateData && (updateData.success !== undefined) && (updateData.success === 0)) {
+    return res.send(updateData);
+  }
+   
+  return res.send({
+    success: 1,
+    message: 'Profile updated successfully'
+  })
+
+  } else {
+    return res.send({
+      success: 0,
+      message: 'User not exist'
+    })
+  }
+
+}
+
 async function otp(phone) {
   var otp = Math.floor(1000 + Math.random() * 9000);
   const apiToken = uuidv4();

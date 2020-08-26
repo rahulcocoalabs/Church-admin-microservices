@@ -16,9 +16,12 @@ module.exports = (app) => {
     app.post('/admin/accounts/sign-up', accountsValidator.validator('signUp'), accounts.signUp);
     app.post('/admin/accounts/login',accountsValidator.validator('login'), accounts.login);
     app.get('/admin/accounts/donation',auth, accounts.donationList);
-    app.get('/admin/accounts/paster-profile',auth, accounts.getProfile);
-    app.patch('/admin/accounts/paster-profile',auth, accounts.updateProfile);
-
+    app.get('/admin/accounts/paster-profile',auth, accounts.getPasterProfile);
+    app.patch('/admin/accounts/paster-profile',auth, accounts.updatePasterProfile);
+    app.get('/admin/accounts/admin-profile',auth, accounts.getAdminProfile);
+    app.patch('/admin/accounts/admin-profile',auth, accounts.updateAdminProfile);
+    app.get('/admin/accounts/urogulf-profile',auth, accounts.getUrogulfProfile);
+    app.patch('/admin/accounts/urogulf-profile',auth, accounts.updateUrogulfProfile);
 };
 
 
