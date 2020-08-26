@@ -67,7 +67,7 @@ exports.update = async (req, res) => {
     var churchId = identity.church;
     let params = req.body;
     var charityId = req.params.id;
-    if (!params.title && !params.trustName && !params.fund && !params.phone && !params.about && !req.file) {
+    if (!params.address &&!params.caption && !params.title && !params.trustName && !params.fund && !params.phone && !params.about && !req.file) {
         return res.send({
             success: 0,
             message: "Nothing to update"
@@ -110,6 +110,12 @@ exports.update = async (req, res) => {
         }
         if (params.about) {
             update.about = params.about;
+        }
+        if (params.caption) {
+            update.caption = params.caption;
+        }
+        if (params.address) {
+            update.address = params.address;
         }
         update.tsModifiedAt = Date.now();
         let data = await Charity.updateOne(findCriteria, update)
@@ -182,6 +188,18 @@ exports.add = async (req, res) => {
             'message': 'phone required',
         })
     }
+    if (!params.caption) {
+        errors.push({
+            'field': 'caption',
+            'message': 'caption required',
+        })
+    }
+    if (!params.address) {
+        errors.push({
+            'field': 'address',
+            'message': 'address required',
+        })
+    }
     if (!params.about) {
         errors.push({
             'field': 'about',
@@ -199,6 +217,8 @@ exports.add = async (req, res) => {
         title: params.title,
         images,
         trustName: params.organisation,
+        address: params.address,
+        caption: params.caption,
         fund: params.amount,
         phone: params.phone,
         about: params.about,

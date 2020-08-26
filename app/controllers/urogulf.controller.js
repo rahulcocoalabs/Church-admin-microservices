@@ -106,7 +106,7 @@ exports.listRequest = async (req, res) => {
         imageBase : userConfig.imageBase,
         pagination,
         items: urogulfRequestList,
-        message: 'List urofulf request list'
+        message: 'List urogulf request list'
     })
 
         } else{
