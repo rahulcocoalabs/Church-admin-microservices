@@ -189,7 +189,9 @@ exports.donationList = async (req, res) => {
     // churchId,
     status: 1
   }
-
+  if(params.userId){
+    findCriteria.userId = params.userId;
+  }
   var page = Number(params.page) || 1;
   page = page > 0 ? page : 1;
   var perPage = Number(params.perPage) || donationConfig.resultsPerPage;
