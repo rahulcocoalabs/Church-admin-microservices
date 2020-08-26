@@ -9,5 +9,6 @@ module.exports = (app) => {
     app.patch('/admin/users/:id/profile',auth, users.updateUser);
     app.delete('/admin/users/:id',auth, users.deleteUser);
     app.patch('/admin/users/:id/block',auth,usersValidator.validator('block'), users.setBlockOrUnBlockUser);
+    app.get('/admin/users/:id/charity',auth, users.charityTransactionsList);
 
 };
