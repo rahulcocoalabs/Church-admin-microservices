@@ -176,7 +176,7 @@ exports.login = async (req, res) => {
     payload.church = userData.church;
     payload.userType = userData.userType;
     payload.roles = userData.roles;
-    payload.designation = userData.designation.name;
+    payload.designation = userData.designation;
     var token = jwt.sign({
       data: payload,
     }, JWT_KEY, {
