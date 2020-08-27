@@ -99,11 +99,11 @@ exports.update = async (req, res) => {
         if (params.title) {
             update.title = params.title;
         }
-        if (params.organisation) {
-            update.trustName = params.organisation;
+        if (params.trustName) {
+            update.trustName = params.trustName;
         }
-        if (params.amount) {
-            update.fund = params.amount;
+        if (params.fund) {
+            update.fund = params.fund;
         }
         if (params.phone) {
             update.phone = params.phone;
@@ -170,16 +170,16 @@ exports.add = async (req, res) => {
             'message': 'title required',
         })
     }
-    if (!params.organisation) {
+    if (!params.trustName) {
         errors.push({
-            'field': 'organisation',
-            'message': 'organisation required',
+            'field': 'trustName',
+            'message': 'trustName required',
         })
     }
-    if (!params.amount) {
+    if (!params.fund) {
         errors.push({
-            'field': 'amount',
-            'message': 'amount required',
+            'field': 'fund',
+            'message': 'fund required',
         })
     }
     if (!params.phone) {
@@ -216,10 +216,10 @@ exports.add = async (req, res) => {
         churchId,
         title: params.title,
         images,
-        trustName: params.organisation,
+        trustName: params.trustName,
         address: params.address,
         caption: params.caption,
-        fund: params.amount,
+        fund: params.fund,
         phone: params.phone,
         about: params.about,
         // paidOn: params.paidOn,
