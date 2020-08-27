@@ -1,4 +1,6 @@
 const Users = require('../models/user.model');
+const Reset = require('../models/resetPassword.model');
+
 const UserRoles = require('../models/userRole.model');
 const Otp = require('../models/otp.model');
 const Donation = require('../models/donation.model');
@@ -13,6 +15,7 @@ var jwt = require('jsonwebtoken');
 const uuidv4 = require('uuid/v4');
 
 var bcrypt = require('bcryptjs');
+const resetPasswordModel = require('../models/resetPassword.model');
 const salt = bcrypt.genSaltSync(10);
 
 
@@ -902,3 +905,108 @@ async function otp(phone) {
 
   return otpResponse
 }
+
+exports.resetPassword = async (req, res) => {
+  // part of  url send to the email and new password
+  let link = req.body.link;
+  let newPass = req.body.password;
+  // find the document with given link
+  let data = await Reset.findOne({value:link});
+  if (!data){
+    return res.send({
+      success:0,
+      msg:"some thing went wrong"
+    });
+  }
+  // find the user's id and time gap betweeen intervals
+  let id = data.id;
+  let time1 = data.tsCreatedAt;
+  let timeObj = Date.now();
+  let time2 = timeObj.getTime;
+  let gap = time2-time1;
+
+  
+  if (gap>(config.resetpassword.timeForExpiry)){
+    return res.send({
+      success:0,
+      msg:"expired link"
+    })
+  }
+  else {
+
+    const hash = bcrypt.hashSync(newPass, salt);
+
+    let data_1 = await Users.updateOne({_id:id},{passwordHash:hash})
+
+    if (data_1){
+      return res.send({
+        success:1,
+        item:hash
+      })
+     
+    }
+    else {
+      return res.send({
+        success:0
+      })
+    }
+  }
+  
+
+
+}
+
+exports.reset = async (req, res) => {
+
+  let mail = req.body.email;
+
+  //return res.send(id);
+
+  let str = randomStr('20','12345abcdef');
+
+  console.log(randomStr('20','12345abcdef'))
+
+  let link = config.resetpassword.root + str;
+  
+  var user = await Users.findOne({email:mail})
+  //return res.send(mail)
+  let id =  user._id;
+ 
+
+  var newPasswordResetLink = new Reset({
+    value: str,
+    owner: id,
+   
+    status: 1,
+    tsCreatedAt: new Date(),
+    tsModifiedAt: null
+  });
+  
+  var saveLink = await newPasswordResetLink.save();
+
+  if (saveLink){
+    return res.send({
+      success:1,
+      link:link,
+      id:id
+    })
+  }
+  else {
+    return res.send({
+      success:0,
+      msg:"something went wrong"
+    })
+  }
+  
+
+}
+
+//code for generating random string 
+function randomStr(len, arr) { 
+  var ans = ''; 
+  for (var i = len; i > 0; i--) { 
+      ans +=  
+        arr[Math.floor(Math.random() * arr.length)]; 
+  } 
+  return ans; 
+} 
