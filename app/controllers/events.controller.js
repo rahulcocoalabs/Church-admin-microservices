@@ -127,7 +127,9 @@ exports.create = async (req, res) => {
     eventObj.status = 1;
     eventObj.tsCreatedAt = Date.now();
     eventObj.tsModifiedAt = null;
-
+    console.log("params.timings")
+    console.log(params.timings)
+    console.log("params.timings")
     let newEventObj = new Post(eventObj);
     let eventData = await newEventObj.save()
         .catch(err => {
