@@ -19,4 +19,6 @@ module.exports = Object.freeze({
 
    IMAGE_POST_TYPE : "image",
    TEXT_POST_TYPE : "text",
+
+   PASTER_DESIGNATION : "Paster",
 });

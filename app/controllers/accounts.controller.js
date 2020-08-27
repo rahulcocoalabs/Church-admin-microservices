@@ -5,6 +5,7 @@ const UserRoles = require('../models/userRole.model');
 const Otp = require('../models/otp.model');
 const Donation = require('../models/donation.model');
 const Church = require('../models/church.model');
+const Designation = require('../models/designation.model');
 const config = require('../../config/app.config.js');
 const constants = require('../helpers/constants');
 var otpConfig = config.otp;
@@ -69,6 +70,21 @@ exports.signUp = async (req, res) => {
     var roles = [];
     roles.push(userRoleData.id);
     // var otpResponse = await otp(phone)
+    let pasterObj = await Designation.findOne({
+      name : constants.PASTER_DESIGNATION,
+      status : 1
+    })
+    .catch(err => {
+      return {
+        success: 0,
+        message: 'Something went wrong while getting paster data',
+        error: err
+      }
+    })
+
+  if (pasterObj && (pasterObj.success !== undefined) && (pasterObj.success === 0)) {
+    return res.send(pasterObj);
+  }
     var newUser = new Users({
       name: name,
       email: email,
@@ -76,7 +92,7 @@ exports.signUp = async (req, res) => {
       passwordHash: hash,
       // address: address,
       church: church,
-
+      designation : pasterObj.id,
       // parish: parish,
       // parishWard: parishWard,
       // bloodGroup: bloodGroup,
@@ -129,6 +145,9 @@ exports.login = async (req, res) => {
       path: 'roles',
       select: { name: 1 }
 
+    },{
+      path: 'designation',
+      select: { name: 1 }
     }])
     .catch(err => {
       return {
@@ -157,6 +176,7 @@ exports.login = async (req, res) => {
     payload.church = userData.church;
     payload.userType = userData.userType;
     payload.roles = userData.roles;
+    payload.designation = userData.designation.name;
     var token = jwt.sign({
       data: payload,
     }, JWT_KEY, {

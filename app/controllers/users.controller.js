@@ -5,6 +5,7 @@ var Users = require('../models/user.model');
 var UserRoles = require('../models/userRole.model');
 var Charity = require('../models/charity.model');
 var CharityPayments = require('../models/charityPayments.model');
+const Designation = require('../models/designation.model');
 var ObjectId = require('mongoose').Types.ObjectId;
 var config = require('../../config/app.config.js');
 var constants = require('../helpers/constants');
@@ -381,8 +382,13 @@ exports.getPriests = async (req, res) => {
         image: 1,
         phone: 1,
         address: 1,
+        designation: 1,
 
     })
+    .populate([{
+        path: 'designation',
+        select: { name: 1 }
+      }])
         .limit(perPage)
         .skip(offset)
         .populate('church')
