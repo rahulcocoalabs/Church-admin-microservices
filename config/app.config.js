@@ -11,6 +11,8 @@ module.exports = {
     resultsPerPage: 30
   },
   pasters: {
+    imageBase: commonStorePath + 'pasters/',
+    imageUploadPath: '/var/www/html/church-app-images/pasters/',
     resultsPerPage: 30
   },
   groups: {
@@ -71,6 +73,9 @@ module.exports = {
     timeForExpiry: 24 *60 * 60 * 1000,
     root:"http://localhost:4200/reset-password"
   },
-
+  oneSignal: {
+    appId : "",
+    apiKey: "",
+  },
 
 }

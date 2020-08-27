@@ -10,6 +10,7 @@ const config = require('../../config/app.config.js');
 const constants = require('../helpers/constants');
 var otpConfig = config.otp;
 var donationConfig = config.donations;
+var pastersConfig = config.pasters;
 const paramsConfig = require('../../config/params.config');
 const JWT_KEY = paramsConfig.development.jwt.secret;
 var jwt = require('jsonwebtoken');
@@ -90,7 +91,9 @@ exports.signUp = async (req, res) => {
       email: email,
       phone: phone,
       passwordHash: hash,
-      // address: address,
+      address: '',
+      image: '',
+      about: '',
       church: church,
       designation : pasterObj.id,
       // parish: parish,
@@ -320,6 +323,7 @@ exports.getPasterProfile = async (req, res) => {
   if (adminUserData) {
     return res.send({
       success: 1,
+      imageBase : pastersConfig.imageBase,
       item: adminUserData,
       message: 'User profile'
     })
@@ -446,11 +450,21 @@ exports.updatePasterProfile = async (req, res) => {
         update.passwordHash = hash;
 
       }else{
+     
         return res.send({
           success: 0,
           message: 'Incorrect current password'
         })
       }
+    }
+    if(params.address){
+      update.address = params.address
+    }
+    if(params.about){
+      update.about = params.about
+    }
+    if(req.file){
+      update.image = req.file.filename
     }
      // if(params.churchId){
     //   update.church = params.churchId
