@@ -30,6 +30,7 @@ const UserSchema = mongoose.Schema({
     image: String,
     phone: String,
     address: String,
+    about: String,
     userType: String,
     passwordHash: String,
     church: { type: mongoose.Schema.Types.ObjectId, ref: 'Church' },
