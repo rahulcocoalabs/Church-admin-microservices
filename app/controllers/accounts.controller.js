@@ -303,6 +303,9 @@ exports.getPasterProfile = async (req, res) => {
     }, {
       path: 'church',
       select: { name: 1 }
+    }, {
+      path: 'designation',
+      select: { name: 1 }
     }])
     .catch(err => {
       return {
