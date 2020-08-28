@@ -21,4 +21,20 @@ module.exports = Object.freeze({
    TEXT_POST_TYPE : "text",
 
    PASTER_DESIGNATION : "Paster",
+
+   ADD_EVENT_NOTIFICATION_TITLE : "New event",
+   ADD_EVENT_NOTIFICATION_MESSAGE : "New event created",
+
+
+   ADD_CHARITY_NOTIFICATION_TITLE : "New charity",
+   ADD_CHARITY_NOTIFICATION_MESSAGE : "New charity created",
+
+   ADD_SERMON_NOTIFICATION_TITLE : "New sermon",
+   ADD_SERMON_NOTIFICATION_MESSAGE : "New sermon created",
+
+   EVENT_NOTIFICATION : "event",
+   CHARITY_NOTIFICATION : "charity",
+   SERMON_NOTIFICATION : "sermon",
+
+
 });

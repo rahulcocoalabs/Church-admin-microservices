@@ -6,6 +6,7 @@ var Charity = require('../models/charity.model');
 var CharityPay = require('../models/charityPayments.model');
 var User = require('../models/user.model')
 var config = require('../../config/app.config.js');
+var pushNotificationHelper = require('../helpers/pushNotificationHelper');
 const constants = require('../helpers/constants');
 
 
@@ -228,9 +229,24 @@ exports.add = async (req, res) => {
         tsModifiedAt: null
     });
 
-    var new_charity = await charity.save();
+    var newCharity = await charity.save();
 
-    if (!new_charity) {
+    var filtersJsonArr = [{"field":"tag","key":"church_id","relation":"=","value":churchId}]
+    // var metaInfo = {"type":"event","reference_id":eventData.id}
+    var notificationObj = {
+        title : constants.ADD_CHARITY_NOTIFICATION_TITLE,
+        message : constants.ADD_CHARITY_NOTIFICATION_MESSAGE,
+        type : constants.CHARITY_NOTIFICATION,
+        referenceId : newCharity.id,
+        filtersJsonArr,
+        // metaInfo,
+        churchId
+    }
+    let notificationData = await pushNotificationHelper.sendNotification(notificationObj)
+    console.log("notificationData")
+    console.log(notificationData)
+    console.log("notificationData")
+    if (!newCharity) {
         return res.send({
             success: 0,
             message: "something wrong"
@@ -239,7 +255,7 @@ exports.add = async (req, res) => {
 
     return res.send({
         success: 1,
-        id: new_charity._id,
+        id: newCharity.id,
         message: 'New charity added successfully',
 
     })
@@ -251,7 +267,6 @@ exports.list = async (req, res) => {
     const identity = req.identity.data;
     var adminUserId = identity.id;
     var churchId = identity.church;
-    var params = req.query;
 
     var params = req.query;
     var page = Number(params.page) || 1;
