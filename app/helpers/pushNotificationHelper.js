@@ -30,7 +30,7 @@ module.exports = {
         };
         // using async/await
         try {
-            const response = await this.oneSignalClient.createNotification(notificationData);
+            const response = await oneSignalClient.createNotification(notificationData);
             console.log("response");
             console.log(response);
             console.log("response");
