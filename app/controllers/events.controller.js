@@ -126,16 +126,16 @@ exports.create = async (req, res) => {
   
     let newEventObj = new Post(eventObj);
     let eventData = await newEventObj.save()
-        .catch(err => {
-            return {
-                success: 0,
-                message: 'Something went wrong while saving event',
-                error: err
-            }
-        })
-    if (eventData && (eventData.success !== undefined) && (eventData.success === 0)) {
-        return res.send(eventData);
-    }
+    //     .catch(err => {
+    //         return {
+    //             success: 0,
+    //             message: 'Something went wrong while saving event',
+    //             error: err
+    //         }
+    //     })
+    // if (eventData && (eventData.success !== undefined) && (eventData.success === 0)) {
+    //     return res.send(eventData);
+    // }
     var filtersJsonArr = [{"field":"tag","key":"church_id","relation":"=","value":churchId}]
     // var metaInfo = {"type":"event","reference_id":eventData.id}
     var notificationObj = {
