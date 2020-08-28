@@ -38,6 +38,7 @@ const PushNotificationSchema = mongoose.Schema({
     userId : {
         type: mongoose.Schema.Types.ObjectId, ref: 'User' 
     },
+    isSent: Number,
     referenceId: String,
     title: String,
     messageText: String,
