@@ -5,9 +5,10 @@ var Church = require('../models/church.model');
 var constants = require('../helpers/constants');
 var oneSignalConfig = config.oneSignal;
 
-var oneSignalClient = new OneSignal.Client(oneSignalConfig.appId, oneSignalConfig.apiKey);
 module.exports = {
-    sendNotification: async function (notificationObj, callback) {
+    sendNotification: async function (notificationObj) {
+var oneSignalClient = new OneSignal.Client(oneSignalConfig.appId, oneSignalConfig.apiKey);
+
         var notificationData = {
             // contents: message,
             contents: {
@@ -28,6 +29,9 @@ module.exports = {
             included_segments: null,
             filters: notificationObj.filtersJsonArr
         };
+        console.log("notificationData");
+        console.log(notificationData);
+        console.log("notificationData");
         // using async/await
         try {
             const response = await oneSignalClient.createNotification(notificationData);
@@ -69,10 +73,10 @@ module.exports = {
                     }
                 })
             if (notificationData && (notificationData.success !== undefined) && (notificationData.success === 0)) {
-                callback(eventData);
+                return eventData;
             }
 
-            callback(response);
+            return response;
 
         } catch (e) {
             console.log("e")
@@ -83,7 +87,7 @@ module.exports = {
                 console.log(e.statusCode);
                 console.log(e.body);
             }
-            callback(e);
+            return e;
 
         }
 
