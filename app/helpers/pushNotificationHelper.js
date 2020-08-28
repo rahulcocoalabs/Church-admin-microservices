@@ -26,7 +26,7 @@ var oneSignalClient = new OneSignal.Client(oneSignalConfig.appId, oneSignalConfi
                 "reference_id": notificationObj.referenceId,
             }
             ,
-            included_segments: null,
+            included_segments: [],
             filters: notificationObj.filtersJsonArr
         };
         console.log("notificationData");
