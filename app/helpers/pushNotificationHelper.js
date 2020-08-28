@@ -1,44 +1,44 @@
 const OneSignal = require('onesignal-node');
 var config = require('../../config/app.config.js');
 var PushNotification = require('../models/pushNotification.model');
-var Church = require('../models/church.model');
+// var Church = require('../models/church.model');
 var constants = require('../helpers/constants');
-var oneSignalConfig = config.oneSignal;
-const oneSignalClient = new OneSignal.Client(oneSignalConfig.appId, oneSignalConfig.apiKey);
+// var oneSignalConfig = config.oneSignal;
+// const oneSignalClient = new OneSignal.Client(oneSignalConfig.appId, oneSignalConfig.apiKey);
 
 module.exports = {
     sendNotification: async function (notificationObj) {
 
-        var notificationData = {
-            // contents: message,
-            contents: {
-                "tr": notificationObj.message,
-                "en": notificationObj.message,
-            },
-            headings: {
-                "en": notificationObj.title
-            },
-            subtitle: {
-                "en": notificationObj.message,
-            },
-            data: {
-                "type": notificationObj.type,
-                "reference_id": notificationObj.referenceId,
-            }
-            ,
-            included_segments: null,
-            filters: notificationObj.filtersJsonArr
-        };
-        console.log("notificationData");
-        console.log(notificationData);
-        console.log("notificationData");
-        // using async/await
-        try {
-            const response = await oneSignalClient.createNotification(notificationData);
-            console.log("response");
-            console.log(response);
-            console.log("response");
-            console.log(response.body.id);
+        // var notificationData = {
+        //     // contents: message,
+        //     contents: {
+        //         "tr": notificationObj.message,
+        //         "en": notificationObj.message,
+        //     },
+        //     headings: {
+        //         "en": notificationObj.title
+        //     },
+        //     subtitle: {
+        //         "en": notificationObj.message,
+        //     },
+        //     data: {
+        //         "type": notificationObj.type,
+        //         "reference_id": notificationObj.referenceId,
+        //     }
+        //     ,
+        //     included_segments: null,
+        //     filters: notificationObj.filtersJsonArr
+        // };
+        // console.log("notificationData");
+        // console.log(notificationData);
+        // console.log("notificationData");
+        // // using async/await
+        // try {
+            // const response = await oneSignalClient.createNotification(notificationData);
+            // console.log("response");
+            // console.log(response);
+            // console.log("response");
+            // console.log(response.body.id);
             var notificationLogObj = {};
             notificationLogObj.type = notificationObj.type;
             notificationLogObj.churchId = notificationObj.churchId;
@@ -59,7 +59,8 @@ module.exports = {
             }
            
             notificationLogObj.referenceId = notificationObj.referenceId;
-            notificationLogObj.sentAt = Date.now();
+            notificationLogObj.isSent = 0;
+            notificationLogObj.sentAt = null;
             notificationLogObj.status = 1;
             notificationLogObj.tsCreatedAt = Date.now();
             notificationLogObj.tsModifiedAt = null;
@@ -73,23 +74,23 @@ module.exports = {
                     }
                 })
             if (notificationData && (notificationData.success !== undefined) && (notificationData.success === 0)) {
-                return eventData;
+                return notificationData;
             }
 
-            return response;
+            return notificationData;
 
-        } catch (e) {
-            console.log("e")
-            console.log(e)
-            console.log("e")
-            if (e instanceof OneSignal.HTTPError) {
-                // When status code of HTTP response is not 2xx, HTTPError is thrown.
-                console.log(e.statusCode);
-                console.log(e.body);
-            }
-            return e;
+        // } catch (e) {
+        //     console.log("e")
+        //     console.log(e)
+        //     console.log("e")
+        //     if (e instanceof OneSignal.HTTPError) {
+        //         // When status code of HTTP response is not 2xx, HTTPError is thrown.
+        //         console.log(e.statusCode);
+        //         console.log(e.body);
+        //     }
+        //     return e;
 
-        }
+        // }
 
     },
 
