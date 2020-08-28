@@ -7,7 +7,7 @@ var onesignalConfig = config.oneSignal;
 
 var oneSignalClient = new OneSignal.Client(oneSignalConfig.appId, oneSignalConfig.apiKey);
 module.exports = {
-    sendNotification: function (notificationObj, callback) {
+    sendNotification: async function (notificationObj, callback) {
         var notificationData = {
             // contents: message,
             contents: {
