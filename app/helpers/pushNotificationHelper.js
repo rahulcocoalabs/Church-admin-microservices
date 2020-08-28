@@ -3,7 +3,7 @@ var config = require('../../config/app.config.js');
 var PushNotification = require('../models/pushNotification.model');
 var Church = require('../models/church.model');
 var constants = require('../helpers/constants');
-var onesignalConfig = config.oneSignal;
+var oneSignalConfig = config.oneSignal;
 
 var oneSignalClient = new OneSignal.Client(oneSignalConfig.appId, oneSignalConfig.apiKey);
 module.exports = {
