@@ -4,10 +4,10 @@ var PushNotification = require('../models/pushNotification.model');
 var Church = require('../models/church.model');
 var constants = require('../helpers/constants');
 var oneSignalConfig = config.oneSignal;
+const oneSignalClient = new OneSignal.Client(oneSignalConfig.appId, oneSignalConfig.apiKey);
 
 module.exports = {
     sendNotification: async function (notificationObj) {
-var oneSignalClient = new OneSignal.Client(oneSignalConfig.appId, oneSignalConfig.apiKey);
 
         var notificationData = {
             // contents: message,
@@ -26,7 +26,7 @@ var oneSignalClient = new OneSignal.Client(oneSignalConfig.appId, oneSignalConfi
                 "reference_id": notificationObj.referenceId,
             }
             ,
-            included_segments: [],
+            included_segments: null,
             filters: notificationObj.filtersJsonArr
         };
         console.log("notificationData");
