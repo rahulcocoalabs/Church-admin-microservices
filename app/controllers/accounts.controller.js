@@ -948,6 +948,18 @@ exports.resetPassword = async (req, res) => {
   // part of  url send to the email and new password
   let link = req.body.link;
   let newPass = req.body.password;
+  if (!link){
+    return res.send({
+      success:0,
+      msg:"no links given"
+    })
+  }
+  if (!newPass){
+    return res.send({
+      success:0,
+      msg:"no passwords given"
+    })
+  }
   // find the document with given link
   let data = await Reset.findOne({value:link});
   if (!data){
