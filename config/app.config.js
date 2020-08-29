@@ -71,6 +71,8 @@ module.exports = {
     timeForExpiry: 24 *60 * 60 * 1000,
     root:"http://localhost:4200/reset-password"
   },
-
+  email: {
+    sendgridApiKey: 'd-1f91f71ba36445599a2fce5790c9a3da'
+  },
 
 }
