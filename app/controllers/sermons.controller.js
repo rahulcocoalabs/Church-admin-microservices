@@ -3,6 +3,7 @@ var Paster = require('../models/paster.model');
 var config = require('../../config/app.config.js');
 var constant = require('../helpers/constants');
 const constants = require('../helpers/constants');
+var pushNotificationHelper = require('../helpers/pushNotificationHelper');
 var sermonsType = constant.TYPE_SERMONS;
 var sermonsConfig = config.sermons;
 var feedsConfig = config.feeds;
@@ -42,6 +43,23 @@ exports.create = async (req, res) => {
     if (newSermonsData && (newSermonsData.success !== undefined) && (newSermonsData.success === 0)) {
         return res.send(newSermonsData);
     }
+
+    var filtersJsonArr = [{"field":"tag","key":"church_id","relation":"=","value":churchId}]
+    // var metaInfo = {"type":"event","reference_id":eventData.id}
+    var notificationObj = {
+        title : constants.ADD_SERMON_NOTIFICATION_TITLE,
+        message : constants.ADD_SERMON_NOTIFICATION_MESSAGE,
+        type : constants.SERMON_NOTIFICATION,
+        referenceId : newSermonsData.id,
+        filtersJsonArr,
+        // metaInfo,
+        churchId
+    }
+    let notificationData = await pushNotificationHelper.sendNotification(notificationObj)
+    console.log("notificationData")
+    console.log(notificationData)
+    console.log("notificationData")
+
     return res.status(200).send({
         success: 1,
         message: 'Sermons added successfully'

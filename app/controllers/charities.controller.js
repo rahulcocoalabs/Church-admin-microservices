@@ -6,6 +6,7 @@ var Charity = require('../models/charity.model');
 var CharityPay = require('../models/charityPayments.model');
 var User = require('../models/user.model')
 var config = require('../../config/app.config.js');
+var pushNotificationHelper = require('../helpers/pushNotificationHelper');
 const constants = require('../helpers/constants');
 
 
@@ -99,11 +100,11 @@ exports.update = async (req, res) => {
         if (params.title) {
             update.title = params.title;
         }
-        if (params.organisation) {
-            update.trustName = params.organisation;
+        if (params.trustName) {
+            update.trustName = params.trustName;
         }
-        if (params.amount) {
-            update.fund = params.amount;
+        if (params.fund) {
+            update.fund = params.fund;
         }
         if (params.phone) {
             update.phone = params.phone;
@@ -170,16 +171,16 @@ exports.add = async (req, res) => {
             'message': 'title required',
         })
     }
-    if (!params.organisation) {
+    if (!params.trustName) {
         errors.push({
-            'field': 'organisation',
-            'message': 'organisation required',
+            'field': 'trustName',
+            'message': 'trustName required',
         })
     }
-    if (!params.amount) {
+    if (!params.fund) {
         errors.push({
-            'field': 'amount',
-            'message': 'amount required',
+            'field': 'fund',
+            'message': 'fund required',
         })
     }
     if (!params.phone) {
@@ -216,10 +217,10 @@ exports.add = async (req, res) => {
         churchId,
         title: params.title,
         images,
-        trustName: params.organisation,
+        trustName: params.trustName,
         address: params.address,
         caption: params.caption,
-        fund: params.amount,
+        fund: params.fund,
         phone: params.phone,
         about: params.about,
         // paidOn: params.paidOn,
@@ -228,9 +229,24 @@ exports.add = async (req, res) => {
         tsModifiedAt: null
     });
 
-    var new_charity = await charity.save();
+    var newCharity = await charity.save();
 
-    if (!new_charity) {
+    var filtersJsonArr = [{"field":"tag","key":"church_id","relation":"=","value":churchId}]
+    // var metaInfo = {"type":"event","reference_id":eventData.id}
+    var notificationObj = {
+        title : constants.ADD_CHARITY_NOTIFICATION_TITLE,
+        message : constants.ADD_CHARITY_NOTIFICATION_MESSAGE,
+        type : constants.CHARITY_NOTIFICATION,
+        referenceId : newCharity.id,
+        filtersJsonArr,
+        // metaInfo,
+        churchId
+    }
+    let notificationData = await pushNotificationHelper.sendNotification(notificationObj)
+    console.log("notificationData")
+    console.log(notificationData)
+    console.log("notificationData")
+    if (!newCharity) {
         return res.send({
             success: 0,
             message: "something wrong"
@@ -239,7 +255,7 @@ exports.add = async (req, res) => {
 
     return res.send({
         success: 1,
-        id: new_charity._id,
+        id: newCharity.id,
         message: 'New charity added successfully',
 
     })
@@ -251,7 +267,6 @@ exports.list = async (req, res) => {
     const identity = req.identity.data;
     var adminUserId = identity.id;
     var churchId = identity.church;
-    var params = req.query;
 
     var params = req.query;
     var page = Number(params.page) || 1;

@@ -5,10 +5,12 @@ const UserRoles = require('../models/userRole.model');
 const Otp = require('../models/otp.model');
 const Donation = require('../models/donation.model');
 const Church = require('../models/church.model');
+const Designation = require('../models/designation.model');
 const config = require('../../config/app.config.js');
 const constants = require('../helpers/constants');
 var otpConfig = config.otp;
 var donationConfig = config.donations;
+var pastersConfig = config.pasters;
 const paramsConfig = require('../../config/params.config');
 const JWT_KEY = paramsConfig.development.jwt.secret;
 var jwt = require('jsonwebtoken');
@@ -70,14 +72,31 @@ exports.signUp = async (req, res) => {
     var roles = [];
     roles.push(userRoleData.id);
     // var otpResponse = await otp(phone)
+    let pasterObj = await Designation.findOne({
+      name : constants.PASTER_DESIGNATION,
+      status : 1
+    })
+    .catch(err => {
+      return {
+        success: 0,
+        message: 'Something went wrong while getting paster data',
+        error: err
+      }
+    })
+
+  if (pasterObj && (pasterObj.success !== undefined) && (pasterObj.success === 0)) {
+    return res.send(pasterObj);
+  }
     var newUser = new Users({
       name: name,
       email: email,
       phone: phone,
       passwordHash: hash,
-      // address: address,
+      address: '',
+      image: '',
+      about: '',
       church: church,
-
+      designation : pasterObj.id,
       // parish: parish,
       // parishWard: parishWard,
       // bloodGroup: bloodGroup,
@@ -130,6 +149,9 @@ exports.login = async (req, res) => {
       path: 'roles',
       select: { name: 1 }
 
+    },{
+      path: 'designation',
+      select: { name: 1 }
     }])
     .catch(err => {
       return {
@@ -158,6 +180,7 @@ exports.login = async (req, res) => {
     payload.church = userData.church;
     payload.userType = userData.userType;
     payload.roles = userData.roles;
+    payload.designation = userData.designation;
     var token = jwt.sign({
       data: payload,
     }, JWT_KEY, {
@@ -284,6 +307,9 @@ exports.getPasterProfile = async (req, res) => {
     }, {
       path: 'church',
       select: { name: 1 }
+    }, {
+      path: 'designation',
+      select: { name: 1 }
     }])
     .catch(err => {
       return {
@@ -298,6 +324,7 @@ exports.getPasterProfile = async (req, res) => {
   if (adminUserData) {
     return res.send({
       success: 1,
+      imageBase : pastersConfig.imageBase,
       item: adminUserData,
       message: 'User profile'
     })
@@ -424,11 +451,21 @@ exports.updatePasterProfile = async (req, res) => {
         update.passwordHash = hash;
 
       }else{
+     
         return res.send({
           success: 0,
           message: 'Incorrect current password'
         })
       }
+    }
+    if(params.address){
+      update.address = params.address
+    }
+    if(params.about){
+      update.about = params.about
+    }
+    if(req.file){
+      update.image = req.file.filename
     }
      // if(params.churchId){
     //   update.church = params.churchId

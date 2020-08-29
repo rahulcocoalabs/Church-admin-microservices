@@ -1,6 +1,7 @@
 var Post = require('../models/post.model');
 var EventCategory = require('../models/eventCategory.model');
 var constants = require('../helpers/constants');
+var pushNotificationHelper = require('../helpers/pushNotificationHelper');
 var eventType = constants.TYPE_EVENT;
 var ObjectId = require('mongoose').Types.ObjectId;
 var config = require('../../config/app.config.js');
@@ -87,9 +88,7 @@ exports.create = async (req, res) => {
     eventObj.detail = params.detail;
     eventObj.venue = params.venue;
     eventObj.churchId = churchId;
-    console.log("req.file")
-    console.log(req.file)
-    console.log("req.file")
+ 
     // if(eventImage){
     // eventObj.image = eventImage.filename;
     // }else{
@@ -104,9 +103,6 @@ exports.create = async (req, res) => {
         var len = eventImages.images.length;
         var i = 0;
         while (i < len) {
-            console.log("eventImages.images[i].filename")
-            console.log(eventImages.images[i].filename)
-            console.log("eventImages.images[i].filename")
             images.push(eventImages.images[i].filename);
             i++;
         }
@@ -127,20 +123,34 @@ exports.create = async (req, res) => {
     eventObj.status = 1;
     eventObj.tsCreatedAt = Date.now();
     eventObj.tsModifiedAt = null;
-
+  
     let newEventObj = new Post(eventObj);
     let eventData = await newEventObj.save()
-        .catch(err => {
-            return {
-                success: 0,
-                message: 'Something went wrong while saving event',
-                error: err
-            }
-        })
-    if (eventData && (eventData.success !== undefined) && (eventData.success === 0)) {
-        return res.send(eventData);
+    //     .catch(err => {
+    //         return {
+    //             success: 0,
+    //             message: 'Something went wrong while saving event',
+    //             error: err
+    //         }
+    //     })
+    // if (eventData && (eventData.success !== undefined) && (eventData.success === 0)) {
+    //     return res.send(eventData);
+    // }
+    var filtersJsonArr = [{"field":"tag","key":"church_id","relation":"=","value":churchId}]
+    // var metaInfo = {"type":"event","reference_id":eventData.id}
+    var notificationObj = {
+        title : constants.ADD_EVENT_NOTIFICATION_TITLE,
+        message : constants.ADD_EVENT_NOTIFICATION_MESSAGE,
+        type : constants.EVENT_NOTIFICATION,
+        referenceId : eventData.id,
+        filtersJsonArr,
+        // metaInfo,
+        churchId
     }
-
+    let notificationData = await pushNotificationHelper.sendNotification(notificationObj)
+    console.log("notificationData")
+    console.log(notificationData)
+    console.log("notificationData")
     return res.status(200).send({
         success: 1,
         message: 'Event added successfully'

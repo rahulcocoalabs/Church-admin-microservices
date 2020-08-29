@@ -2,15 +2,15 @@ const auth = require('../middleware/auth.js');
 var multer = require('multer');
 var mime = require('mime-types');
 var config = require('../../config/app.config.js');
-var profileConfig = config.users;
+var pastersConfig = config.pasters;
 const accountsValidator = require('../validators/accounts-validator');
 var storage = multer.diskStorage({
-    destination: profileConfig.imageUploadPath,
+    destination: pastersConfig.imageUploadPath,
     filename: function (req, file, cb) {
         cb(null, file.fieldname + '-' + Date.now() + "." + mime.extension(file.mimetype))
     }
 });
-var userImageUpload = multer({ storage: storage });
+var pasterImageUpload = multer({ storage: storage });
 module.exports = (app) => {
     const accounts = require('../controllers/accounts.controller.js');
     app.post('/admin/accounts/sign-up', accountsValidator.validator('signUp'), accounts.signUp);
@@ -20,7 +20,7 @@ module.exports = (app) => {
     app.post('/admin/accounts/addnewpassword', accounts.resetPassword);
 
     app.get('/admin/accounts/paster-profile',auth, accounts.getPasterProfile);
-    app.patch('/admin/accounts/paster-profile',auth, accounts.updatePasterProfile);
+    app.patch('/admin/accounts/paster-profile',auth,pasterImageUpload.single('image'),  accounts.updatePasterProfile);
     app.get('/admin/accounts/admin-profile',auth, accounts.getAdminProfile);
     app.patch('/admin/accounts/admin-profile',auth, accounts.updateAdminProfile);
     app.get('/admin/accounts/urogulf-profile',auth, accounts.getUrogulfProfile);

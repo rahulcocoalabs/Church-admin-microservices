@@ -23,9 +23,14 @@ var options = {
 const UserSchema = mongoose.Schema({
     name: String,
     email: String,
+    designation: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Designation'
+    },
     image: String,
     phone: String,
     address: String,
+    about: String,
     userType: String,
     passwordHash: String,
     church: { type: mongoose.Schema.Types.ObjectId, ref: 'Church' },
