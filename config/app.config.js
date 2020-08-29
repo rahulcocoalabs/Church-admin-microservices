@@ -53,6 +53,12 @@ module.exports = {
     resultsPerPage: 30,
 
   },
+  ngos: {
+    resultsPerPage: 30,
+    imageBase: commonStorePath + 'ngo/',
+    // imageUploadPath: 'uploads'
+    imageUploadPath: '/var/www/html/church-app-images/ngo/'
+  },
   urogulf: {
     resultsPerPage: 30
   },
