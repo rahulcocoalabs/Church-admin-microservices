@@ -59,6 +59,7 @@ exports.add = async (req, res) => {
         country: params.country,
         state: params.state,
         district:params.district,
+        branch:params.branch,
         address: params.address,
         status: 1,
         tsCreatedAt: new Date(),
@@ -112,11 +113,8 @@ exports.list = async (req, res) => {
         find.district = params.district;
     }
     
-    var proj = {
-        branch:1,
-        address:1
-    };
-    var list = await Locations.find(find,proj)
+   
+    var list = await Locations.find(find)
     // .limit(perPage)
     // .skip(offset)
     .catch(err => {
