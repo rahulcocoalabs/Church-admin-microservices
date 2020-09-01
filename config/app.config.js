@@ -12,9 +12,9 @@ module.exports = {
   },
   pasters: {
     imageBase: commonStorePath + 'pasters/',
-    // imageUploadPath: 'uploads',
+     imageUploadPath: 'uploads',
 
-    imageUploadPath: '/var/www/html/church-app-images/pasters/',
+    //imageUploadPath: '/var/www/html/church-app-images/pasters/',
     resultsPerPage: 30
   },
   groups: {
@@ -82,7 +82,7 @@ module.exports = {
     root:"http://localhost:4200/reset-password"
   },
   email: {
-    sendgridApiKey: 'd-1f91f71ba36445599a2fce5790c9a3da'
+    sendgridApiKey: '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'
   },
   oneSignal: {
     appId : "9777ade8-faad-4cc1-96fa-8f3109efa482",

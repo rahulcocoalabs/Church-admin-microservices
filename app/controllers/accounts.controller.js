@@ -15,6 +15,9 @@ const paramsConfig = require('../../config/params.config');
 const JWT_KEY = paramsConfig.development.jwt.secret;
 var jwt = require('jsonwebtoken');
 const uuidv4 = require('uuid/v4');
+const sgMail = require('@sendgrid/mail');
+
+sgMail.setApiKey(config.email.sendgridApiKey);
 
 var bcrypt = require('bcryptjs');
 const resetPasswordModel = require('../models/resetPassword.model');
@@ -1006,28 +1009,51 @@ exports.resetPassword = async (req, res) => {
 
 }
 
+async function sendMail(message,target){
+
+  var ret = 0;
+  
+  console.log('heloooooo',config.email.sendgridApiKey);
+const msg = {
+  to: target,
+  from: 'docsofrakesh@gmail.com',
+  subject: 'Password reset link from church app',
+  text: content,
+
+};
+sgMail
+  .send(msg)
+  .then(() => console.log('send mail success'))
+  .catch(err=>{
+    console.log(err);
+    ret = 1;
+  });
+}
+
 exports.reset = async (req, res) => {
 
   let mail = req.body.email;
-
-  //return res.send(id);
-
-
-
+  if (!mail){
+    return res.send({
+      success:0,
+      msg:"email not submitted"
+    })
+  }
   let str = randomStr('20','12345abcdef');
-
-  console.log(randomStr('20','12345abcdef'))
-
-  let link = config.resetpassword.root + str;
-  
-  var user = await Users.findOne({email:mail})
-  //return res.send(mail)
+  let link = config.resetpassword.root + "/" +  str;
+  var user = await Users.findOne({email:mail});
   let id =  user._id;
- 
+  if (!id) {
 
-  var newPasswordResetLink = new Reset({
+    return res.json({
+        success:0,
+        message:"no matching email found"
+    });
+  }
+
+  
+var newPasswordResetLink = new Reset({
     value: str,
-    owner: id,
    
     status: 1,
     tsCreatedAt: new Date(),
@@ -1046,40 +1072,18 @@ exports.reset = async (req, res) => {
   const externalLink = appConfig.resetpassword.root+"/"+str;
   const mailmsg = "you can reset your password by clciking this link" + "   " + externalLink;
 
-  var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'mailrkponline@gmail.com',
-      pass: 'alifbetgimel'
-    }
-  });
-//   transporter.verify(function(error, success) {
-//     if (error) {
-//          console.log(error);
-//     } else {
-//          console.log('Server is ready to take our messages');
-//     }
-//  });
 
 
- var mailOptions = {
-  from: 'mailrkponline@gmail.com',
-  to: mail,
-  subject: 'Sending Email using Node.js',
-  text: mailmsg
-       
-  // html: '<h1>Hi Smartherd</h1><p>Your Messsage</p>'        
-};
 
-transporter.sendMail(mailOptions, function(error, info){
-  if (error) {
-    console.log(error);
-  } else {
-    console.log('Email sent: ' + info.response);
-  }
-});
+ const x = await sendMail(mailmsg,mail);
 
- 
+ if (x==1){
+
+  return res.json({
+    success:0,
+    message:"mail could not be sent"
+  })
+ }
 
   if (saveLink){
     return res.send({
@@ -1098,89 +1102,8 @@ transporter.sendMail(mailOptions, function(error, info){
 
 }
 
-//const SGmail = require('@sendgrid/mail');
-//SGmail.setApiKey(config.email.sendgridApiKey); // Input Api key or add to environment config
 
-async function newUserEmail(email, name,res){
-  const content = { 
-  to : email, //email variable
-  from : { email : 'mailrkponline@gmail.com' , name: 'Rakesh'},
-  message : `Hi there, ${name}`,
-  subject : "This is a test Email",
-  html: "<p>test</p>",
-  templateId: "f091dbe6-146b-4670-bcd4-72a1770b2d7d"
-  }
-  
-  try{
-    const response = await SGmail.send(content)
 
-    return res.json({message: 'message sent',item:response})
-
-  } catch(error){
-    const { message, code, response } = error
-
-    return res.json({message, response})
-  }
-  
- }
-
- async function nodemailercall(req,res,msg){
-console.log("1");
-  const output = `
-    <p>You have a new contact request</p>
-    <h3>Contact Details</h3>
-    <ul>  
-      <li>Name: ${req.body.name}</li>
-     
-    </ul>
-    <h3>Message</h3>
-    <p>${req.body.message}</p>
-  `;
-
-  // create reusable transporter object using the default SMTP transport
-
-  console.log("2");
-  let transporter = nodemailer.createTransport({
-    host: 'mail.google.com',
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-        user: 'mailrkponline@gmail.com', // generated ethereal user
-        pass: 'alifbetgimel'  // generated ethereal password
-    },
-    tls:{
-      rejectUnauthorized:false
-    }
-  });
-
-  // setup email data with unicode symbols
-
-  console.log("3");
-  let mailOptions = {
-      from: '"Nodemailer Contact" <mailrkponline@gmail.com>', // sender address
-      to: 'docsofrakesh@gmail.com', // list of receivers
-      subject: 'Node Contact Request', // Subject line
-      text: 'Hello world?', // plain text body
-      html: output // html body
-  };
-
-  // send mail with defined transport object
-
-  console.log("4");
-  const y = await transporter.sendMail(mailOptions, (error, info) => {
-    console.log("5");
-      if (error) {
-        console.log("5");
-          return console.log(error);
-      }
-      console.log('Message sent: %s', info.messageId);   
-      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-    
-      //res.render('contact', {msg:'Email has been sent'});
-  });
- 
-  return y;
- }
 
 //code for generating random string 
 function randomStr(len, arr) { 
