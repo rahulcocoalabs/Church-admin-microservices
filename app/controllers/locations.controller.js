@@ -102,7 +102,9 @@ exports.list = async (req, res) => {
     // perPage = perPage > 0 ? perPage : feedsConfig.resultsPerPage;
     // var offset = (page - 1) * perPage;
 
-    var find = {};
+    var find = {
+        status : 1
+    };
     if (params.country) {
         find.country = params.country;
     }
