@@ -1018,7 +1018,7 @@ const msg = {
   to: target,
   from: 'docsofrakesh@gmail.com',
   subject: 'Password reset link from church app',
-  text: content,
+  text: message,
 
 };
 sgMail
@@ -1042,8 +1042,8 @@ exports.reset = async (req, res) => {
   let str = randomStr('20','12345abcdef');
   let link = config.resetpassword.root + "/" +  str;
   var user = await Users.findOne({email:mail});
-  let id =  user._id;
-  if (!id) {
+  
+  if (!user) {
 
     return res.json({
         success:0,
@@ -1051,7 +1051,7 @@ exports.reset = async (req, res) => {
     });
   }
 
-  
+  let id =  user._id;
 var newPasswordResetLink = new Reset({
     value: str,
    
