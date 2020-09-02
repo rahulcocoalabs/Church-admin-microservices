@@ -994,6 +994,7 @@ exports.resetPassword = async (req, res) => {
     if (data_1){
       return res.send({
         success:1,
+        data_1,
         msg:"successfully updated password"
       })
      
@@ -1021,6 +1022,8 @@ const msg = {
   text: message,
 
 };
+
+console.log(target,message);
 sgMail
   .send(msg)
   .then(() => console.log('send mail success'))
