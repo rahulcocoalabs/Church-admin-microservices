@@ -12,9 +12,9 @@ module.exports = {
   },
   pasters: {
     imageBase: commonStorePath + 'pasters/',
-     imageUploadPath: 'uploads',
+    //  imageUploadPath: 'uploads',
 
-    //imageUploadPath: '/var/www/html/church-app-images/pasters/',
+    imageUploadPath: '/var/www/html/church-app-images/pasters/',
     resultsPerPage: 30
   },
   groups: {
