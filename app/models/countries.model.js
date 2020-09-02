@@ -4,7 +4,6 @@ function transform(ret) {
     ret.id = ret._id;
     delete ret._id;
     delete ret.status;
-    delete ret.tsCreatedAt;
     delete ret.tsModifiedAt;
 }
 var options = {
@@ -22,15 +21,11 @@ var options = {
     }
 };
 
-const LocationSchema = mongoose.Schema({
-    country : String,
-    state : String,
-    district : String,
-    branch : String,
-    address:String,
-    status:Number,
+const CountrySchema = mongoose.Schema({
+    name: String,
+    status: Number,
     tsCreatedAt: Number,
     tsModifiedAt: Number
 
 }, options);
-module.exports = mongoose.model('Location', LocationSchema, 'Locations');
+module.exports = mongoose.model('Country', CountrySchema, 'Countries');

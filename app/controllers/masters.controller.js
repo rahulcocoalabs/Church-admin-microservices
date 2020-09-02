@@ -2,6 +2,10 @@ var Church = require('../models/church.model');
 var Parish = require('../models/parish.model');
 var ParishWard = require('../models/parishWard.model');
 var EventCategory = require('../models/eventCategory.model');
+var Countries = require('../models/countries.model');
+var States = require('../models/states.model');
+var Districts = require('../models/districts.model');
+var Places = require('../models/places.model');
 
 exports.churchList = async (req, res) => {
     try {
@@ -193,4 +197,171 @@ exports.updatePayementGatewaySettings = async (req, res) => {
             message: 'Church not found'
         })
     }
+}
+
+
+exports.countryList = async (req, res) => {
+    var findCriteria = {
+        status: 1
+    }
+    var projection = {
+        name: 1
+    }
+    var countriesData = await Countries.find(findCriteria, projection)
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while listing countries',
+                error: err
+            }
+        })
+    if (countriesData && (countriesData.success !== undefined) && (countriesData.success === 0)) {
+        return res.send(countriesData);
+    }
+    return res.send({
+        success: 1,
+        items: countriesData,
+        message: 'List countries'
+    })
+}
+
+exports.stateList = async (req, res) => {
+    var countryId = req.params.id;
+
+    var countryData = await Countries.findOne({
+        _id: countryId,
+        status: 1
+    })
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while checking country',
+                error: err
+            }
+        })
+    if (countryData && (countryData.success !== undefined) && (countryData.success === 0)) {
+        return res.send(countryData);
+    }
+    if (countryData) {
+        var statesData = await States.find({
+            countryId,
+            status: 1
+        })
+            .catch(err => {
+                return {
+                    success: 0,
+                    message: 'Something went wrong while listing states',
+                    error: err
+                }
+            })
+        if (statesData && (statesData.success !== undefined) && (statesData.success === 0)) {
+            return res.send(statesData);
+        }
+        return res.send({
+            success: 1,
+            items: statesData,
+            message: 'List states'
+        })
+    } else {
+        return res.send({
+            success: 0,
+            message: 'Invalid country id'
+        })
+    }
+}
+
+exports.districtList = async (req, res) => {
+    var stateId = req.params.id;
+
+    var stateData = await States.findOne({
+        _id: stateId,
+        status: 1
+    })
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while checking state',
+                error: err
+            }
+        })
+    if (stateData && (stateData.success !== undefined) && (stateData.success === 0)) {
+        return res.send(stateData);
+    }
+    if (stateData) {
+        var districtData = await Districts.find({
+            stateId,
+            status: 1
+        })
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while listing districts',
+                error: err
+            }
+        })
+    if (districtData && (districtData.success !== undefined) && (districtData.success === 0)) {
+        return res.send(districtData);
+    }
+    return res.send({
+        success: 1,
+        items: districtData,
+        message: 'List districts'
+    })
+
+    } else {
+        return res.send({
+            success: 0,
+            message: 'Invalid state id'
+        })
+    }
+
+
+
+}
+
+exports.placeList = async(req,res) =>{
+    var districtId = req.params.id;
+
+    var districtData = await Districts.findOne({
+        _id: districtId,
+        status: 1
+    })
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while checking district',
+                error: err
+            }
+        })
+    if (districtData && (districtData.success !== undefined) && (districtData.success === 0)) {
+        return res.send(districtData);
+    }
+    if (districtData) {
+        var placeData = await Places.find({
+            districtId,
+            status: 1
+        })
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while listing places',
+                error: err
+            }
+        })
+    if (placeData && (placeData.success !== undefined) && (placeData.success === 0)) {
+        return res.send(placeData);
+    }
+    return res.send({
+        success: 1,
+        items: placeData,
+        message: 'List places'
+    })
+
+    } else {
+        return res.send({
+            success: 0,
+            message: 'Invalid state id'
+        })
+    }
+
 }

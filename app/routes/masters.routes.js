@@ -7,4 +7,10 @@ module.exports = (app) => {
     app.get('/admin/masters/event-category/list', masters.eventCategoryList);
     app.get('/admin/masters/payment/settings',auth, masters.getPayementGatewaySettings);
     app.patch('/admin/masters/payment/settings',auth, masters.updatePayementGatewaySettings);
+
+    app.get('/admin/masters/country/list', masters.countryList);
+    app.get('/admin/masters/state/:id/list', masters.stateList);
+    app.get('/admin/masters/district/:id/list', masters.districtList);
+    app.get('/admin/masters/place/:id/list', masters.placeList);
+
 };
