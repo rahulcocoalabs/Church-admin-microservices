@@ -990,10 +990,11 @@ exports.resetPassword = async (req, res) => {
     const hash = bcrypt.hashSync(newPass, salt);
 
     let data_1 = await Users.updateOne({_id:id},{passwordHash:hash})
-
+    
     if (data_1){
       return res.send({
         success:1,
+        data_1,
         msg:"successfully updated password"
       })
      
@@ -1021,6 +1022,8 @@ const msg = {
   text: message,
 
 };
+
+console.log(target,message);
 sgMail
   .send(msg)
   .then(() => console.log('send mail success'))
@@ -1054,7 +1057,7 @@ exports.reset = async (req, res) => {
   let id =  user._id;
 var newPasswordResetLink = new Reset({
     value: str,
-   
+    owner: user._id,
     status: 1,
     tsCreatedAt: new Date(),
     tsModifiedAt: null
