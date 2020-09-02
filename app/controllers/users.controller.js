@@ -22,9 +22,26 @@ exports.userList = async (req, res) => {
     var perPage = Number(params.perPage) || userConfig.resultsPerPage;
     perPage = perPage > 0 ? perPage : userConfig.resultsPerPage;
     var offset = (page - 1) * perPage;
+    let userRolesData = await UserRoles.find({
+        name : { $in: [constants.SUB_ADMIN_USER,constants.ADMIN_USER,constants.URO_GULF_ADMIN_USER] }
+    })
+    .catch(err => {
+        return {
+            success: 0,
+            message: 'Something went wrong while listing users',
+            error: err
+        }
+    })
 
+if (userRolesData && (userRolesData.success !== undefined) && (userRolesData.success === 0)) {
+    return res.send(userRolesData);
+}
+var idArray = []
+for(let i = 0; i < userRolesData.length; i++){
+    idArray.push(userRolesData[i].id)
+}
     var usersList = await Users.find({
-        userType: { $nin: [constants.ADMIN_USER, constants.SUB_ADMIN_USER] },
+        roles: { $nin: idArray },
         church: churchId,
         status: 1
     }, {
