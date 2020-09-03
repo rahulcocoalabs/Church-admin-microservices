@@ -23,10 +23,22 @@ var options = {
 };
 
 const LocationSchema = mongoose.Schema({
-    country : String,
-    state : String,
-    district : String,
-    branch : String,
+    countryId :  {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Country'
+    },
+    stateId :  {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'State'
+    },
+    districtId : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'District'
+    },
+    branchId : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Place'
+    },
     address:String,
     status:Number,
     tsCreatedAt: Number,
