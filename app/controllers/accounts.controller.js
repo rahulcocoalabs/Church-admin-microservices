@@ -977,7 +977,7 @@ exports.resetPassword = async (req, res) => {
   let timeObj = Date.now();
   let time2 = timeObj.getTime;
   let gap = time2-time1;
-
+  return res.send(gap);
   
   if (gap>(config.resetpassword.timeForExpiry)){
     return res.send({
@@ -1042,7 +1042,8 @@ exports.reset = async (req, res) => {
       msg:"email not submitted"
     })
   }
-  let str = randomStr('20','12345abcdef');
+  //let str = randomStr('20','12345abcdef');
+  var str = randomString(32, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
   let link = config.resetpassword.root + "/" +  str;
   var user = await Users.findOne({email:mail});
   
@@ -1106,7 +1107,11 @@ var newPasswordResetLink = new Reset({
 }
 
 
-
+function randomString(length, chars) {
+  var result = '';
+  for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+  return result;
+}
 
 //code for generating random string 
 function randomStr(len, arr) { 
