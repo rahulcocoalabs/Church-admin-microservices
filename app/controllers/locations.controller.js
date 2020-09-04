@@ -188,6 +188,9 @@ exports.detail = async (req, res) => {
     if (locationData && (locationData.success !== undefined) && (locationData.success === 0)) {
         return res.send(locationData);
     }
+    console.log("locationData")
+    console.log(locationData)
+    console.log("locationData")
     if (locationData) {
         return res.send({
             success: 1,
