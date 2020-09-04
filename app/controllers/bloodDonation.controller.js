@@ -138,7 +138,7 @@ exports.list = async (req, res) => {
 
 
 
-    var total = await bloodDonation.countDocuments()
+    var total = await bloodDonation.countDocuments(findCriteria)
         .catch(err => {
             return {
                 success: 0,
@@ -161,7 +161,7 @@ exports.list = async (req, res) => {
         totalPages
     }
 
-    if (data.length > 0){
+    if (total > 0){
         return res.status(200).send({
             success: 1,
             pagination,
