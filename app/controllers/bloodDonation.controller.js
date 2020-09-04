@@ -67,7 +67,7 @@ exports.create = async (req, res) => {
        
         address: params.address,
         description: params.description,
-        bloodgroup:params.bloodgroup,
+        bloodGroup:params.bloodgroup,
         phone: params.phone,
         neededDate: params.date,
         hospitalName:params.hospital,
