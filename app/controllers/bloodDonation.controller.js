@@ -161,7 +161,7 @@ exports.list = async (req, res) => {
         totalPages
     }
 
-    if (data.count > 0){
+    if (data.length > 0){
         return res.status(200).send({
             success: 1,
             pagination,
