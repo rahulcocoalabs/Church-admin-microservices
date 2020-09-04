@@ -67,7 +67,7 @@ exports.create = async (req, res) => {
        
         address: params.address,
         description: params.description,
-        bloodgroup:params.bloodgroup,
+        bloodGroup:params.bloodgroup,
         phone: params.phone,
         neededDate: params.date,
         hospitalName:params.hospital,
@@ -111,7 +111,7 @@ exports.list = async (req, res) => {
     var projection = {
         address:1,
         description:1,
-        bloodgroup:1,
+        bloodGroup:1,
         neededDate:1,
         phone:1,
         hospitalName:1,
@@ -138,7 +138,7 @@ exports.list = async (req, res) => {
 
 
 
-    var total = await bloodDonation.countDocuments()
+    var total = await bloodDonation.countDocuments(findCriteria)
         .catch(err => {
             return {
                 success: 0,
@@ -161,7 +161,7 @@ exports.list = async (req, res) => {
         totalPages
     }
 
-    if (data.length > 0){
+    if (total > 0){
         return res.status(200).send({
             success: 1,
             pagination,
@@ -272,7 +272,7 @@ exports.update = async (req, res) => {
     // var adminUserId = identity.id;
     // var churchId = identity.church;
     let params = req.body;
-    var id = params.id;
+    var id = req.params.id;
     if (!params.address &&!params.description && !params.bloodgroup && !params.date &&  !params.phone ) {
         return res.send({
             success: 0,
@@ -309,6 +309,12 @@ exports.update = async (req, res) => {
         }
         if (params.phone) {
             update.phone = params.phone;
+        }
+        if (params.bloodGroup) {
+            update.bloodGroup = params.bloodGroup;
+        }
+        if (params.hospital) {
+            update.hospitalName = params.hospital;
         }
        
         update.tsModifiedAt = Date.now();
