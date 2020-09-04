@@ -513,6 +513,11 @@ exports.updateBranchDetails = async (req, res) => {
                         success: 1,
                         message: 'Branch updated successfully'
                     })
+                }else{
+                    return res.send({
+                        success: 0,
+                        message: "Branch id invalid"
+                    })
                 }
             } else {
                 return res.send({
@@ -596,6 +601,11 @@ exports.deleteBranch = async (req, res) => {
                     return res.status(200).send({
                         success: 1,
                         message: 'Branch deleted successfully'
+                    })
+                }else{
+                    return res.send({
+                        success: 0,
+                        message: "Branch id invalid"
                     })
                 }
             } else {
