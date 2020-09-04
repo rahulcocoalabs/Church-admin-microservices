@@ -21,5 +21,6 @@ module.exports = (app) => {
     app.post('/admin/blooddonation/create',auth,bloodDonation.create);
     app.post('/admin/blooddonation/update',auth,bloodDonation.update);
     app.post('/admin/blooddonation/delete',auth,bloodDonation.delete);
+    app.get('/admin/blooddonation/:id/detail', auth, bloodDonation.detail);
    
 };

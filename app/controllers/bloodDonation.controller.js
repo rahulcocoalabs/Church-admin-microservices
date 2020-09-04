@@ -218,6 +218,40 @@ exports.delete = async (req, res) => {
     }
 }
 
+exports.detail = async (req,res) => {
+
+    var id = req.params.id;
+    var filter = {
+        
+        status: 1
+    };
+    var requirement = await bloodDonation.findOne(filter)
+    .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while getting event detail',
+                error: err
+            }
+        })
+    if (requirement && (requirement.success !== undefined) && (requirement.success === 0)) {
+        return res.send(eventDetail);
+    }
+    if (requirement) {
+        return res.status(200).send({
+            success: 1,
+            
+            item: requirement,
+            message: 'Event details'
+        });
+    } else {
+        return res.send({
+            success: 0,
+            message: 'Event not exists'
+        });
+    }
+
+}
+
 exports.update = async (req, res) => {
 
     // const identity = req.identity.data;
