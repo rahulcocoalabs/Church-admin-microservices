@@ -68,7 +68,7 @@ exports.listRequest = async (req, res) => {
                         select: { name: 1 }
                     }, {
                         path: 'branchId',
-                        select: {branchId : 1},
+                        select: { branchId: 1 },
                         populate: {
                             path: 'branchId',
                             select: { name: 1 }
@@ -388,19 +388,19 @@ exports.getBranchDetails = async (req, res) => {
                     _id: branchId,
                     status: 1
                 })
-                .populate([{
-                    path: 'countryId',
-                    select: { name: 1 }
-                }, {
-                    path: 'stateId',
-                    select: { name: 1 }
-                }, {
-                    path: 'districtId',
-                    select: { name: 1 }
-                }, {
-                    path: 'branchId',
-                    select: { name: 1 }
-                }])
+                    .populate([{
+                        path: 'countryId',
+                        select: { name: 1 }
+                    }, {
+                        path: 'stateId',
+                        select: { name: 1 }
+                    }, {
+                        path: 'districtId',
+                        select: { name: 1 }
+                    }, {
+                        path: 'branchId',
+                        select: { name: 1 }
+                    }])
                     .catch(err => {
                         return {
                             success: 0,
@@ -416,6 +416,11 @@ exports.getBranchDetails = async (req, res) => {
                         success: 1,
                         item: branchDetailsData,
                         message: 'Branch detail'
+                    })
+                } else {
+                    return res.send({
+                        success: 0,
+                        message: "Branch id invalid"
                     })
                 }
             } else {
@@ -434,6 +439,8 @@ exports.getBranchDetails = async (req, res) => {
     }
 
 }
+
+
 
 exports.updateBranchDetails = async (req, res) => {
     const identity = req.identity.data;
@@ -507,6 +514,11 @@ exports.updateBranchDetails = async (req, res) => {
                     return res.status(200).send({
                         success: 1,
                         message: 'Branch updated successfully'
+                    })
+                } else {
+                    return res.send({
+                        success: 0,
+                        message: "Branch id invalid"
                     })
                 }
             } else {
@@ -592,6 +604,11 @@ exports.deleteBranch = async (req, res) => {
                         success: 1,
                         message: 'Branch deleted successfully'
                     })
+                } else {
+                    return res.send({
+                        success: 0,
+                        message: "Branch id invalid"
+                    })
                 }
             } else {
                 return res.send({
@@ -610,3 +627,126 @@ exports.deleteBranch = async (req, res) => {
 
 }
 
+exports.listBranch = async (req, res) => {
+    const identity = req.identity.data;
+    var adminUserId = identity.id;
+    var churchId = identity.church;
+
+
+    let userData = await User.findOne({
+        _id: adminUserId,
+    })
+        .populate([{
+            path: 'roles',
+            select: { name: 1 }
+
+        }])
+
+        .catch(err => {
+            return {
+                success: 0,
+                message: 'Something went wrong while getting user data',
+                error: err
+            }
+        })
+    if (userData && (userData.success !== undefined) && (userData.success === 0)) {
+        return res.send(userData);
+    }
+    if (userData) {
+        if (userData.roles && userData.roles.length > 0) {
+            let index = await userData.roles.findIndex(x => x.name === constants.URO_GULF_ADMIN_USER)
+            if (index > -1) {
+                var params = req.query;
+                var page = Number(params.page) || 1;
+                page = page > 0 ? page : 1;
+                var perPage = Number(params.perPage) || urogulfConfig.resultsPerPage;
+                perPage = perPage > 0 ? perPage : urogulfConfig.resultsPerPage;
+                var offset = (page - 1) * perPage;
+                var findCriteria = {};
+                findCriteria.status = 1;
+                if (params.countryId) {
+                    findCriteria.countryId = params.countryId;
+                }
+                if (params.stateId) {
+                    findCriteria.stateId = params.stateId;
+                }
+                if (params.districtId) {
+                    findCriteria.districtId = params.districtId;
+                }
+                if (params.branchId) {
+                    findCriteria.branchId = params.branchId;
+                }
+                var branchList = await Location.find(findCriteria)
+                    .populate([{
+                        path: 'countryId',
+                        select: { name: 1 }
+                    }, {
+                        path: 'stateId',
+                        select: { name: 1 }
+                    }, {
+                        path: 'districtId',
+                        select: { name: 1 }
+                    }, {
+                        path: 'branchId',
+                        select: { name: 1 }
+                    }])
+                    .limit(perPage)
+                    .skip(offset)
+                    .sort({
+                        'tsCreatedAt': -1
+                    })
+                    .catch(err => {
+                        return {
+                            success: 0,
+                            message: 'Something went wrong while listing branches',
+                            error: err
+                        }
+                    })
+
+                if (branchList && (branchList.success !== undefined) && (branchList.success === 0)) {
+                    return res.send(branchList);
+                }
+                var totalBranchCount = await Location.countDocuments(findCriteria)
+                    .catch(err => {
+                        return {
+                            success: 0,
+                            message: 'Something went wrong while finding total branch count',
+                            error: err
+                        }
+                    })
+                if (totalBranchCount && (totalBranchCount.success !== undefined) && (totalBranchCount.success === 0)) {
+                    return res.send(totalBranchCount);
+                }
+
+                totalPages = totalBranchCount / perPage;
+                totalPages = Math.ceil(totalPages);
+                var hasNextPage = page < totalPages;
+                var pagination = {
+                    page,
+                    perPage,
+                    hasNextPage,
+                    totalItems: totalBranchCount,
+                    totalPages
+                }
+                return res.status(200).send({
+                    success: 1,
+                    pagination,
+                    items: branchList,
+                    message: 'List branch list'
+                })
+            } else {
+                return res.send({
+                    success: 0,
+                    message: 'Unauthorized'
+                })
+            }
+        }
+
+    } else {
+        return res.send({
+            success: 0,
+            message: 'Unauthorized'
+        })
+    }
+
+}
