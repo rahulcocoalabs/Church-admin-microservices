@@ -58,17 +58,21 @@ exports.listRequest = async (req, res) => {
                         select: 'name email phone image'
 
                     }, {
-                        path: 'nearbyLocation',
-                        select: 'name address urogulfLocationId',
+                        path: 'countryId',
+                        select: { name: 1 }
+                    }, {
+                        path: 'stateId',
+                        select: { name: 1 }
+                    }, {
+                        path: 'districtId',
+                        select: { name: 1 }
+                    }, {
+                        path: 'branchId',
+                        select: {branchId : 1},
                         populate: {
-                            path: 'urogulfLocationId',
-                            select: "name"
+                            path: 'branchId',
+                            select: { name: 1 }
                         }
-
-                    }, , {
-                        path: 'location',
-                        select: 'name'
-
                     }])
                     .limit(perPage)
                     .skip(offset)
