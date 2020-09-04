@@ -21,13 +21,21 @@ var options = {
     }
 };
 const UrogulfSchema = mongoose.Schema({
-    location: {
+    countryId :  {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'UrogulfLocation'
+        ref: 'Country'
     },
-    nearbyLocation: {
+    stateId :  {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'UrogulfNearby'
+        ref: 'State'
+    },
+    districtId : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'District'
+    },
+    branchId : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Location'
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
