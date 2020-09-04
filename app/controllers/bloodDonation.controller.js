@@ -272,7 +272,7 @@ exports.update = async (req, res) => {
     // var adminUserId = identity.id;
     // var churchId = identity.church;
     let params = req.body;
-    var id = params.id;
+    var id = req.params.id;
     if (!params.address &&!params.description && !params.bloodgroup && !params.date &&  !params.phone ) {
         return res.send({
             success: 0,
@@ -309,6 +309,12 @@ exports.update = async (req, res) => {
         }
         if (params.phone) {
             update.phone = params.phone;
+        }
+        if (params.bloodGroup) {
+            update.bloodGroup = params.bloodGroup;
+        }
+        if (params.hospital) {
+            update.hospitalName = params.hospital;
         }
        
         update.tsModifiedAt = Date.now();

@@ -19,7 +19,7 @@ module.exports = (app) => {
     const bloodDonation = require('../controllers/bloodDonation.controller');
     app.get('/admin/blooddonation/list',auth,bloodDonation.list);
     app.post('/admin/blooddonation/create',auth,bloodDonation.create);
-    app.post('/admin/blooddonation/update',auth,bloodDonation.update);
+    app.post('/admin/blooddonation/:id/update',auth,bloodDonation.update);
     app.post('/admin/blooddonation/delete',auth,bloodDonation.delete);
     app.get('/admin/blooddonation/:id/detail', auth, bloodDonation.detail);
    
