@@ -112,7 +112,10 @@ exports.list = async (req, res) => {
         address:1,
         description:1,
         bloodgroup:1,
-        neededDate:1
+        neededDate:1,
+        phone:1,
+        hospital:1,
+        bloodgroup:1
     };
    
     let data = await bloodDonation.find(findCriteria,projection)
@@ -138,7 +141,7 @@ exports.list = async (req, res) => {
         .catch(err => {
             return {
                 success: 0,
-                message: 'Something went wrong while finding post count',
+                message: 'Something went wrong while finding blood donation requirements count',
                 error: err
             }
         })
@@ -156,13 +159,23 @@ exports.list = async (req, res) => {
         totalItems: total,
         totalPages
     }
-    return res.status(200).send({
-        success: 1,
-        pagination,
-       
-        items: data,
-        message: 'List Requirements'
-    })
+
+    if (data.count > 0){
+        return res.status(200).send({
+            success: 1,
+            pagination,
+        
+            items: data,
+            message: 'blood donation requirements '
+        })
+    }
+    else {
+        return res.status(200).send({
+            success: 1,
+           
+            message: 'no blood donation requirements now'
+        })
+    }
 }
 
 exports.delete = async (req, res) => {
