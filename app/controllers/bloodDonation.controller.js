@@ -70,7 +70,7 @@ exports.create = async (req, res) => {
         bloodgroup:params.bloodgroup,
         phone: params.phone,
         neededDate: params.date,
-        
+        hospitalName:params.hospital,
         status: 1,
         tsCreatedAt: Date.now(),
         tsModifiedAt: null
@@ -114,6 +114,7 @@ exports.list = async (req, res) => {
         bloodgroup:1,
         neededDate:1,
         phone:1,
+        hospitalName:1,
         hospital:1,
         bloodgroup:1
     };
