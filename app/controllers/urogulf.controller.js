@@ -417,6 +417,11 @@ exports.getBranchDetails = async (req, res) => {
                         item: branchDetailsData,
                         message: 'Branch detail'
                     })
+                }else{
+                    return res.send({
+                        success: 0,
+                        message: "Branch id invalid"
+                    })
                 }
             } else {
                 return res.send({
