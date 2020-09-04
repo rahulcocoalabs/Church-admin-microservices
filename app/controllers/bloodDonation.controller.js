@@ -111,7 +111,7 @@ exports.list = async (req, res) => {
     var projection = {
         address:1,
         description:1,
-        bloodgroup:1,
+        bloodGroup:1,
         neededDate:1,
         phone:1,
         hospitalName:1,
