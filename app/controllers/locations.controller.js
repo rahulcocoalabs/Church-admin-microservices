@@ -13,31 +13,31 @@ exports.add = async (req, res) => {
     var identity = req.identity.data;
     var params = req.body;
     var errors = [];
-    if (!params.country) {
+    if (!params.countryId) {
         errors.push({
-            field: "country",
-            message: 'Country required'
+            field: "countryId",
+            message: 'countryId required'
         })
     }
 
-    if (!params.state) {
+    if (!params.stateId) {
         errors.push({
-            field: "state",
-            message: "state is required"
+            field: "stateId",
+            message: "stateId is required"
         })
     }
 
-    if (!params.district) {
+    if (!params.districtId) {
         errors.push({
-            field: "district",
-            message: "district is required"
+            field: "districtId",
+            message: "districtId is required"
         })
     }
 
-    if (!params.branch) {
+    if (!params.branchId) {
         errors.push({
-            field: "branch",
-            message: "branch is required"
+            field: "branchId",
+            message: "branchId is required"
         })
     }
 
@@ -56,10 +56,10 @@ exports.add = async (req, res) => {
     }
 
     var newLocation = new Locations({
-        country: params.country,
-        state: params.state,
-        district: params.district,
-        branch: params.branch,
+        countryId: params.countryId,
+        stateId: params.stateId,
+        districtId: params.districtId,
+        branchId: params.branchId,
         address: params.address,
         status: 1,
         tsCreatedAt: new Date(),
@@ -103,20 +103,33 @@ exports.list = async (req, res) => {
     // var offset = (page - 1) * perPage;
 
     var find = {
-        status : 1
+        status: 1
     };
-    if (params.country) {
-        find.country = params.country;
+    if (params.countryId) {
+        find.countryId = params.countryId;
     }
-    if (params.state) {
-        find.state = params.state;
+    if (params.stateId) {
+        find.stateId = params.stateId;
     }
-    if (params.district) {
-        find.district = params.district;
+    if (params.districtId) {
+        find.districtId = params.districtId;
     }
 
 
     var list = await Locations.find(find)
+        .populate([{
+            path: 'countryId',
+            select: { name: 1 }
+        }, {
+            path: 'stateId',
+            select: { name: 1 }
+        }, {
+            path: 'districtId',
+            select: { name: 1 }
+        }, {
+            path: 'branchId',
+            select: { name: 1 }
+        }])
         // .limit(perPage)
         // .skip(offset)
         .catch(err => {
@@ -147,6 +160,20 @@ exports.detail = async (req, res) => {
         status: 1
     }
     let locationData = await Locations.findOne(filter)
+        .populate([{
+            path: 'countryId',
+            select: { name: 1 }
+        }, {
+            path: 'stateId',
+            select: { name: 1 }
+        }, {
+            path: 'districtId',
+            select: { name: 1 }
+        }, {
+            path: 'branchId',
+            select: { name: 1 },
+
+        }])
         .catch(err => {
             return {
                 success: 0,
@@ -198,18 +225,18 @@ exports.update = async (req, res) => {
     }
     if (locationData) {
         var update = {};
-        if (params.country) {
-            update.country = params.country;
-        }
-        if (params.state) {
-            update.state = params.state;
-        }
-        if (params.district) {
-            update.district = params.district;
-        }
-        if (params.branch) {
-            update.branch = params.branch;
-        }
+        // if (params.countryId) {
+        //     update.countryId = params.countryId;
+        // }
+        // if (params.stateId) {
+        //     update.stateId = params.stateId;
+        // }
+        // if (params.districtId) {
+        //     update.districtId = params.districtId;
+        // }
+        // if (params.branchId) {
+        //     update.branchId = params.branchId;
+        // }
         if (params.address) {
             update.address = params.address;
         }
