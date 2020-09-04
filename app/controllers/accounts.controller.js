@@ -974,10 +974,11 @@ exports.resetPassword = async (req, res) => {
   // find the user's id and time gap betweeen intervals
   let id = data.owner;
   let time1 = data.tsCreatedAt;
-  let timeObj = Date.now();
-  let time2 = timeObj.getTime;
+  let time2 = Date.now();
+  //let time2 = timeObj.getTime;
   let gap = time2-time1;
-  return res.send(gap);
+ 
+
   
   if (gap>(config.resetpassword.timeForExpiry)){
     return res.send({
