@@ -70,20 +70,20 @@ module.exports = {
         port : 3035
       }
     },
-    // {
-    //   name: 'Buy/sell church-admin Microservices',
-    //   script: 'buyorsell.service.js',
-    //   // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
-    //   instances: 1,
-    //   autorestart: true,
-    //   watch: false,
-    //   max_memory_restart: '1G',
-    //   //cron_restart
-    //   env: {
-    //     NODE_ENV: 'development',
-    //     port : 3036
-    //   }
-    // },
+    {
+      name: 'Buy/sell church-admin Microservices',
+      script: 'buyorsell.service.js',
+      // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '1G',
+      //cron_restart
+      env: {
+        NODE_ENV: 'development',
+        port : 3036
+      }
+    },
     {
       name: 'Feeds church-admin Microservices',
       script: 'feeds.service.js',
