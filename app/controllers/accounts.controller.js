@@ -6,6 +6,7 @@ const Otp = require('../models/otp.model');
 const Donation = require('../models/donation.model');
 const Church = require('../models/church.model');
 const Designation = require('../models/designation.model');
+const Matrimony = require('../models/matrimony.model');
 const config = require('../../config/app.config.js');
 const constants = require('../helpers/constants');
 var otpConfig = config.otp;
@@ -70,26 +71,28 @@ exports.signUp = async (req, res) => {
     let userRoleData = await UserRoles.findOne({
       name: constants.SUB_ADMIN_USER,
       status: 1
-    }, { name: 1 })
+    }, {
+      name: 1
+    })
 
     var roles = [];
     roles.push(userRoleData.id);
     // var otpResponse = await otp(phone)
     let pasterObj = await Designation.findOne({
-      name : constants.PASTER_DESIGNATION,
-      status : 1
-    })
-    .catch(err => {
-      return {
-        success: 0,
-        message: 'Something went wrong while getting paster data',
-        error: err
-      }
-    })
+        name: constants.PASTER_DESIGNATION,
+        status: 1
+      })
+      .catch(err => {
+        return {
+          success: 0,
+          message: 'Something went wrong while getting paster data',
+          error: err
+        }
+      })
 
-  if (pasterObj && (pasterObj.success !== undefined) && (pasterObj.success === 0)) {
-    return res.send(pasterObj);
-  }
+    if (pasterObj && (pasterObj.success !== undefined) && (pasterObj.success === 0)) {
+      return res.send(pasterObj);
+    }
     var newUser = new Users({
       name: name,
       email: email,
@@ -99,7 +102,7 @@ exports.signUp = async (req, res) => {
       image: '',
       about: '',
       church: church,
-      designation : pasterObj.id,
+      designation: pasterObj.id,
       // parish: parish,
       // parishWard: parishWard,
       // bloodGroup: bloodGroup,
@@ -150,11 +153,15 @@ exports.login = async (req, res) => {
   let userData = await Users.findOne(findCriteria)
     .populate([{
       path: 'roles',
-      select: { name: 1 }
+      select: {
+        name: 1
+      }
 
-    },{
+    }, {
       path: 'designation',
-      select: { name: 1 }
+      select: {
+        name: 1
+      }
     }])
     .catch(err => {
       return {
@@ -225,7 +232,7 @@ exports.donationList = async (req, res) => {
   var perPage = Number(params.perPage) || donationConfig.resultsPerPage;
   perPage = perPage > 0 ? perPage : donationConfig.resultsPerPage;
   var offset = (page - 1) * perPage;
-  if(params.userId){
+  if (params.userId) {
     findCriteria.userId = params.userId;
   }
   // console.log("findCriteria")
@@ -285,7 +292,9 @@ exports.getPasterProfile = async (req, res) => {
   const identity = req.identity.data;
   var adminUserId = identity.id;
   var churchId = identity.church;
-  var roles = await UserRoles.findOne({ name: constants.SUB_ADMIN_USER })
+  var roles = await UserRoles.findOne({
+      name: constants.SUB_ADMIN_USER
+    })
     .catch(err => {
       return {
         success: 0,
@@ -298,21 +307,29 @@ exports.getPasterProfile = async (req, res) => {
   }
 
   let adminUserData = await Users.findOne({
-    _id: adminUserId,
-    roles: { $in: [roles._id] },
-    status: 1
-  }, {
-    passwordHash: 0
-  })
+      _id: adminUserId,
+      roles: {
+        $in: [roles._id]
+      },
+      status: 1
+    }, {
+      passwordHash: 0
+    })
     .populate([{
       path: 'roles',
-      select: { name: 1 }
+      select: {
+        name: 1
+      }
     }, {
       path: 'church',
-      select: { name: 1 }
+      select: {
+        name: 1
+      }
     }, {
       path: 'designation',
-      select: { name: 1 }
+      select: {
+        name: 1
+      }
     }])
     .catch(err => {
       return {
@@ -327,7 +344,7 @@ exports.getPasterProfile = async (req, res) => {
   if (adminUserData) {
     return res.send({
       success: 1,
-      imageBase : pastersConfig.imageBase,
+      imageBase: pastersConfig.imageBase,
       item: adminUserData,
       message: 'User profile'
     })
@@ -344,7 +361,9 @@ exports.updatePasterProfile = async (req, res) => {
   var adminUserId = identity.id;
   var churchId = identity.church;
 
-  var roles = await UserRoles.findOne({ name: constants.SUB_ADMIN_USER })
+  var roles = await UserRoles.findOne({
+      name: constants.SUB_ADMIN_USER
+    })
     .catch(err => {
       return {
         success: 0,
@@ -356,10 +375,12 @@ exports.updatePasterProfile = async (req, res) => {
     return res.send(roles);
   }
   let userData = await Users.findOne({
-    _id: adminUserId,
-    roles: { $in: [roles._id] },
-    status: 1
-  })
+      _id: adminUserId,
+      roles: {
+        $in: [roles._id]
+      },
+      status: 1
+    })
     .catch(err => {
       return {
         success: 0,
@@ -372,129 +393,131 @@ exports.updatePasterProfile = async (req, res) => {
   }
   if (userData) {
     let params = req.body;
-    if(!params.name && !params.email && !params.phone && !params.newPassword && !params.churchId){
+    if (!params.name && !params.email && !params.phone && !params.newPassword && !params.churchId) {
       return res.send({
         success: 0,
         message: 'Nothing to update'
       })
     }
     let update = {};
-    if(params.name){
+    if (params.name) {
       update.name = params.name;
     }
-    if(params.email){
- 
+    if (params.email) {
+
       var filter = {
-        email : params.email,
-         _id: { $ne: adminUserId },
+        email: params.email,
+        _id: {
+          $ne: adminUserId
+        },
         status: 1
       }
       var checkEmail = await Users.findOne(filter)
-      .catch(err => {
-        return {
-          success: 0,
-          message: 'Something went wrong while getting email already exists',
-          error: err
-        }
-      })
-    if (checkEmail && (checkEmail.success !== undefined) && (checkEmail.success === 0)) {
-      return res.send(checkEmail);
-    }
+        .catch(err => {
+          return {
+            success: 0,
+            message: 'Something went wrong while getting email already exists',
+            error: err
+          }
+        })
+      if (checkEmail && (checkEmail.success !== undefined) && (checkEmail.success === 0)) {
+        return res.send(checkEmail);
+      }
       if (checkEmail) {
         return res.send({
           success: 0,
           message: 'Email already registered'
         })
-      }else{
+      } else {
         update.email = params.email;
       }
     }
-    if(params.phone){
+    if (params.phone) {
       var filter = {
         phone: params.phone,
-        _id: { $ne: adminUserId },
+        _id: {
+          $ne: adminUserId
+        },
         status: 1
       }
       var checkPhone = await Users.findOne(filter)
-      .catch(err => {
-        return {
-          success: 0,
-          message: 'Something went wrong while getting phone already exists',
-          error: err
-        }
-      })
-    if (checkPhone && (checkPhone.success !== undefined) && (checkPhone.success === 0)) {
-      return res.send(checkPhone);
-    }
+        .catch(err => {
+          return {
+            success: 0,
+            message: 'Something went wrong while getting phone already exists',
+            error: err
+          }
+        })
+      if (checkPhone && (checkPhone.success !== undefined) && (checkPhone.success === 0)) {
+        return res.send(checkPhone);
+      }
       if (checkPhone) {
         return res.send({
           success: 0,
           message: 'Phone number already registered'
         })
-      }else{
+      } else {
         update.phone = params.phone;
       }
     }
-    if(!params.oldPassword && params.newPassword){
+    if (!params.oldPassword && params.newPassword) {
       return res.send({
         success: 0,
         message: 'Missing old password'
       })
     }
-    if(params.oldPassword && !params.newPassword){
+    if (params.oldPassword && !params.newPassword) {
       return res.send({
         success: 0,
         message: 'Missing new password'
       })
     }
-    if(params.oldPassword && params.newPassword){
+    if (params.oldPassword && params.newPassword) {
       let matched = await bcrypt.compare(params.oldPassword, userData.passwordHash);
       if (matched) {
         const hash = bcrypt.hashSync(params.newPassword, salt);
         update.passwordHash = hash;
 
-      }else{
-     
+      } else {
+
         return res.send({
           success: 0,
           message: 'Incorrect current password'
         })
       }
     }
-    if(params.address){
+    if (params.address) {
       update.address = params.address
     }
-    if(params.about){
+    if (params.about) {
       update.about = params.about
     }
-    if(req.file){
+    if (req.file) {
       update.image = req.file.filename
     }
-     // if(params.churchId){
+    // if(params.churchId){
     //   update.church = params.churchId
     // }
     update.tsModifiedAt = Date.now();
 
-    var updateData = await Users.updateOne(
-      {
-        _id : adminUserId
-      },update
-    )
-    .catch(err => {
-      return {
-        success: 0,
-        message: 'Something went wrong while updating user data',
-        error: err
-      }
+    var updateData = await Users.updateOne({
+        _id: adminUserId
+      }, update)
+      .catch(err => {
+        return {
+          success: 0,
+          message: 'Something went wrong while updating user data',
+          error: err
+        }
+      })
+    if (updateData && (updateData.success !== undefined) && (updateData.success === 0)) {
+      return res.send(updateData);
+    }
+
+    return res.send({
+      success: 1,
+      message: 'Profile updated successfully'
     })
-  if (updateData && (updateData.success !== undefined) && (updateData.success === 0)) {
-    return res.send(updateData);
-  }
-   
-  return res.send({
-    success: 1,
-    message: 'Profile updated successfully'
-  })
 
   } else {
     return res.send({
@@ -509,7 +532,9 @@ exports.getAdminProfile = async (req, res) => {
   const identity = req.identity.data;
   var adminUserId = identity.id;
   var churchId = identity.church;
-  var roles = await UserRoles.findOne({ name: constants.ADMIN_USER })
+  var roles = await UserRoles.findOne({
+      name: constants.ADMIN_USER
+    })
     .catch(err => {
       return {
         success: 0,
@@ -522,18 +547,24 @@ exports.getAdminProfile = async (req, res) => {
   }
 
   let adminUserData = await Users.findOne({
-    _id: adminUserId,
-    roles: { $in: [roles._id] },
-    status: 1
-  }, {
-    passwordHash: 0
-  })
+      _id: adminUserId,
+      roles: {
+        $in: [roles._id]
+      },
+      status: 1
+    }, {
+      passwordHash: 0
+    })
     .populate([{
       path: 'roles',
-      select: { name: 1 }
+      select: {
+        name: 1
+      }
     }, {
       path: 'church',
-      select: { name: 1 }
+      select: {
+        name: 1
+      }
     }])
     .catch(err => {
       return {
@@ -564,7 +595,9 @@ exports.updateAdminProfile = async (req, res) => {
   var adminUserId = identity.id;
   var churchId = identity.church;
 
-  var roles = await UserRoles.findOne({ name: constants.ADMIN_USER })
+  var roles = await UserRoles.findOne({
+      name: constants.ADMIN_USER
+    })
     .catch(err => {
       return {
         success: 0,
@@ -576,10 +609,12 @@ exports.updateAdminProfile = async (req, res) => {
     return res.send(roles);
   }
   let userData = await Users.findOne({
-    _id: adminUserId,
-    roles: { $in: [roles._id] },
-    status: 1
-  })
+      _id: adminUserId,
+      roles: {
+        $in: [roles._id]
+      },
+      status: 1
+    })
     .catch(err => {
       return {
         success: 0,
@@ -592,119 +627,121 @@ exports.updateAdminProfile = async (req, res) => {
   }
   if (userData) {
     let params = req.body;
-    if(!params.name && !params.email && !params.phone && !params.newPassword && !params.churchId){
+    if (!params.name && !params.email && !params.phone && !params.newPassword && !params.churchId) {
       return res.send({
         success: 0,
         message: 'Nothing to update'
       })
     }
     let update = {};
-    if(params.name){
+    if (params.name) {
       update.name = params.name;
     }
-    if(params.email){
- 
+    if (params.email) {
+
       var filter = {
-        email : params.email,
-         _id: { $ne: adminUserId },
+        email: params.email,
+        _id: {
+          $ne: adminUserId
+        },
         status: 1
       }
       var checkEmail = await Users.findOne(filter)
-      .catch(err => {
-        return {
-          success: 0,
-          message: 'Something went wrong while getting email already exists',
-          error: err
-        }
-      })
-    if (checkEmail && (checkEmail.success !== undefined) && (checkEmail.success === 0)) {
-      return res.send(checkEmail);
-    }
+        .catch(err => {
+          return {
+            success: 0,
+            message: 'Something went wrong while getting email already exists',
+            error: err
+          }
+        })
+      if (checkEmail && (checkEmail.success !== undefined) && (checkEmail.success === 0)) {
+        return res.send(checkEmail);
+      }
       if (checkEmail) {
         return res.send({
           success: 0,
           message: 'Email already registered'
         })
-      }else{
+      } else {
         update.email = params.email;
       }
     }
-    if(params.phone){
+    if (params.phone) {
       var filter = {
         phone: params.phone,
-        _id: { $ne: adminUserId },
+        _id: {
+          $ne: adminUserId
+        },
         status: 1
       }
       var checkPhone = await Users.findOne(filter)
-      .catch(err => {
-        return {
-          success: 0,
-          message: 'Something went wrong while getting phone already exists',
-          error: err
-        }
-      })
-    if (checkPhone && (checkPhone.success !== undefined) && (checkPhone.success === 0)) {
-      return res.send(checkPhone);
-    }
+        .catch(err => {
+          return {
+            success: 0,
+            message: 'Something went wrong while getting phone already exists',
+            error: err
+          }
+        })
+      if (checkPhone && (checkPhone.success !== undefined) && (checkPhone.success === 0)) {
+        return res.send(checkPhone);
+      }
       if (checkPhone) {
         return res.send({
           success: 0,
           message: 'Phone number already registered'
         })
-      }else{
+      } else {
         update.phone = params.phone;
       }
     }
-    if(!params.oldPassword && params.newPassword){
+    if (!params.oldPassword && params.newPassword) {
       return res.send({
         success: 0,
         message: 'Missing old password'
       })
     }
-    if(params.oldPassword && !params.newPassword){
+    if (params.oldPassword && !params.newPassword) {
       return res.send({
         success: 0,
         message: 'Missing new password'
       })
     }
-    if(params.oldPassword && params.newPassword){
+    if (params.oldPassword && params.newPassword) {
       let matched = await bcrypt.compare(params.oldPassword, userData.passwordHash);
       if (matched) {
         const hash = bcrypt.hashSync(params.newPassword, salt);
         update.passwordHash = hash;
 
-      }else{
+      } else {
         return res.send({
           success: 0,
           message: 'Incorrect current password'
         })
       }
     }
-     // if(params.churchId){
+    // if(params.churchId){
     //   update.church = params.churchId
     // }
     update.tsModifiedAt = Date.now();
 
-    var updateData = await Users.updateOne(
-      {
-        _id : adminUserId
-      },update
-    )
-    .catch(err => {
-      return {
-        success: 0,
-        message: 'Something went wrong while updating user data',
-        error: err
-      }
+    var updateData = await Users.updateOne({
+        _id: adminUserId
+      }, update)
+      .catch(err => {
+        return {
+          success: 0,
+          message: 'Something went wrong while updating user data',
+          error: err
+        }
+      })
+    if (updateData && (updateData.success !== undefined) && (updateData.success === 0)) {
+      return res.send(updateData);
+    }
+
+    return res.send({
+      success: 1,
+      message: 'Profile updated successfully'
     })
-  if (updateData && (updateData.success !== undefined) && (updateData.success === 0)) {
-    return res.send(updateData);
-  }
-   
-  return res.send({
-    success: 1,
-    message: 'Profile updated successfully'
-  })
 
   } else {
     return res.send({
@@ -718,7 +755,9 @@ exports.getUrogulfProfile = async (req, res) => {
   const identity = req.identity.data;
   var adminUserId = identity.id;
   // var churchId = identity.church;
-  var roles = await UserRoles.findOne({ name: constants.URO_GULF_ADMIN_USER })
+  var roles = await UserRoles.findOne({
+      name: constants.URO_GULF_ADMIN_USER
+    })
     .catch(err => {
       return {
         success: 0,
@@ -731,17 +770,20 @@ exports.getUrogulfProfile = async (req, res) => {
   }
 
   let adminUserData = await Users.findOne({
-    _id: adminUserId,
-    roles: { $in: [roles._id] },
-    status: 1
-  }, {
-    passwordHash: 0
-  })
+      _id: adminUserId,
+      roles: {
+        $in: [roles._id]
+      },
+      status: 1
+    }, {
+      passwordHash: 0
+    })
     .populate([{
       path: 'roles',
-      select: { name: 1 }
-    }
-  ])
+      select: {
+        name: 1
+      }
+    }])
     .catch(err => {
       return {
         success: 0,
@@ -770,7 +812,9 @@ exports.updateUrogulfProfile = async (req, res) => {
   const identity = req.identity.data;
   var adminUserId = identity.id;
 
-  var roles = await UserRoles.findOne({ name: constants.URO_GULF_ADMIN_USER })
+  var roles = await UserRoles.findOne({
+      name: constants.URO_GULF_ADMIN_USER
+    })
     .catch(err => {
       return {
         success: 0,
@@ -782,10 +826,12 @@ exports.updateUrogulfProfile = async (req, res) => {
     return res.send(roles);
   }
   let userData = await Users.findOne({
-    _id: adminUserId,
-    roles: { $in: [roles._id] },
-    status: 1
-  })
+      _id: adminUserId,
+      roles: {
+        $in: [roles._id]
+      },
+      status: 1
+    })
     .catch(err => {
       return {
         success: 0,
@@ -798,119 +844,121 @@ exports.updateUrogulfProfile = async (req, res) => {
   }
   if (userData) {
     let params = req.body;
-    if(!params.name && !params.email && !params.phone && !params.newPassword && !params.churchId){
+    if (!params.name && !params.email && !params.phone && !params.newPassword && !params.churchId) {
       return res.send({
         success: 0,
         message: 'Nothing to update'
       })
     }
     let update = {};
-    if(params.name){
+    if (params.name) {
       update.name = params.name;
     }
-    if(params.email){
- 
+    if (params.email) {
+
       var filter = {
-        email : params.email,
-         _id: { $ne: adminUserId },
+        email: params.email,
+        _id: {
+          $ne: adminUserId
+        },
         status: 1
       }
       var checkEmail = await Users.findOne(filter)
-      .catch(err => {
-        return {
-          success: 0,
-          message: 'Something went wrong while getting email already exists',
-          error: err
-        }
-      })
-    if (checkEmail && (checkEmail.success !== undefined) && (checkEmail.success === 0)) {
-      return res.send(checkEmail);
-    }
+        .catch(err => {
+          return {
+            success: 0,
+            message: 'Something went wrong while getting email already exists',
+            error: err
+          }
+        })
+      if (checkEmail && (checkEmail.success !== undefined) && (checkEmail.success === 0)) {
+        return res.send(checkEmail);
+      }
       if (checkEmail) {
         return res.send({
           success: 0,
           message: 'Email already registered'
         })
-      }else{
+      } else {
         update.email = params.email;
       }
     }
-    if(params.phone){
+    if (params.phone) {
       var filter = {
         phone: params.phone,
-        _id: { $ne: adminUserId },
+        _id: {
+          $ne: adminUserId
+        },
         status: 1
       }
       var checkPhone = await Users.findOne(filter)
-      .catch(err => {
-        return {
-          success: 0,
-          message: 'Something went wrong while getting phone already exists',
-          error: err
-        }
-      })
-    if (checkPhone && (checkPhone.success !== undefined) && (checkPhone.success === 0)) {
-      return res.send(checkPhone);
-    }
+        .catch(err => {
+          return {
+            success: 0,
+            message: 'Something went wrong while getting phone already exists',
+            error: err
+          }
+        })
+      if (checkPhone && (checkPhone.success !== undefined) && (checkPhone.success === 0)) {
+        return res.send(checkPhone);
+      }
       if (checkPhone) {
         return res.send({
           success: 0,
           message: 'Phone number already registered'
         })
-      }else{
+      } else {
         update.phone = params.phone;
       }
     }
-    if(!params.oldPassword && params.newPassword){
+    if (!params.oldPassword && params.newPassword) {
       return res.send({
         success: 0,
         message: 'Missing old password'
       })
     }
-    if(params.oldPassword && !params.newPassword){
+    if (params.oldPassword && !params.newPassword) {
       return res.send({
         success: 0,
         message: 'Missing new password'
       })
     }
-    if(params.oldPassword && params.newPassword){
+    if (params.oldPassword && params.newPassword) {
       let matched = await bcrypt.compare(params.oldPassword, userData.passwordHash);
       if (matched) {
         const hash = bcrypt.hashSync(params.newPassword, salt);
         update.passwordHash = hash;
 
-      }else{
+      } else {
         return res.send({
           success: 0,
           message: 'Incorrect current password'
         })
       }
     }
-     // if(params.churchId){
+    // if(params.churchId){
     //   update.church = params.churchId
     // }
     update.tsModifiedAt = Date.now();
 
-    var updateData = await Users.updateOne(
-      {
-        _id : adminUserId
-      },update
-    )
-    .catch(err => {
-      return {
-        success: 0,
-        message: 'Something went wrong while updating user data',
-        error: err
-      }
+    var updateData = await Users.updateOne({
+        _id: adminUserId
+      }, update)
+      .catch(err => {
+        return {
+          success: 0,
+          message: 'Something went wrong while updating user data',
+          error: err
+        }
+      })
+    if (updateData && (updateData.success !== undefined) && (updateData.success === 0)) {
+      return res.send(updateData);
+    }
+
+    return res.send({
+      success: 1,
+      message: 'Profile updated successfully'
     })
-  if (updateData && (updateData.success !== undefined) && (updateData.success === 0)) {
-    return res.send(updateData);
-  }
-   
-  return res.send({
-    success: 1,
-    message: 'Profile updated successfully'
-  })
 
   } else {
     return res.send({
@@ -951,24 +999,26 @@ exports.resetPassword = async (req, res) => {
   // part of  url send to the email and new password
   let link = req.body.link;
   let newPass = req.body.password;
-  if (!link){
+  if (!link) {
     return res.send({
-      success:0,
-      msg:"no links given"
+      success: 0,
+      msg: "no links given"
     })
   }
-  if (!newPass){
+  if (!newPass) {
     return res.send({
-      success:0,
-      msg:"no passwords given"
+      success: 0,
+      msg: "no passwords given"
     })
   }
   // find the document with given link
-  let data = await Reset.findOne({value:link});
-  if (!data){
+  let data = await Reset.findOne({
+    value: link
+  });
+  if (!data) {
     return res.send({
-      success:0,
-      msg:"some thing went wrong"
+      success: 0,
+      msg: "some thing went wrong"
     });
   }
   // find the user's id and time gap betweeen intervals
@@ -976,137 +1026,249 @@ exports.resetPassword = async (req, res) => {
   let time1 = data.tsCreatedAt;
   let time2 = Date.now();
   //let time2 = timeObj.getTime;
-  let gap = time2-time1;
- 
+  let gap = time2 - time1;
 
-  
-  if (gap>(config.resetpassword.timeForExpiry)){
+
+
+  if (gap > (config.resetpassword.timeForExpiry)) {
     return res.send({
-      success:0,
-      msg:"expired link"
+      success: 0,
+      msg: "expired link"
     })
-  }
-  else {
+  } else {
 
     const hash = bcrypt.hashSync(newPass, salt);
 
-    let data_1 = await Users.updateOne({_id:id},{passwordHash:hash})
-    
-    if (data_1){
+    let data_1 = await Users.updateOne({
+      _id: id
+    }, {
+      passwordHash: hash
+    })
+
+    if (data_1) {
       return res.send({
-        success:1,
+        success: 1,
         data_1,
-        msg:"successfully updated password"
+        msg: "successfully updated password"
       })
-     
-    }
-    else {
+
+    } else {
       return res.send({
-        success:0
+        success: 0
       })
     }
   }
-  
+
 
 
 }
 
-async function sendMail(message,target){
+async function sendMail(message, target) {
 
   var ret = 0;
-  
-  console.log('heloooooo',config.email.sendgridApiKey);
-const msg = {
-  to: target,
-  from: 'docsofrakesh@gmail.com',
-  subject: 'Password reset link from church app',
-  text: message,
 
-};
+  console.log('heloooooo', config.email.sendgridApiKey);
+  const msg = {
+    to: target,
+    from: 'docsofrakesh@gmail.com',
+    subject: 'Password reset link from church app',
+    text: message,
 
-console.log(target,message);
-sgMail
-  .send(msg)
-  .then(() => console.log('send mail success'))
-  .catch(err=>{
-    console.log(err);
-    ret = 1;
-  });
+  };
+
+  console.log(target, message);
+  sgMail
+    .send(msg)
+    .then(() => console.log('send mail success'))
+    .catch(err => {
+      console.log(err);
+      ret = 1;
+    });
 }
 
 exports.reset = async (req, res) => {
 
   let mail = req.body.email;
-  if (!mail){
+  if (!mail) {
     return res.send({
-      success:0,
-      msg:"email not submitted"
+      success: 0,
+      msg: "email not submitted"
     })
   }
   //let str = randomStr('20','12345abcdef');
   var str = randomString(32, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  let link = config.resetpassword.root + "/" +  str;
-  var user = await Users.findOne({email:mail});
-  
+  let link = config.resetpassword.root + "/" + str;
+  var user = await Users.findOne({
+    email: mail
+  });
+
   if (!user) {
 
     return res.json({
-        success:0,
-        message:"no matching email found"
+      success: 0,
+      message: "no matching email found"
     });
   }
 
-  let id =  user._id;
-var newPasswordResetLink = new Reset({
+  let id = user._id;
+  var newPasswordResetLink = new Reset({
     value: str,
     owner: user._id,
     status: 1,
     tsCreatedAt: new Date(),
     tsModifiedAt: null
   });
-  
+
   var saveLink = await newPasswordResetLink.save();
 
 
   if (!saveLink) {
     return res.send({
-      success:0,
-      msg:"somethin wrong"
+      success: 0,
+      msg: "somethin wrong"
     })
   }
-  const externalLink = appConfig.resetpassword.root+"/"+str;
+  const externalLink = appConfig.resetpassword.root + "/" + str;
   const mailmsg = "you can reset your password by clciking this link" + "   " + externalLink;
 
 
 
 
- const x = await sendMail(mailmsg,mail);
+  const x = await sendMail(mailmsg, mail);
 
- if (x==1){
+  if (x == 1) {
 
-  return res.json({
-    success:0,
-    message:"mail could not be sent"
-  })
- }
-
-  if (saveLink){
-    return res.send({
-      success:1,
-      link:link,
-      id:id
+    return res.json({
+      success: 0,
+      message: "mail could not be sent"
     })
   }
-  else {
+
+  if (saveLink) {
     return res.send({
-      success:0,
-      msg:"something went wrong"
+      success: 1,
+      link: link,
+      id: id
+    })
+  } else {
+    return res.send({
+      success: 0,
+      msg: "something went wrong"
     })
   }
-  
+
 
 }
 
+exports.getDashboardData = async (req, res) => {
+  const identity = req.identity.data;
+  const userId = identity.id;
+  var params = req.query;
+  var page = Number(params.page) || 1;
+  page = page > 0 ? page : 1;
+  var perPage = Number(params.perPage) || pastersConfig.resultsPerPage;
+  perPage = perPage > 0 ? perPage : pastersConfig.resultsPerPage;
+  try {
+    var totalDonation = await Donation.aggregate([{
+      $match: {
+        status: 1
+      }
+    }, {
+      $group: {
+        _id: null,
+        amount: {
+          $sum: "$amount"
+        }
+      }
+    }]);
+    totalDonation = totalDonation[0].amount;
+    var totalChurch = await Church.countDocuments({
+      status: 1
+    });
+    var totalMatrimony = await Matrimony.countDocuments({
+      status: 1
+    });
+    var totalUsers = await Users.find({
+      roles: {
+        $size: 0
+      }
+    });
+    totalUsers = totalUsers.length;
+    var findChurchList = await Church.find({
+      status: 1
+    });
+    var churchSummaryData = [];
+    for (var i = 0; i < findChurchList.length; i++) {
+      var churchId = findChurchList[i]._id;
+      var name = findChurchList[i].name;
+      var location = findChurchList[i].location;
+      var address = findChurchList[i].address;
+      var churchDonation = await Donation.aggregate([{
+        $match: {
+          churchId: churchId,
+          status: 1
+        }
+      }, {
+        $group: {
+          _id: null,
+          amount: {
+            $sum: "$amount"
+          }
+        }
+      }]);
+      churchDonation = churchDonation[0] ? churchDonation[0].amount : 0;
+      var totalUsersUnderChurch = await Users.find({
+        church: churchId,
+        roles: {
+          $size: 0
+        }
+      });
+      totalUsersUnderChurch = totalUsersUnderChurch.length;
+      var totalMatrimonyUnderChurch = await Matrimony.countDocuments({
+        churchId: churchId,
+        status: 1
+      });
+      churchSummaryData.push({
+        name: name,
+        location: location,
+        address: address,
+        totaldonation: churchDonation,
+        totalusers: totalUsersUnderChurch,
+        totalMatrimony: totalMatrimonyUnderChurch
+      });
+    };
+    var itemsCount = churchSummaryData.length;
+    churchSummaryData = paginate(churchSummaryData, perPage, page)
+    totalPages = itemsCount / perPage;
+    totalPages = Math.ceil(totalPages);
+    var hasNextPage = page < totalPages;
+    var pagination = {
+      page: page,
+      perPage: perPage,
+      hasNextPage: hasNextPage,
+      totalItems: itemsCount,
+      totalPages: totalPages
+    };
+    res.status(200).send({
+      success: 1,
+      totalDonation: totalDonation,
+      totalChurch: totalChurch,
+      totalMatrimony: totalMatrimony,
+      totalUsers: totalUsers,
+      pagination: pagination,
+      items: churchSummaryData
+    });
+  } catch (err) {
+    res.status(500).send({
+      success: 0,
+      message: 'Something went wrong' || err.message
+    })
+  }
+}
+
+function paginate(array, page_size, page_number) {
+  return array.slice((page_number - 1) * page_size, page_number * page_size);
+};
 
 function randomString(length, chars) {
   var result = '';
@@ -1115,11 +1277,11 @@ function randomString(length, chars) {
 }
 
 //code for generating random string 
-function randomStr(len, arr) { 
-  var ans = ''; 
-  for (var i = len; i > 0; i--) { 
-      ans +=  
-        arr[Math.floor(Math.random() * arr.length)]; 
-  } 
-  return ans; 
-} 
+function randomStr(len, arr) {
+  var ans = '';
+  for (var i = len; i > 0; i--) {
+    ans +=
+      arr[Math.floor(Math.random() * arr.length)];
+  }
+  return ans;
+}
