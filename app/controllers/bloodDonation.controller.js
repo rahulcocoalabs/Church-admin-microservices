@@ -311,7 +311,7 @@ exports.update = async (req, res) => {
             update.phone = params.phone;
         }
         if (params.bloodGroup) {
-            update.bloodGroup = params.bloodGroup;
+            update.bloodGroup = params.bloodgroup;
         }
         if (params.hospital) {
             update.hospitalName = params.hospital;
