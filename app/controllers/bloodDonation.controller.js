@@ -236,7 +236,7 @@ exports.detail = async (req,res) => {
 
     var id = req.params.id;
     var filter = {
-        
+        _id:id,
         status: 1
     };
     var requirement = await bloodDonation.findOne(filter)
