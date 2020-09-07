@@ -23,6 +23,10 @@ var options = {
 
 const MatrimonySchema = mongoose.Schema({
     name: String,
+    churchId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Church'
+    },
     gender: String,
     age: String,
     image: String,

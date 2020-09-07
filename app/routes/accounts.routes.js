@@ -25,6 +25,8 @@ module.exports = (app) => {
     app.patch('/admin/accounts/admin-profile',auth, accounts.updateAdminProfile);
     app.get('/admin/accounts/urogulf-profile',auth, accounts.getUrogulfProfile);
     app.patch('/admin/accounts/urogulf-profile',auth, accounts.updateUrogulfProfile);
+
+    app.get('/admin/accounts/dashboard-details',auth, accounts.getDashboardData);
 };
 
 
