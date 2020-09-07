@@ -184,7 +184,7 @@ exports.approve = async (req, res) => {
             feedStatus: approvedFeed
         };
        
-        var productDetail = await Post.UpdateOne(filter,update);
+        var productDetail = await Post.updateOne(filter,update);
         res.status(200).send({
             success: 1,
            
