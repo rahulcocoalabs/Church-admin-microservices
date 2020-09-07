@@ -154,7 +154,7 @@ exports.detail = async (req, res) => {
             additionalInfo: 1,
             feedStatus:1
         };
-        var productDetail = await Post.findOne(filter, projection).populate({
+        var productDetail = await Post.findOne(filter).populate({
             path: 'userId',
             select: 'address phone'
         });
