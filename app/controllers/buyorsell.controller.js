@@ -160,6 +160,7 @@ exports.detail = async (req, res) => {
         });
         res.status(200).send({
             success: 1,
+            test:"testing",
             imageBase: buyorsellConfig.imageBase,
             item: productDetail
         })
