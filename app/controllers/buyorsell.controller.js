@@ -152,6 +152,7 @@ exports.detail = async (req, res) => {
             model: 1,
             kilometer: 1,
             additionalInfo: 1,
+            feedStatus:1
         };
         var productDetail = await Post.findOne(filter, projection).populate({
             path: 'userId',
