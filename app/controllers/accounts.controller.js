@@ -1067,10 +1067,10 @@ async function sendMail(message, target) {
 
   var ret = 0;
 
-  console.log('heloooooo', config.email.sendgridApiKey);
+ 
   const msg = {
     to: target,
-    from: 'docsofrakesh@gmail.com',
+    from: 'rahul@cocoalabs.in',
     subject: 'Password reset link from church app',
     text: message,
 
