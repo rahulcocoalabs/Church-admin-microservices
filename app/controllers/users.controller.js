@@ -43,6 +43,7 @@ for(let i = 0; i < userRolesData.length; i++){
     var usersList = await Users.find({
         roles: { $nin: idArray },
         church: churchId,
+        isVerified : true,
         status: 1
     }, {
         parish: 0,
@@ -73,6 +74,7 @@ for(let i = 0; i < userRolesData.length; i++){
     var itemsCount = await Users.countDocuments({
         userType: { $nin: [constants.ADMIN_USER, constants.SUB_ADMIN_USER] },
         church: churchId,
+        isVerified : true,
         status: 1
     })
         .catch(err => {

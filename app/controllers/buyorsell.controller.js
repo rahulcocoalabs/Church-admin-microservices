@@ -102,7 +102,8 @@ exports.list = async (req, res) => {
             caption: 1,
             images: 1,
             model: 1,
-            rate: 1
+            rate: 1,
+            feedStatus:1
         };
         var listBuyorSell = await Post.find(filter, projection, pageParams).populate({
             path: 'userId',
@@ -152,13 +153,15 @@ exports.detail = async (req, res) => {
             model: 1,
             kilometer: 1,
             additionalInfo: 1,
+            feedStatus:1
         };
-        var productDetail = await Post.findOne(filter, projection).populate({
+        var productDetail = await Post.findOne(filter,projection).populate({
             path: 'userId',
             select: 'address phone'
         });
         res.status(200).send({
             success: 1,
+            
             imageBase: buyorsellConfig.imageBase,
             item: productDetail
         })
@@ -184,7 +187,7 @@ exports.approve = async (req, res) => {
             feedStatus: approvedFeed
         };
        
-        var productDetail = await Post.UpdateOne(filter,update);
+        var productDetail = await Post.updateOne(filter,update);
         res.status(200).send({
             success: 1,
            

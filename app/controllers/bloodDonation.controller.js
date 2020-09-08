@@ -236,7 +236,7 @@ exports.detail = async (req,res) => {
 
     var id = req.params.id;
     var filter = {
-        
+        _id:id,
         status: 1
     };
     var requirement = await bloodDonation.findOne(filter)
@@ -273,7 +273,7 @@ exports.update = async (req, res) => {
     // var churchId = identity.church;
     let params = req.body;
     var id = req.params.id;
-    if (!params.address &&!params.description && !params.bloodgroup && !params.date &&  !params.phone ) {
+    if (!params.address &&!params.description && !params.bloodgroup && !params.date &&  !params.phone && !params.hospital) {
         return res.send({
             success: 0,
             message: "Nothing to update"
@@ -310,8 +310,8 @@ exports.update = async (req, res) => {
         if (params.phone) {
             update.phone = params.phone;
         }
-        if (params.bloodGroup) {
-            update.bloodGroup = params.bloodGroup;
+        if (params.bloodgroup) {
+            update.bloodGroup = params.bloodgroup;
         }
         if (params.hospital) {
             update.hospitalName = params.hospital;

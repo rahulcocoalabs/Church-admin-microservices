@@ -269,7 +269,10 @@ exports.donationList = async (req, res) => {
   if (totalDonationCount && (totalDonationCount.success !== undefined) && (totalDonationCount.success === 0)) {
     return res.send(totalDonationCount);
   }
-
+  donationList = JSON.parse(JSON.stringify(donationList));
+  for(let i = 0; i < donationList.length; i++){
+    donationList[i].name = donationList[i].userId.name
+  }
   totalPages = totalDonationCount / perPage;
   totalPages = Math.ceil(totalPages);
   var hasNextPage = page < totalPages;
@@ -1067,10 +1070,10 @@ async function sendMail(message, target) {
 
   var ret = 0;
 
-  console.log('heloooooo', config.email.sendgridApiKey);
+ 
   const msg = {
     to: target,
-    from: 'docsofrakesh@gmail.com',
+    from: 'rahul@cocoalabs.in',
     subject: 'Password reset link from church app',
     text: message,
 
