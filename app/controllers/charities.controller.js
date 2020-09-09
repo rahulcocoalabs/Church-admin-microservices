@@ -349,10 +349,22 @@ exports.donations = async (req, res) => {
     perPage = perPage > 0 ? perPage : charityConfig.resultsPerPage;
     var offset = (page - 1) * perPage;
 
-    var findCriteria = {
-        charityId,
-        status: 1
-    }
+    var findCriteria = {};
+    if (params.startDate && params.endDate) {
+
+        var startDate = getDate(params.startDate);
+        var endDate = getDate(params.endDate)
+        // let currentDate = new Date(year, month, day);
+     
+        findCriteria = {
+          "paidOn": {
+              "$lte": endDate,
+              "$gte":  startDate,
+            }
+          }
+      }
+    findCriteria.charityId = charityId,
+    findCriteria.status =  1
     let charityPaymentData = await CharityPay.find(findCriteria)
         .populate([{
             path: 'charityId',
@@ -394,6 +406,13 @@ exports.donations = async (req, res) => {
         hasNextPage,
         totalItems: charityPayCount,
         totalPages
+    }
+
+    charityPaymentData = JSON.parse(JSON.stringify(charityPaymentData));
+    for(let i = 0; i < charityPaymentData.length; i++){
+        charityPaymentData[i].name =  charityPaymentData[i].userId.name;
+        charityPaymentData[i].charityId =  charityPaymentData[i].charityId.id;
+        charityPaymentData[i].charityName =  charityPaymentData[i].charityId.name;
     }
     return res.status(200).send({
         success: 1,
@@ -439,3 +458,7 @@ exports.details = async (req, res) => {
         });
     }
 }
+function getDate(date){
+    const [day, month, year] = date.split("/")
+    return new Date(year, month - 1, day).toLocaleString("en-US", {timeZone: "Asia/Kolkata"});
+  }
