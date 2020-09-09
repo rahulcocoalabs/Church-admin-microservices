@@ -386,7 +386,15 @@ exports.donations = async (req, res) => {
     if (charityPaymentData && (charityPaymentData.success !== undefined) && (charityPaymentData.success === 0)) {
         return res.send(charityData);
     }
-
+    charityPaymentData = JSON.parse(JSON.stringify(charityPaymentData));
+  for (let i = 0; i < charityPaymentData.length; i++) {
+    if(charityPaymentData[i].userId){
+        charityPaymentData[i].name = charityPaymentData[i].userId.name
+    }
+    if(charityPaymentData[i].charityId){
+        charityPaymentData[i].charityTitle = charityPaymentData[i].charityId.title
+    }
+  }
     var charityPayCount = await CharityPay.countDocuments(findCriteria)
         .catch(err => {
             return {
