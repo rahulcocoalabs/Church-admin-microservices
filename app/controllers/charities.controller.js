@@ -366,6 +366,9 @@ exports.donations = async (req, res) => {
     findCriteria.charityId = charityId,
     findCriteria.paidStatus = true,
     findCriteria.status =  1
+    console.log("findCriteria")
+    console.log(findCriteria)
+    console.log("findCriteria")
     let charityPaymentData = await CharityPay.find(findCriteria)
         .populate([{
             path: 'charityId',
