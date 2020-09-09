@@ -79,9 +79,9 @@ exports.signUp = async (req, res) => {
     roles.push(userRoleData.id);
     // var otpResponse = await otp(phone)
     let pasterObj = await Designation.findOne({
-        name: constants.PASTER_DESIGNATION,
-        status: 1
-      })
+      name: constants.PASTER_DESIGNATION,
+      status: 1
+    })
       .catch(err => {
         return {
           success: 0,
@@ -224,7 +224,6 @@ exports.donationList = async (req, res) => {
   var params = req.query;
   var findCriteria = {
     // churchId,
-    status: 1
   }
 
   var page = Number(params.page) || 1;
@@ -232,12 +231,28 @@ exports.donationList = async (req, res) => {
   var perPage = Number(params.perPage) || donationConfig.resultsPerPage;
   perPage = perPage > 0 ? perPage : donationConfig.resultsPerPage;
   var offset = (page - 1) * perPage;
+
+  if (params.startDate && params.endDate) {
+
+    var startDate = getDate(params.startDate);
+    var endDate = getDate(params.endDate)
+    // let currentDate = new Date(year, month, day);
+ 
+    findCriteria = {
+      "paidOn": {
+          "$lte": endDate,
+          "$gte":  startDate,
+        }
+      }
+  }
   if (params.userId) {
     findCriteria.userId = params.userId;
   }
-  // console.log("findCriteria")
-  // console.log(findCriteria)
-  // console.log("findCriteria")
+  findCriteria.paidStatus = true;
+  findCriteria.status = 1;
+  console.log("findCriteria")
+  console.log(findCriteria)
+  console.log("findCriteria")
   var donationList = await Donation.find(findCriteria)
     .populate([{
       path: 'userId',
@@ -270,8 +285,10 @@ exports.donationList = async (req, res) => {
     return res.send(totalDonationCount);
   }
   donationList = JSON.parse(JSON.stringify(donationList));
-  for(let i = 0; i < donationList.length; i++){
+  for (let i = 0; i < donationList.length; i++) {
+    if(donationList[i].userId){
     donationList[i].name = donationList[i].userId.name
+    }
   }
   totalPages = totalDonationCount / perPage;
   totalPages = Math.ceil(totalPages);
@@ -296,8 +313,8 @@ exports.getPasterProfile = async (req, res) => {
   var adminUserId = identity.id;
   var churchId = identity.church;
   var roles = await UserRoles.findOne({
-      name: constants.SUB_ADMIN_USER
-    })
+    name: constants.SUB_ADMIN_USER
+  })
     .catch(err => {
       return {
         success: 0,
@@ -310,14 +327,14 @@ exports.getPasterProfile = async (req, res) => {
   }
 
   let adminUserData = await Users.findOne({
-      _id: adminUserId,
-      roles: {
-        $in: [roles._id]
-      },
-      status: 1
-    }, {
-      passwordHash: 0
-    })
+    _id: adminUserId,
+    roles: {
+      $in: [roles._id]
+    },
+    status: 1
+  }, {
+    passwordHash: 0
+  })
     .populate([{
       path: 'roles',
       select: {
@@ -365,8 +382,8 @@ exports.updatePasterProfile = async (req, res) => {
   var churchId = identity.church;
 
   var roles = await UserRoles.findOne({
-      name: constants.SUB_ADMIN_USER
-    })
+    name: constants.SUB_ADMIN_USER
+  })
     .catch(err => {
       return {
         success: 0,
@@ -378,12 +395,12 @@ exports.updatePasterProfile = async (req, res) => {
     return res.send(roles);
   }
   let userData = await Users.findOne({
-      _id: adminUserId,
-      roles: {
-        $in: [roles._id]
-      },
-      status: 1
-    })
+    _id: adminUserId,
+    roles: {
+      $in: [roles._id]
+    },
+    status: 1
+  })
     .catch(err => {
       return {
         success: 0,
@@ -504,8 +521,8 @@ exports.updatePasterProfile = async (req, res) => {
     update.tsModifiedAt = Date.now();
 
     var updateData = await Users.updateOne({
-        _id: adminUserId
-      }, update)
+      _id: adminUserId
+    }, update)
       .catch(err => {
         return {
           success: 0,
@@ -536,8 +553,8 @@ exports.getAdminProfile = async (req, res) => {
   var adminUserId = identity.id;
   var churchId = identity.church;
   var roles = await UserRoles.findOne({
-      name: constants.ADMIN_USER
-    })
+    name: constants.ADMIN_USER
+  })
     .catch(err => {
       return {
         success: 0,
@@ -550,14 +567,14 @@ exports.getAdminProfile = async (req, res) => {
   }
 
   let adminUserData = await Users.findOne({
-      _id: adminUserId,
-      roles: {
-        $in: [roles._id]
-      },
-      status: 1
-    }, {
-      passwordHash: 0
-    })
+    _id: adminUserId,
+    roles: {
+      $in: [roles._id]
+    },
+    status: 1
+  }, {
+    passwordHash: 0
+  })
     .populate([{
       path: 'roles',
       select: {
@@ -599,8 +616,8 @@ exports.updateAdminProfile = async (req, res) => {
   var churchId = identity.church;
 
   var roles = await UserRoles.findOne({
-      name: constants.ADMIN_USER
-    })
+    name: constants.ADMIN_USER
+  })
     .catch(err => {
       return {
         success: 0,
@@ -612,12 +629,12 @@ exports.updateAdminProfile = async (req, res) => {
     return res.send(roles);
   }
   let userData = await Users.findOne({
-      _id: adminUserId,
-      roles: {
-        $in: [roles._id]
-      },
-      status: 1
-    })
+    _id: adminUserId,
+    roles: {
+      $in: [roles._id]
+    },
+    status: 1
+  })
     .catch(err => {
       return {
         success: 0,
@@ -728,8 +745,8 @@ exports.updateAdminProfile = async (req, res) => {
     update.tsModifiedAt = Date.now();
 
     var updateData = await Users.updateOne({
-        _id: adminUserId
-      }, update)
+      _id: adminUserId
+    }, update)
       .catch(err => {
         return {
           success: 0,
@@ -759,8 +776,8 @@ exports.getUrogulfProfile = async (req, res) => {
   var adminUserId = identity.id;
   // var churchId = identity.church;
   var roles = await UserRoles.findOne({
-      name: constants.URO_GULF_ADMIN_USER
-    })
+    name: constants.URO_GULF_ADMIN_USER
+  })
     .catch(err => {
       return {
         success: 0,
@@ -773,14 +790,14 @@ exports.getUrogulfProfile = async (req, res) => {
   }
 
   let adminUserData = await Users.findOne({
-      _id: adminUserId,
-      roles: {
-        $in: [roles._id]
-      },
-      status: 1
-    }, {
-      passwordHash: 0
-    })
+    _id: adminUserId,
+    roles: {
+      $in: [roles._id]
+    },
+    status: 1
+  }, {
+    passwordHash: 0
+  })
     .populate([{
       path: 'roles',
       select: {
@@ -816,8 +833,8 @@ exports.updateUrogulfProfile = async (req, res) => {
   var adminUserId = identity.id;
 
   var roles = await UserRoles.findOne({
-      name: constants.URO_GULF_ADMIN_USER
-    })
+    name: constants.URO_GULF_ADMIN_USER
+  })
     .catch(err => {
       return {
         success: 0,
@@ -829,12 +846,12 @@ exports.updateUrogulfProfile = async (req, res) => {
     return res.send(roles);
   }
   let userData = await Users.findOne({
-      _id: adminUserId,
-      roles: {
-        $in: [roles._id]
-      },
-      status: 1
-    })
+    _id: adminUserId,
+    roles: {
+      $in: [roles._id]
+    },
+    status: 1
+  })
     .catch(err => {
       return {
         success: 0,
@@ -945,8 +962,8 @@ exports.updateUrogulfProfile = async (req, res) => {
     update.tsModifiedAt = Date.now();
 
     var updateData = await Users.updateOne({
-        _id: adminUserId
-      }, update)
+      _id: adminUserId
+    }, update)
       .catch(err => {
         return {
           success: 0,
@@ -1287,4 +1304,8 @@ function randomStr(len, arr) {
       arr[Math.floor(Math.random() * arr.length)];
   }
   return ans;
+}
+function getDate(date){
+  const [day, month, year] = date.split("/")
+  return new Date(year, month - 1, day).toLocaleString("en-US", {timeZone: "Asia/Kolkata"});
 }
