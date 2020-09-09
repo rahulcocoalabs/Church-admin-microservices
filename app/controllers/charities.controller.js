@@ -68,7 +68,7 @@ exports.update = async (req, res) => {
     var churchId = identity.church;
     let params = req.body;
     var charityId = req.params.id;
-    if (!params.address &&!params.caption && !params.title && !params.trustName && !params.fund && !params.phone && !params.about && !req.file) {
+    if (!params.address && !params.caption && !params.title && !params.trustName && !params.fund && !params.phone && !params.about && !req.file) {
         return res.send({
             success: 0,
             message: "Nothing to update"
@@ -231,13 +231,13 @@ exports.add = async (req, res) => {
 
     var newCharity = await charity.save();
 
-    var filtersJsonArr = [{"field":"tag","key":"church_id","relation":"=","value":churchId}]
+    var filtersJsonArr = [{ "field": "tag", "key": "church_id", "relation": "=", "value": churchId }]
     // var metaInfo = {"type":"event","reference_id":eventData.id}
     var notificationObj = {
-        title : constants.ADD_CHARITY_NOTIFICATION_TITLE,
-        message : constants.ADD_CHARITY_NOTIFICATION_MESSAGE,
-        type : constants.CHARITY_NOTIFICATION,
-        referenceId : newCharity.id,
+        title: constants.ADD_CHARITY_NOTIFICATION_TITLE,
+        message: constants.ADD_CHARITY_NOTIFICATION_MESSAGE,
+        type: constants.CHARITY_NOTIFICATION,
+        referenceId: newCharity.id,
         filtersJsonArr,
         // metaInfo,
         churchId
@@ -355,18 +355,18 @@ exports.donations = async (req, res) => {
         var startDate = getDate(params.startDate);
         var endDate = getDate(params.endDate)
         // let currentDate = new Date(year, month, day);
-     
+
         findCriteria = {
-          "paidOn": {
-              "$lte": endDate,
-              "$gte":  startDate,
+            "paidOn": {
+                "$lte": endDate,
+                "$gte": startDate,
             }
-          }
-      }
+        }
+    }
     findCriteria.charityId = charityId,
-    findCriteria.paidStatus = true,
-    findCriteria.status =  1
-   
+        findCriteria.paidStatus = true,
+        findCriteria.status = 1
+
     let charityPaymentData = await CharityPay.find(findCriteria)
         .populate([{
             path: 'charityId',
@@ -387,14 +387,14 @@ exports.donations = async (req, res) => {
         return res.send(charityData);
     }
     charityPaymentData = JSON.parse(JSON.stringify(charityPaymentData));
-  for (let i = 0; i < charityPaymentData.length; i++) {
-    if(charityPaymentData[i].userId){
-        charityPaymentData[i].name = charityPaymentData[i].userId.name
+    for (let i = 0; i < charityPaymentData.length; i++) {
+        if (charityPaymentData[i].userId) {
+            charityPaymentData[i].name = charityPaymentData[i].userId.name
+        }
+        if (charityPaymentData[i].charityId) {
+            charityPaymentData[i].charityTitle = charityPaymentData[i].charityId.title
+        }
     }
-    if(charityPaymentData[i].charityId){
-        charityPaymentData[i].charityTitle = charityPaymentData[i].charityId.title
-    }
-  }
     var charityPayCount = await CharityPay.countDocuments(findCriteria)
         .catch(err => {
             return {
@@ -419,10 +419,10 @@ exports.donations = async (req, res) => {
     }
 
     charityPaymentData = JSON.parse(JSON.stringify(charityPaymentData));
-    for(let i = 0; i < charityPaymentData.length; i++){
-        charityPaymentData[i].name =  charityPaymentData[i].userId.name;
-        charityPaymentData[i].charityId =  charityPaymentData[i].charityId.id;
-        charityPaymentData[i].charityName =  charityPaymentData[i].charityId.name;
+    for (let i = 0; i < charityPaymentData.length; i++) {
+        charityPaymentData[i].name = charityPaymentData[i].userId.name;
+        charityPaymentData[i].charityId = charityPaymentData[i].charityId.id;
+        charityPaymentData[i].charityName = charityPaymentData[i].charityId.name;
     }
     return res.status(200).send({
         success: 1,
@@ -468,7 +468,7 @@ exports.details = async (req, res) => {
         });
     }
 }
-function getDate(date){
+function getDate(date) {
     const [day, month, year] = date.split("/")
-    return new Date(year, month - 1, day).toLocaleString("en-US", {timeZone: "Asia/Kolkata"});
-  }
+    return new Date(year, month - 1, day).toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+}
