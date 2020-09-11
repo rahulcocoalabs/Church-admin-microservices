@@ -10,11 +10,11 @@ var storage = multer.diskStorage({
         cb(null, file.fieldname + '-' + Date.now() + "." + mime.extension(file.mimetype))
     }
 });
-var ngoFileUpload = multer({ storage: storage });
+var imageUpload = multer({ storage: storage });
 
 module.exports = (app) => {
     const ngos = require('../controllers/ngos.controller');
-    app.post('/admin/ngos/add',auth,ngoFileUpload.single('image'), ngos.add);
+    app.post('/admin/ngos/add',auth,imageUpload.fields([{ name: 'image'}]), ngos.add);
     app.get('/admin/ngos/details',auth, ngos.details);
-    app.patch('/admin/ngos/update',auth,ngoFileUpload.single('image'), ngos.update);
+    app.patch('/admin/ngos/update',auth,imageUpload.fields([{ name: 'image'}]),ngos.update);
 };
