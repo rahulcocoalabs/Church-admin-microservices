@@ -19,12 +19,14 @@ exports.add = async (req, res) => {
     var images = [];
 
     if (files) {
+        if(files.image && files.image.length > 0){
     var len = files.image.length;
     var i = 0;
     while (i < len) {
         images.push(files.image[i].filename);
         i++;
     }
+}
     }
     let ngoDetails = await Ngo.findOne({
         churchId,
@@ -205,6 +207,7 @@ exports.update = async (req, res) => {
         var update = {};
         var files = req.files;
         if (files) {
+            if(files.image && files.image.length > 0){
             var len = files.image.length;
             var i = 0;
             while (i < len) {
@@ -212,7 +215,8 @@ exports.update = async (req, res) => {
                 i++;
             }
             update.images = images;
-            }
+        }
+        }
        
         if (params.ngoName) {
             update.ngoName = params.ngoName
