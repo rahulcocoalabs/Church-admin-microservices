@@ -204,6 +204,8 @@ exports.update = async (req, res) => {
                 console.log("deletedImages")
                 console.log(params.deletedImages)
                 console.log("deletedImages")
+                console.log("length : " + params.deletedImages.length)
+            
                 images = await removeDeletedImagesNames(images, params.deletedImages);
                 console.log("images")
                 console.log(images)
