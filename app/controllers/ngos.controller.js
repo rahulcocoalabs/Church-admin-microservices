@@ -198,6 +198,8 @@ exports.update = async (req, res) => {
             });
         }
         var images = [];
+        var update = {};
+
         if (ngoDetails.images && ngoDetails.images.length > 0) {
             images = ngoDetails.images;
             if (params.deletedImages && params.deletedImages.length > 0) {
@@ -213,7 +215,6 @@ exports.update = async (req, res) => {
                 update.images = images;
             }
         }
-        var update = {};
         var files = req.files;
         if (files) {
             if (files.image && files.image.length > 0) {
