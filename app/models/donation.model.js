@@ -5,6 +5,7 @@ const DonationSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    orderId: String,
     transactionId: String,
     amount: String,
     paidStatus: Boolean,

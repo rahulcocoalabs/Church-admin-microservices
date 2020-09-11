@@ -9,6 +9,7 @@ const CharityPaymentSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Charity'
     },
+    orderId: String,
     transactionId: String,
     amount: String,
     paidStatus: Boolean,
