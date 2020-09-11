@@ -1307,5 +1307,6 @@ function randomStr(len, arr) {
 }
 function getDate(date){
   const [day, month, year] = date.split("/")
-  return new Date(year, month - 1, day).toLocaleString("en-US", {timeZone: "Asia/Kolkata"});
+  return new Date(year, month - 1, day);
+  // return new Date(year, month - 1, day).toLocaleString("en-US", {timeZone: "Asia/Kolkata"});
 }
