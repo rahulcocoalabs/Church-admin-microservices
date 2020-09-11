@@ -1211,7 +1211,8 @@ exports.getDashboardData = async (req, res) => {
     var totalUsers = await Users.find({
       roles: {
         $size: 0
-      }
+      },
+      isVerified: true
     });
     totalUsers = totalUsers.length;
     var findChurchList = await Church.find({
@@ -1241,7 +1242,8 @@ exports.getDashboardData = async (req, res) => {
         church: churchId,
         roles: {
           $size: 0
-        }
+        },
+        isVerified: true
       });
       totalUsersUnderChurch = totalUsersUnderChurch.length;
       var totalMatrimonyUnderChurch = await Matrimony.countDocuments({
