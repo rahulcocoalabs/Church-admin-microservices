@@ -200,14 +200,14 @@ exports.update = async (req, res) => {
         var images = [];
         if (ngoDetails.images && ngoDetails.images.length > 0) {
             images = ngoDetails.images;
-            if (params.deletedImages) {
+            if (params.deletedImages && params.deletedImages.length > 0) {
                 console.log("deletedImages")
                 console.log(params.deletedImages)
                 console.log("deletedImages")
                 images = await removeDeletedImagesNames(images, params.deletedImages);
-                console.log("deletedImages")
+                console.log("images")
                 console.log(images)
-                console.log("deletedImages")
+                console.log("images")
                 update.images = images;
             }
         }
