@@ -10,7 +10,7 @@ var storage = multer.diskStorage({
         cb(null, file.fieldname + '-' + Date.now() + "." + mime.extension(file.mimetype))
     }
 });
-var ngoFileUpload = multer({ storage: storage });
+var imageUpload = multer({ storage: storage });
 
 module.exports = (app) => {
     const ngos = require('../controllers/ngos.controller');
