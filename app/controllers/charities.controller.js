@@ -302,26 +302,29 @@ exports.list = async (req, res) => {
     if (data && (data.success !== undefined) && (data.success === 0)) {
         return res.send(userDatas);
     }
-    // var charityIds = [];
-    // for(let i = 0; i < data.length; j++){
-    //     charityIds.push(data[i].id);
-    // }
+    var charityIds = [];
+    for(let i = 0; i < data.length; i++){
+        charityIds.push(data[i].id);
+    }
 
-    // var charityPayements = await CharityPay.find({
-    //     '_id': { $in: charityIds},
-    //     paidStatus : true,
-    //     status : 1
-    // })
-    // .catch(err => {
-    //     return {
-    //         success: 0,
-    //         message: 'Something went wrong while getting charity payments',
-    //         error: err
-    //     }
-    // })
-    // if (charityPayements && (charityPayements.success !== undefined) && (dcharityPayementsata.success === 0)) {
-    //     return res.send(charityPayements);
-    // }
+    var charityPayements = await CharityPay.find({
+        '_id': { $in: charityIds},
+        paidStatus : true,
+        status : 1
+    })
+    .catch(err => {
+        return {
+            success: 0,
+            message: 'Something went wrong while getting charity payments',
+            error: err
+        }
+    })
+    if (charityPayements && (charityPayements.success !== undefined) && (dcharityPayementsata.success === 0)) {
+        return res.send(charityPayements);
+    }
+    console.log("charityPayements")
+    console.log(charityPayements)
+    console.log("charityPayements")
     // for(let j = 0; j < charityPayements.length; j++){
         
     // }
