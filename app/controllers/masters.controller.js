@@ -6,6 +6,7 @@ var Countries = require('../models/countries.model');
 var States = require('../models/states.model');
 var Districts = require('../models/districts.model');
 var Places = require('../models/places.model');
+var Designation = require('../models/designation.model');
 
 exports.churchList = async (req, res) => {
     try {
@@ -364,4 +365,81 @@ exports.placeList = async(req,res) =>{
         })
     }
 
+}
+
+exports.designationList = async(req,res) =>{
+    var designationList = await Designation.find({
+        status : 1
+    })
+    .catch(err => {
+        return {
+            success: 0,
+            message: 'Something went wrong while listing designations',
+            error: err
+        }
+    })
+if (designationList && (designationList.success !== undefined) && (designationList.success === 0)) {
+    return res.send(designationList);
+}
+return res.send({
+    success: 1,
+    items: designationList,
+    message: 'List designations'
+})
+}
+
+exports.updateDesignation = async(req,res) =>{
+    var designationId = req.params.id;
+    var findCriteria = {
+        _id : designationId,
+        status : 1
+    }
+    var designationData = await Designation.findOne(findCriteria)
+    .catch(err => {
+        return {
+            success: 0,
+            message: 'Something went wrong while getting designation',
+            error: err
+        }
+    })
+if (designationData && (designationData.success !== undefined) && (designationData.success === 0)) {
+    return res.send(designationData);
+}
+if(designationData){
+    var update = {};
+    var params = req.body;
+    if(!params.name){
+        return res.send({
+            success: 0,
+            message: 'Nothing to update'
+        })
+    }else{
+        update.name = params.name;
+    }
+
+    var updateDesignation = await Designation.updateOne(findCriteria,update)
+    .catch(err => {
+        return {
+            success: 0,
+            message: 'Something went wrong while updating designation',
+            error: err
+        }
+    })
+if (updateDesignation && (updateDesignation.success !== undefined) && (updateDesignation.success === 0)) {
+    return res.send(updateDesignation);
+}
+
+return res.send({
+    success: 1,
+    message: 'Designation updated successfully'
+})
+
+
+    
+}else{
+    return res.send({
+        success: 0,
+        message: 'Designation not exists'
+    })
+}
 }
