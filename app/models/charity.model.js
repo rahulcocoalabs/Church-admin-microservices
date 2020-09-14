@@ -22,13 +22,10 @@ var options = {
 };
 
 const CharitiesSchema = mongoose.Schema({
-    churchId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Church'
-    },
     caption: String,
     title: String,
     trustName: String,
+    address: String,
     images: Array,
     fund: String,
     phone: String,

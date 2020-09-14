@@ -288,6 +288,16 @@ exports.list = async (req, res) => {
     let data = await Charity.find(
         findCriteria
         , projection)
+        .populate([{
+            path: 'charityPayments',
+            select: {
+                transactionId : 1,
+                orderId : 1,
+                userId: 1,
+                amount : 1,
+                paidOn : 1
+            }
+          }])
         .limit(perPage)
         .skip(offset)
         .sort({
@@ -302,34 +312,9 @@ exports.list = async (req, res) => {
     if (data && (data.success !== undefined) && (data.success === 0)) {
         return res.send(userDatas);
     }
-    var charityIds = [];
-    for(let i = 0; i < data.length; i++){
-        charityIds.push(data[i].id);
-    }
-
-    var charityPayements = await CharityPay.find({
-        '_id': { $in: charityIds},
-        paidStatus : true,
-        status : 1
-    })
-    .catch(err => {
-        return {
-            success: 0,
-            message: 'Something went wrong while getting charity payments',
-            error: err
-        }
-    })
-    if (charityPayements && (charityPayements.success !== undefined) && (dcharityPayementsata.success === 0)) {
-        return res.send(charityPayements);
-    }
-    console.log("charityPayements")
-    console.log(charityPayements)
-    console.log("charityPayements")
-    // for(let j = 0; j < charityPayements.length; j++){
-        
-    // }
-
-
+  
+    data = JSON.parse(JSON.stringify(data));
+    data = await calculateReceivedAmount(data);
 
     var totalCharityCount = await Charity.countDocuments(findCriteria)
         .catch(err => {
@@ -497,4 +482,22 @@ function getDate(date) {
     const [day, month, year] = date.split("/")
     return new Date(year, month - 1, day);
     // return new Date(year, month - 1, day).toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+}
+
+async function calculateReceivedAmount(data){
+    console.log(data)
+    for(let i = 0; i < data.length; i++){
+       let charityData = data[i];
+       var receivedAmount = 0;
+       if(charityData.charityPayments && charityData.charityPayments.length > 0){
+           var charityPaymentData = charityData.charityPayments;
+           for(let j = 0; j < charityPaymentData.length; j++){
+                var amount = charityPaymentData[j].amount;
+                receivedAmount = receivedAmount + amount;
+           }
+       }
+       data[i].receivedAmount = receivedAmount;
+       delete data[i].charityPayments;
+    }
+    return data
 }

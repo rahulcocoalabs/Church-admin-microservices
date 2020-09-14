@@ -11,7 +11,7 @@ const CharityPaymentSchema = mongoose.Schema({
     },
     orderId: String,
     transactionId: String,
-    amount: String,
+    amount: Number,
     paidStatus: Boolean,
     paidOn: Date,
     status: Number,
