@@ -19,12 +19,14 @@ exports.add = async (req, res) => {
     var images = [];
 
     if (files) {
-    var len = files.image.length;
-    var i = 0;
-    while (i < len) {
-        images.push(files.image[i].filename);
-        i++;
-    }
+        if (files.image && files.image.length > 0) {
+            var len = files.image.length;
+            var i = 0;
+            while (i < len) {
+                images.push(files.image[i].filename);
+                i++;
+            }
+        }
     }
     let ngoDetails = await Ngo.findOne({
         churchId,
@@ -188,32 +190,44 @@ exports.update = async (req, res) => {
         return res.send(ngoDetails);
     }
     if (ngoDetails) {
-        let params = req.body;
-        if (!req.files && !params.deletedImages  && !params.ngoName && !params.caption && !params.phone && !params.address && !params.about) {
+        var params = req.body;
+        if (!req.files && !params.deletedImages && !params.ngoName && !params.caption && !params.phone && !params.address && !params.about) {
             return res.send({
                 success: 0,
                 message: 'Nothing to update'
             });
         }
         var images = [];
-        if(ngoDetails.images && ngoDetails.images.length > 0){
-          images = ngoDetails.images;
-          if(params.deletedImages){
-            images = await removeDeletedImagesNames(images,params.deletedImages);
-          }
-        }
         var update = {};
+
+        if (ngoDetails.images && ngoDetails.images.length > 0) {
+            images = ngoDetails.images;
+            if (params.deletedImages && params.deletedImages.length > 0) {
+                console.log("deletedImages")
+                console.log(params.deletedImages)
+                console.log("deletedImages")
+                console.log("length : " + params.deletedImages.length)
+            
+                images = await removeDeletedImagesNames(images, params.deletedImages);
+                console.log("images")
+                console.log(images)
+                console.log("images")
+                update.images = images;
+            }
+        }
         var files = req.files;
         if (files) {
-            var len = files.image.length;
-            var i = 0;
-            while (i < len) {
-                images.push(files.image[i].filename);
-                i++;
+            if (files.image && files.image.length > 0) {
+                var len = files.image.length;
+                var i = 0;
+                while (i < len) {
+                    images.push(files.image[i].filename);
+                    i++;
+                }
+                update.images = images;
             }
-            update.images = images;
-            }
-       
+        }
+
         if (params.ngoName) {
             update.ngoName = params.ngoName
         }
@@ -258,11 +272,11 @@ exports.update = async (req, res) => {
 
 }
 
-async function removeDeletedImagesNames(mainSubImageArray,deletedImages){
-   
-    for(let i = 0; i < deletedImages.length; i++){
+async function removeDeletedImagesNames(mainSubImageArray, deletedImages) {
+
+    for (let i = 0; i < deletedImages.length; i++) {
         var deletedImageIndex = await mainSubImageArray.findIndex(imageName => (imageName === deletedImages[i]));
-        mainSubImageArray.splice(deletedImageIndex,1);
+        mainSubImageArray.splice(deletedImageIndex, 1);
     }
 
     return mainSubImageArray;

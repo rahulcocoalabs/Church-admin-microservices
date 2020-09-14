@@ -13,4 +13,7 @@ module.exports = (app) => {
     app.get('/admin/masters/district/:id/list', masters.districtList);
     app.get('/admin/masters/place/:id/list', masters.placeList);
 
+    app.get('/admin/masters/designation/list', masters.designationList);
+    app.patch('/admin/masters/designation/:id/update', masters.updateDesignation);
+
 };
