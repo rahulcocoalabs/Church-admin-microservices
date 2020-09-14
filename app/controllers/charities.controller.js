@@ -8,7 +8,7 @@ var User = require('../models/user.model')
 var config = require('../../config/app.config.js');
 var pushNotificationHelper = require('../helpers/pushNotificationHelper');
 const constants = require('../helpers/constants');
-
+var mongoose = require('mongoose');
 
 var charityConfig = config.charity;
 exports.delete = async (req, res) => {
@@ -267,7 +267,7 @@ exports.list = async (req, res) => {
     const identity = req.identity.data;
     var adminUserId = identity.id;
     var churchId = identity.church;
-
+    
     var params = req.query;
     var page = Number(params.page) || 1;
     page = page > 0 ? page : 1;
@@ -281,13 +281,12 @@ exports.list = async (req, res) => {
     projection.images = 0;
     projection.phone = 0;
     let findCriteria = {
-        churchId,
+        churchId : mongoose.Types.ObjectId(churchId),
         status: 1
     }
-
-    let data = await Charity.find(
-        findCriteria
-        , projection)
+ 
+  
+    let data = await Charity.find(findCriteria, projection)
         .populate([{
             path: 'charityPayments',
             select: {
@@ -312,7 +311,9 @@ exports.list = async (req, res) => {
     if (data && (data.success !== undefined) && (data.success === 0)) {
         return res.send(userDatas);
     }
-  
+    console.log("data")
+    console.log(data)
+    console.log("data")
     data = JSON.parse(JSON.stringify(data));
     data = await calculateReceivedAmount(data);
 
