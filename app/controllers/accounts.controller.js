@@ -1022,23 +1022,34 @@ exports.resetPassword = async (req, res) => {
   if (!link) {
     return res.send({
       success: 0,
-      msg: "no links given"
+      msg: "Link required"
     })
   }
   if (!newPass) {
     return res.send({
       success: 0,
-      msg: "no passwords given"
+      msg: "Password required"
     })
   }
   // find the document with given link
   let data = await Reset.findOne({
-    value: link
-  });
+    value: link,
+    status : 1
+  })
+  .catch(err => {
+    return {
+      success: 0,
+      message: 'Something went wrong while checking link',
+      error: err
+    }
+  })
+if (data && (data.success !== undefined) && (data.success === 0)) {
+  return res.send(data);
+}
   if (!data) {
     return res.send({
       success: 0,
-      msg: "some thing went wrong"
+      msg: "Invalid link"
     });
   }
   // find the user's id and time gap betweeen intervals
@@ -1053,30 +1064,32 @@ exports.resetPassword = async (req, res) => {
   if (gap > (config.resetpassword.timeForExpiry)) {
     return res.send({
       success: 0,
-      msg: "expired link"
+      msg: "Link expired"
     })
   } else {
 
     const hash = bcrypt.hashSync(newPass, salt);
 
-    let data_1 = await Users.updateOne({
+    let passwordUpdate = await Users.updateOne({
       _id: id
     }, {
-      passwordHash: hash
+      passwordHash: hash,
+      tsModifiedAt : Date.now()
     })
-
-    if (data_1) {
+    .catch(err => {
+      return {
+        success: 0,
+        message: 'Something went wrong while updating password',
+        error: err
+      }
+    })
+  if (passwordUpdate && (passwordUpdate.success !== undefined) && (passwordUpdate.success === 0)) {
+    return res.send(passwordUpdate);
+  }
       return res.send({
         success: 1,
-        data_1,
         msg: "successfully updated password"
       })
-
-    } else {
-      return res.send({
-        success: 0
-      })
-    }
   }
 
 
