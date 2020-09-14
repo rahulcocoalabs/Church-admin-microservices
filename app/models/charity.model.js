@@ -34,6 +34,16 @@ const CharitiesSchema = mongoose.Schema({
     phone: String,
     about: String,
     address: String,
+    charityPayments: [{
+        paymentId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'CharityPayment'
+        },
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    }],
     status: Number,
     tsCreatedAt: Number,
     tsModifiedAt: Number
