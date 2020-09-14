@@ -74,7 +74,7 @@ exports.signUp = async (req, res) => {
     }, {
       name: 1
     })
-
+   
     var roles = [];
     roles.push(userRoleData.id);
     // var otpResponse = await otp(phone)
@@ -1071,7 +1071,7 @@ if (data && (data.success !== undefined) && (data.success === 0)) {
     const hash = bcrypt.hashSync(newPass, salt);
 
     let passwordUpdate = await Users.updateOne({
-      _id: id
+      _id: id,
     }, {
       passwordHash: hash,
       tsModifiedAt : Date.now()
@@ -1123,7 +1123,7 @@ exports.forgotPassword = async (req, res) => {
   if (!mail) {
     return res.send({
       success: 0,
-      msg: "Email id required"
+      message: "Email id required"
     })
   }
 
@@ -1212,13 +1212,13 @@ if (saveLink && (saveLink.success !== undefined) && (saveLink.success === 0)) {
   if (saveLink) {
     return res.send({
       success: 1,
-      link: link,
-      id: id
+      message: "Mail sent",
+      
     })
   } else {
     return res.send({
       success: 0,
-      msg: "something went wrong"
+      message: "something went wrong"
     })
   }
 
