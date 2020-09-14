@@ -82,7 +82,7 @@ module.exports = {
     root:"http://localhost:4200/reset-password"
   },
   email: {
-    sendgridApiKey: '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'
+    sendgridApiKey: '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'
   },
   oneSignal: {
     appId : "9777ade8-faad-4cc1-96fa-8f3109efa482",
