@@ -9,19 +9,19 @@ const Designation = require('../models/designation.model');
 const Matrimony = require('../models/matrimony.model');
 const config = require('../../config/app.config.js');
 const constants = require('../helpers/constants');
+const { v4: uuidv4 } = require('uuid');
+
 var otpConfig = config.otp;
 var donationConfig = config.donations;
 var pastersConfig = config.pasters;
 const paramsConfig = require('../../config/params.config');
 const JWT_KEY = paramsConfig.development.jwt.secret;
 var jwt = require('jsonwebtoken');
-const uuidv4 = require('uuid/v4');
 const sgMail = require('@sendgrid/mail');
 
 sgMail.setApiKey(config.email.sendgridApiKey);
 
 var bcrypt = require('bcryptjs');
-const resetPasswordModel = require('../models/resetPassword.model');
 const appConfig = require('../../config/app.config.js');
 const salt = bcrypt.genSaltSync(10);
 
@@ -1086,7 +1086,6 @@ exports.resetPassword = async (req, res) => {
 async function sendMail(message, target) {
 
   var ret = 0;
-
  
   const msg = {
     to: target,
@@ -1095,7 +1094,6 @@ async function sendMail(message, target) {
     text: message,
 
   };
-
   console.log(target, message);
   sgMail
     .send(msg)
@@ -1106,61 +1104,95 @@ async function sendMail(message, target) {
     });
 }
 
-exports.reset = async (req, res) => {
+exports.forgotPassword = async (req, res) => {
 
   let mail = req.body.email;
   if (!mail) {
     return res.send({
       success: 0,
-      msg: "email not submitted"
+      msg: "Email id required"
     })
   }
-  //let str = randomStr('20','12345abcdef');
-  var str = randomString(32, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  let link = config.resetpassword.root + "/" + str;
-  var user = await Users.findOne({
-    email: mail
-  });
 
-  if (!user) {
+  var rolesData  = await UserRoles.find({
+    status : 1
+  })
+  .catch(err => {
+    return {
+        success: 0,
+        message: 'Something went wrong while listing roles',
+        error: err
+    }
+})
+if (rolesData && (rolesData.success !== undefined) && (rolesData.success === 0)) {
+  return res.send(rolesData);
+}
+var rolesArray = [];
+for(let i = 0; i < rolesData.length; i++){
+  rolesArray.push(rolesData[i].id)
+}
+  //let str = randomStr('20','12345abcdef');
+  
+  var userData = await Users.findOne({
+    roles: {
+      $in: rolesArray
+    },
+    email: mail,
+    status : 1
+  })
+  .catch(err => {
+    return {
+        success: 0,
+        message: 'Something went wrong while checking email',
+        error: err
+    }
+})
+if (userData && (userData.success !== undefined) && (userData.success === 0)) {
+  return res.send(userData);
+}
+
+  if (!userData) {
 
     return res.json({
       success: 0,
-      message: "no matching email found"
+      message: "Email not registered"
     });
   }
-
-  let id = user._id;
+  var str = uuidv4();
+  let link = config.resetpassword.root + "/" + str;
+  let id = userData.id;
   var newPasswordResetLink = new Reset({
     value: str,
-    owner: user._id,
+    owner: id,
     status: 1,
     tsCreatedAt: new Date(),
     tsModifiedAt: null
   });
 
-  var saveLink = await newPasswordResetLink.save();
+  var saveLink = await newPasswordResetLink.save()
+  .catch(err => {
+    return {
+        success: 0,
+        message: 'Something went wrong while saving forgot password info',
+        error: err
+    }
+})
+if (saveLink && (saveLink.success !== undefined) && (saveLink.success === 0)) {
+  return res.send(saveLink);
+}
 
-
-  if (!saveLink) {
-    return res.send({
-      success: 0,
-      msg: "somethin wrong"
-    })
-  }
   const externalLink = appConfig.resetpassword.root + "/" + str;
-  const mailmsg = "you can reset your password by clciking this link" + "   " + externalLink;
+  const mailmsg = "You can reset your password by cliciking this link" + "   " + externalLink;
 
 
 
 
   const x = await sendMail(mailmsg, mail);
 
-  if (x == 1) {
-
+  if (x && ( x == 1 )) {
     return res.json({
       success: 0,
-      message: "mail could not be sent"
+      message: "Mail could not be sent"
     })
   }
 

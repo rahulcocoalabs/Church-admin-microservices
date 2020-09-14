@@ -413,9 +413,10 @@ if(designationData){
             success: 0,
             message: 'Nothing to update'
         })
-    }else{
-        update.name = params.name;
     }
+
+        update.name = params.name;
+
 
     var updateDesignation = await Designation.updateOne(findCriteria,update)
     .catch(err => {
