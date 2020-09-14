@@ -285,7 +285,9 @@ exports.list = async (req, res) => {
         status: 1
     }
  
-  
+  console.log("findCriteria")
+  console.log(findCriteria)
+  console.log("findCriteria")
     let data = await Charity.find(findCriteria, projection)
         .populate([{
             path: 'charityPayments',
