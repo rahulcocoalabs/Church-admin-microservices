@@ -1,4 +1,6 @@
-var commonStorePath = 'http://172.105.33.226/church-app-images/'
+// var commonStorePath = 'http://172.105.33.226/church-app-images/';
+var commonStorePath = 'http://45.79.120.216/church-app-images/'
+
 module.exports = {
   gateway: {
     url: "http://localhost:5000"
