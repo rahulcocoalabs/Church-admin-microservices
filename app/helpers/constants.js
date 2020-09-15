@@ -20,7 +20,7 @@ module.exports = Object.freeze({
    IMAGE_POST_TYPE : "image",
    TEXT_POST_TYPE : "text",
 
-   PASTER_DESIGNATION : "Paster",
+   PASTER_DESIGNATION : "Pastor",
 
    ADD_EVENT_NOTIFICATION_TITLE : "New event",
    ADD_EVENT_NOTIFICATION_MESSAGE : "New event created",
