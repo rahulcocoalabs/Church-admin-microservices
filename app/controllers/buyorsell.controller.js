@@ -178,12 +178,14 @@ exports.detail = async (req, res) => {
 exports.approve = async (req, res) => {
     var id = req.params.id;
     var type = req.query.type;
+    console.log(type);
     if(type != approvedFeed || type != rejectedFeed) {
         return res.status(400).send({
             success: 0,
             message: 'invalid type value'
         })
     }
+    console.log(type);
     try {
         var filter = {
             contentType: buyorsellType,
