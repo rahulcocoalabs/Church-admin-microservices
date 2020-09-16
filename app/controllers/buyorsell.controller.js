@@ -3,6 +3,7 @@ var User = require('../models/user.model');
 var constant = require('../helpers/constants');
 var buyorsellType = constant.TYPE_BUYORSELL;
 const pendingFeed = constant.PENDING_FEED;
+const approvedFeed = constant.APPROVED_FEED;
 var config = require('../../config/app.config.js');
 var buyorsellConfig = config.buyorsell;
 var usersConfig = config.users;
@@ -183,7 +184,6 @@ exports.approve = async (req, res) => {
         };
 
         var update = {
-
             feedStatus: approvedFeed
         };
        
