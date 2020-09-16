@@ -177,7 +177,7 @@ exports.detail = async (req, res) => {
 
 exports.approve = async (req, res) => {
     var id = req.params.id;
-    var type = req.query.type;
+    var type = req.body.type;
     console.log(type);
     if(type != approvedFeed || type != rejectedFeed) {
         return res.status(400).send({
