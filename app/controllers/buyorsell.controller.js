@@ -179,6 +179,8 @@ exports.approve = async (req, res) => {
     var id = req.params.id;
     var type = req.body.type;
     console.log(type);
+    console.log((type != approvedFeed));
+    console.log((type != rejectedFeed));
     if((type != approvedFeed) || (type != rejectedFeed)) {
         return res.status(400).send({
             success: 0,
