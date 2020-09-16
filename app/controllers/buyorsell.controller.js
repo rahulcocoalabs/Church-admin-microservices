@@ -177,17 +177,13 @@ exports.detail = async (req, res) => {
 
 exports.approve = async (req, res) => {
     var id = req.params.id;
-    var type = req.body.type;
-    console.log(type);
-    console.log((type != approvedFeed));
-    console.log((type != rejectedFeed));
+    var type = req.query.type;
     if((type != approvedFeed) && (type != rejectedFeed)) {
         return res.status(400).send({
             success: 0,
             message: 'invalid type value'
         })
     }
-    console.log(type);
     try {
         var filter = {
             contentType: buyorsellType,
@@ -201,9 +197,8 @@ exports.approve = async (req, res) => {
        
         var productDetail = await Post.updateOne(filter,update);
         res.status(200).send({
-            success: 1,
-           
-            message: "approved"
+            success: 1, 
+            message: "Status changed"
         })
     } catch (err) {
         res.status(500).send({
