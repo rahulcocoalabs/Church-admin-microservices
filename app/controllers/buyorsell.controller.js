@@ -4,6 +4,7 @@ var constant = require('../helpers/constants');
 var buyorsellType = constant.TYPE_BUYORSELL;
 const pendingFeed = constant.PENDING_FEED;
 const approvedFeed = constant.APPROVED_FEED;
+const rejectedFeed = constant.REJECTED_FEED;
 var config = require('../../config/app.config.js');
 var buyorsellConfig = config.buyorsell;
 var usersConfig = config.users;
@@ -176,6 +177,13 @@ exports.detail = async (req, res) => {
 
 exports.approve = async (req, res) => {
     var id = req.params.id;
+    var type = req.body.type;
+    if((type != approvedFeed) && (type != rejectedFeed)) {
+        return res.status(400).send({
+            success: 0,
+            message: 'invalid type value'
+        })
+    }
     try {
         var filter = {
             contentType: buyorsellType,
@@ -184,14 +192,13 @@ exports.approve = async (req, res) => {
         };
 
         var update = {
-            feedStatus: approvedFeed
+            feedStatus: type
         };
        
         var productDetail = await Post.updateOne(filter,update);
         res.status(200).send({
-            success: 1,
-           
-            message: "approved"
+            success: 1, 
+            message: "Status changed"
         })
     } catch (err) {
         res.status(500).send({
