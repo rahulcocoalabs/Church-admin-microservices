@@ -152,6 +152,9 @@ exports.add = async (req, res) => {
     // var files = req.files;
     var file = req.file;
     var images = [];
+    console.log("churchId")
+    console.log(churchId)
+    console.log("churchId")
 
     // if (files) {
     // var len = files.image.length;
